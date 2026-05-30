@@ -1,0 +1,44 @@
+# Application
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+
+# Env / secrets
+.env
+.env.backup
+.env.production
+
+# Dev artifacts
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+/.claude
+/.playwright-mcp
+/auth.json
+/database/database.sqlite
+/database/database.sqlite-journal
+npm-debug.log
+yarn-error.log
+.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project-specific
+# 参照用のプロトタイプ。リポジトリに含めない。
+/_legacy-static
+
+# ユーザーアップロード (本番では別途配置/書き込みされる)
+/public/uploads/*
+!/public/uploads/.gitkeep
