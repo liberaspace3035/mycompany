@@ -4,13 +4,15 @@
 providers = ["php"]
 
 [phases.setup]
-nixPkgs = ["nodejs_20", "php84", "php84Packages.composer"]
+nixPkgs = ["nodejs_22", "php84", "php84Packages.composer"]
 
 [phases.install]
 dependsOn = ["setup"]
 cmds = [
   "composer install --no-dev --no-interaction --optimize-autoloader --no-progress",
-  "npm ci",
+  # npm ci だと Rolldown の platform-specific optional deps が抜ける既知バグを踏むため
+  # npm install を使う (lock ファイルは尊重される)。
+  "npm install --no-audit --no-fund",
 ]
 
 [phases.build]
