@@ -81,7 +81,8 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', true),
-            'visibility' => 'public',
+            // R2 はオブジェクトACL非対応。公開はバケットのPublic URL/独自ドメインで行うため
+            // visibility は指定しない（指定するとPUT時にACLエラーになり得る）。
             'throw' => false,
             'report' => false,
         ],
