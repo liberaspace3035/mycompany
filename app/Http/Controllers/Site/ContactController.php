@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Site;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ContactSubmissionReceived;
 use App\Models\ContactSubmission;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -18,7 +21,7 @@ class ContactController extends Controller
             'body'    => ['required', 'string', 'max:8000'],
         ]);
 
-        ContactSubmission::create([
+        $submission = ContactSubmission::create([
             ...$data,
             'source_url' => $request->headers->get('referer'),
             'referrer'   => $request->headers->get('referer'),
@@ -26,7 +29,17 @@ class ContactController extends Controller
             'ip'         => $request->ip(),
         ]);
 
-        // TODO: 通知メール送信。MAIL_* が本番で設定されたら mail()->to($settings->contact_email)->send(...) を追加
+        // 通知メール送信。失敗してもユーザーの送信完了は妨げない（受信は管理画面に残る）。
+        try {
+            Mail::to(config('mail.contact_to'))
+                ->send(new ContactSubmissionReceived($submission));
+        } catch (\Throwable $e) {
+            Log::error('Contact notification mail failed', [
+                'submission_id' => $submission->id,
+                'error'         => $e->getMessage(),
+            ]);
+        }
+
         return redirect()->back()->with('contact_ok', true)->withFragment('contact');
     }
 }

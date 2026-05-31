@@ -115,4 +115,15 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Contact Notification Recipient
+    |--------------------------------------------------------------------------
+    |
+    | サイトのお問い合わせフォームから届いた通知メールの送信先。
+    |
+    */
+
+    'contact_to' => env('CONTACT_NOTIFY_TO', 'liberaspace3035@gmail.com'),
+
 ];
