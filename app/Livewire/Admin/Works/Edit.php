@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Works;
 
 use App\Models\Work;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
@@ -79,11 +80,14 @@ class Edit extends Component
     {
         $data = $this->validate();
 
-        // 画像がアップロードされていれば public/uploads/works に保存し、パスを image に反映
+        // 画像がアップロードされていれば既定ディスクに保存し、公開URLを image に反映。
+        // 本番(FILESYSTEM_DISK=r2)は R2、ローカルは public/uploads に保存する。
         if ($this->imageUpload) {
+            $disk = config('filesystems.default') === 'r2' ? 'r2' : 'uploads';
             $ext  = strtolower($this->imageUpload->getClientOriginalExtension() ?: 'png');
             $name = $data['slug'].'-'.substr(md5(uniqid('', true)), 0, 8).'.'.$ext;
-            $data['image'] = $this->imageUpload->storeAs('works', $name, 'uploads'); // 例: works/slug-xxxxxxxx.png
+            $path = $this->imageUpload->storeAs('works', $name, $disk);
+            $data['image'] = Storage::disk($disk)->url($path); // 絶対URLで保存（blade側は http... をそのまま使う）
         }
 
         $payload = [
