@@ -9,6 +9,11 @@ class WorkSeeder extends Seeder
 {
     public function run(): void
     {
+        // 既に実績が登録されていれば再投入しない（デプロイ等での上書き・復活を防ぐ）。
+        if (Work::query()->exists()) {
+            return;
+        }
+
         $rows = [
             [
                 'slug' => 'auto-quote-system',

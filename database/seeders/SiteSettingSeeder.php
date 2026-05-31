@@ -9,6 +9,11 @@ class SiteSettingSeeder extends Seeder
 {
     public function run(): void
     {
+        // 既にサイト設定が存在すれば再投入しない（管理画面の編集内容が上書きされるのを防ぐ）。
+        if (SiteSetting::query()->exists()) {
+            return;
+        }
+
         SiteSetting::query()->updateOrCreate(['id' => 1], [
             'site_name' => 'Liberaspace',
             'contact_email' => 'hello@liberaspace.net',
