@@ -6,6 +6,7 @@ use App\Models\Work;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -86,7 +87,22 @@ class Edit extends Component
             $disk = config('filesystems.default') === 'r2' ? 'r2' : 'uploads';
             $ext  = strtolower($this->imageUpload->getClientOriginalExtension() ?: 'png');
             $name = $data['slug'].'-'.substr(md5(uniqid('', true)), 0, 8).'.'.$ext;
-            $path = $this->imageUpload->storeAs('works', $name, $disk);
+
+            try {
+                $path = $this->imageUpload->storeAs('works', $name, $disk);
+            } catch (\Throwable $e) {
+                // R2 への書き込みエラー（バケット名・認証情報・エンドポイント等）をそのまま表示
+                throw ValidationException::withMessages([
+                    'imageUpload' => 'アップロードに失敗しました: '.$e->getMessage(),
+                ]);
+            }
+
+            if (! $path) {
+                throw ValidationException::withMessages([
+                    'imageUpload' => 'アップロードに失敗しました（保存先ディスクの設定を確認してください）。',
+                ]);
+            }
+
             $data['image'] = Storage::disk($disk)->url($path); // 絶対URLで保存（blade側は http... をそのまま使う）
         }
 

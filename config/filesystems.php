@@ -83,7 +83,8 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', true),
             // R2 はオブジェクトACL非対応。公開はバケットのPublic URL/独自ドメインで行うため
             // visibility は指定しない（指定するとPUT時にACLエラーになり得る）。
-            'throw' => false,
+            // throw=true: 書き込み失敗を握りつぶさず例外にし、原因（バケット名/認証ミス等）を表面化させる。
+            'throw' => true,
             'report' => false,
         ],
 
