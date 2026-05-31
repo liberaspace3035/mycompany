@@ -8,12 +8,17 @@ use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('layouts.admin', ['title' => 'Edit Work'])]
 #[Title('Work 編集')]
 class Edit extends Component
 {
+    use WithFileUploads;
+
     public ?Work $work = null;
+
+    public $imageUpload = null;     // アップロードする画像ファイル
 
     public string $title = '';
     public string $slug = '';
@@ -55,6 +60,7 @@ class Edit extends Component
             'summary'  => ['nullable', 'string', 'max:2000'],
             'url'      => ['nullable', 'url', 'max:255'],
             'image'    => ['nullable', 'string', 'max:255'],
+            'imageUpload' => ['nullable', 'image', 'max:8192'], // 最大8MB
             'tagsRaw'  => ['nullable', 'string', 'max:255'],
             'featured' => ['boolean'],
             'position' => ['integer', 'min:0'],
@@ -72,6 +78,13 @@ class Edit extends Component
     public function save()
     {
         $data = $this->validate();
+
+        // 画像がアップロードされていれば public/uploads/works に保存し、パスを image に反映
+        if ($this->imageUpload) {
+            $ext  = strtolower($this->imageUpload->getClientOriginalExtension() ?: 'png');
+            $name = $data['slug'].'-'.substr(md5(uniqid('', true)), 0, 8).'.'.$ext;
+            $data['image'] = $this->imageUpload->storeAs('works', $name, 'uploads'); // 例: works/slug-xxxxxxxx.png
+        }
 
         $payload = [
             'title'    => $data['title'],

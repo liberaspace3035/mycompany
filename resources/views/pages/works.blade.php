@@ -52,7 +52,11 @@
       flex-direction: column;
       transition: all 0.3s ease;
       cursor: pointer;
+      color: inherit;
+      text-decoration: none;
     }
+    a.work-card { cursor: pointer; }
+    article.work-card { cursor: default; }
     .work-card:hover { border-color: var(--border-bright); transform: translateY(-4px); }
     .work-card:hover .work-thumb-fg { transform: scale(1.04); }
     .work-thumb {
@@ -246,7 +250,10 @@
 
       <div class="works-grid">
         @foreach($works as $i => $work)
-          <article class="work-card" @if($i > 0) data-delay="{{ $i }}" @endif>
+          @php $hasLink = filled($work->url); @endphp
+          <{{ $hasLink ? 'a' : 'article' }} class="work-card"
+            @if($hasLink) href="{{ $work->url }}" target="_blank" rel="noopener noreferrer" @endif
+            @if($i > 0) data-delay="{{ $i }}" @endif>
             <div class="work-thumb">
               <span class="work-thumb-tag">/ {{ strtoupper(\App\Support\WorkUi::shortTag($work->category)) }}</span>
               <div class="work-thumb-fg">
@@ -281,7 +288,7 @@
                 </div>
               @endif
             </div>
-          </article>
+          </{{ $hasLink ? 'a' : 'article' }}>
         @endforeach
       </div>
 
