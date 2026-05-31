@@ -16,11 +16,15 @@ class TimelineSeeder extends Seeder
             ['date' => '2026.04', 'title' => 'サイトリニューアル',   'description' => 'デザイン / コピーをフル刷新。"Make Agents feel native." を旗印に。'],
         ];
 
+        TimelineEntry::query()->delete();
+
         foreach ($rows as $i => $r) {
-            TimelineEntry::query()->updateOrCreate(
-                ['date' => $r['date'], 'title' => $r['title']],
-                ['description' => $r['description'], 'position' => $i],
-            );
+            TimelineEntry::query()->create([
+                'date' => $r['date'],
+                'title' => $r['title'],
+                'description' => $r['description'],
+                'position' => $i,
+            ]);
         }
     }
 }
