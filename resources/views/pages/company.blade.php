@@ -6,7 +6,7 @@
       display: grid;
       grid-template-columns: 1fr 1.4fr;
       gap: 80px;
-      padding: 120px 0;
+      padding: 120px var(--gutter);
       border-bottom: 1px solid var(--border);
       align-items: start;
     }
@@ -380,7 +380,8 @@
       .skill-grid { grid-template-columns: 1fr; }
       .tl-item { grid-template-columns: 70px 1fr; gap: 16px; }
       .form-row.cols { grid-template-columns: 1fr; }
-      .intro-grid, .timeline-section, .skills-section, .contact-section { padding: 80px 0; }
+      .timeline-section, .skills-section, .contact-section { padding: 80px 0; }
+      .intro-grid { padding: 80px var(--gutter); }
       .intro-content h2, .timeline-section h2, .skills-section h2, .contact-info h2 {
         font-size: clamp(28px, 6.5vw, 36px);
       }
