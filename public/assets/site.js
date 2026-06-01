@@ -88,16 +88,17 @@
   panel.setAttribute('aria-hidden', 'true');
   // Map each link from existing nav-links
   const links = [
-    ['index.html',    'Top',      'TOP'],
-    ['services.html', 'Services', 'SERVICES'],
-    ['works.html',    'Works',    'WORKS'],
-    ['blog.html',     'Blog',     'BLOG'],
-    ['company.html',  'Company',  'COMPANY']
+    ['/',         'Top',      'TOP'],
+    ['/services', 'Services', 'SERVICES'],
+    ['/works',    'Works',    'WORKS'],
+    ['/blog',     'Blog',     'BLOG'],
+    ['/company',  'Company',  'COMPANY']
   ];
-  const here = location.pathname.split('/').pop() || 'index.html';
+  const here = location.pathname;
+  const isActive = (href) => href === '/' ? here === '/' : (here === href || here.startsWith(href + '/'));
   panel.innerHTML = links.map(([href, jp, en]) =>
-    `<a href="${href}"${here === href ? ' class="active"' : ''}>${jp}<span class="en">${en}</span></a>`
-  ).join('') + `<a class="panel-cta" href="company.html#contact">無料相談 <span aria-hidden="true">→</span></a>`;
+    `<a href="${href}"${isActive(href) ? ' class="active"' : ''}>${jp}<span class="en">${en}</span></a>`
+  ).join('') + `<a class="panel-cta" href="/company#contact">無料相談 <span aria-hidden="true">→</span></a>`;
   document.body.appendChild(panel);
 
   function setOpen(open) {
