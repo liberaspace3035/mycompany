@@ -4,6 +4,7 @@ FROM caddy:2-alpine
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY index.html /srv/index.html
 COPY assets /srv/assets
+COPY apps /srv/apps
 
 # Railway injects $PORT; Caddyfile reads it. EXPOSE is informational.
 EXPOSE 80
