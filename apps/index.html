@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apps — LiberaSpace</title>
+<meta name="description" content="LiberaSpace のアプリ開発。日々の仕事を静かに支える、端末内で完結するiPhoneアプリをつくっています。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1A1B1F;
+    --muted:rgba(26,27,31,0.54);
+    --faint:rgba(26,27,31,0.34);
+    --hair:rgba(26,27,31,0.12);
+    --paper:#fbfaf8;
+    --panel:#f3f0ea;
+    --gut:clamp(24px,6vw,120px);
+    --wordmark-font:"Playfair Display", Georgia, "Times New Roman", serif;
+    --sans:"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  html,body{ overflow-x:hidden; max-width:100%; }
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    background:
+      radial-gradient(120% 80% at 6% 96%, rgba(255,243,228,0.5), rgba(255,243,228,0) 44%),
+      radial-gradient(120% 80% at 94% 4%, rgba(255,241,226,0.46), rgba(255,241,226,0) 44%),
+      radial-gradient(150% 130% at 50% 40%, #fdfcfa 0%, #f7f5f1 72%, #f1eee8 100%);
+    background-attachment:fixed;
+  }
+
+  /* ---- ambient background fx (CSS only) ---- */
+  #bgfx{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .ribbon{ position:absolute; border-radius:50%; }
+  .ribbon--body{
+    width:172vmax; height:52vmax; left:-26vmax; top:24%; transform:rotate(-30deg);
+    background:radial-gradient(ellipse 48% 52% at 50% 50%,
+      rgba(176,175,179,0.42), rgba(176,175,179,0.22) 48%, rgba(176,175,179,0.08) 70%, rgba(176,175,179,0) 82%);
+    filter:blur(62px);
+  }
+  .ribbon--core{
+    width:150vmax; height:34vmax; left:-16vmax; top:30%; transform:rotate(-31deg);
+    background:radial-gradient(ellipse 44% 50% at 50% 50%,
+      rgba(255,255,255,0.72), rgba(238,237,234,0.38) 40%, rgba(210,210,212,0.12) 66%, rgba(210,210,212,0) 80%);
+    filter:blur(44px);
+  }
+  .dotgrid{ position:absolute; top:-28px; left:-28px; width:46vw; height:40vw; max-width:640px; max-height:540px;
+    background-image:radial-gradient(rgba(26,27,31,0.14) 1px, transparent 1.7px);
+    background-size:17px 17px;
+    -webkit-mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%);
+    mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%); }
+  .grain{ position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:170px 170px; opacity:0.38; mix-blend-mode:overlay; }
+
+  .page{ position:relative; z-index:1; }
+
+  /* ---------- header ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px var(--gut);
+    transition:background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+  }
+  .nav.scrolled{
+    background:rgba(251,250,248,0.72);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 var(--hair);
+  }
+  .nav__brand{
+    font-family:var(--wordmark-font); font-weight:700; font-size:20px;
+    letter-spacing:-0.01em; color:var(--ink); text-decoration:none;
+  }
+  .nav__links{ display:flex; gap:clamp(16px,2.4vw,38px); align-items:center; }
+  .nav__links a{
+    font-size:11px; letter-spacing:0.24em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none; font-weight:600; transition:color .25s ease;
+  }
+  .nav__links a:hover{ color:var(--ink); }
+
+  /* ---------- intro ---------- */
+  .intro{ position:relative; padding:clamp(132px,20vh,220px) var(--gut) clamp(48px,8vh,96px); max-width:1100px; margin:0 auto; }
+  .intro__eyebrow{ font-size:11px; letter-spacing:0.34em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:24px; }
+  .intro__title{ font-family:var(--wordmark-font); font-weight:700; font-size:clamp(40px,8vw,108px); line-height:0.98; letter-spacing:-0.02em; }
+  .intro__title em{ font-style:italic; font-weight:500; color:var(--muted); }
+  .intro__lead{ margin-top:clamp(28px,4vh,44px); font-size:clamp(15px,1.5vw,19px); line-height:1.85; color:var(--muted); max-width:560px; text-wrap:pretty; }
+
+  /* ---------- section scaffolding ---------- */
+  section.block{ position:relative; padding:clamp(56px,9vh,120px) var(--gut); max-width:1100px; margin:0 auto; }
+  .block + .block{ border-top:1px solid var(--hair); }
+  .head{ display:flex; align-items:baseline; gap:18px; margin-bottom:clamp(32px,5vh,60px); flex-wrap:wrap; }
+  .head__num{ font-size:12px; letter-spacing:0.12em; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; }
+  .head__en{ font-family:var(--wordmark-font); font-style:italic; font-weight:500; font-size:clamp(28px,4.4vw,56px); letter-spacing:-0.01em; line-height:1; }
+  .head__jp{ font-size:12px; letter-spacing:0.26em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  .head__line{ flex:1; height:1px; background:var(--hair); min-width:40px; align-self:center; }
+
+  /* reveal */
+  [data-reveal]{ opacity:0; transform:translateY(20px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  [data-reveal].in{ opacity:1; transform:none; }
+
+  /* ---------- app card ---------- */
+  .app{
+    display:grid; grid-template-columns:auto 1fr; gap:clamp(24px,4vw,56px); align-items:start;
+    padding:clamp(28px,4vh,44px) 0; border-top:1px solid var(--hair);
+  }
+  .app:last-child{ border-bottom:1px solid var(--hair); }
+  .app__icon{
+    width:clamp(72px,9vw,104px); aspect-ratio:1; border-radius:22%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--wordmark-font); font-weight:700; font-size:clamp(30px,4vw,46px); color:var(--paper);
+    background:linear-gradient(150deg, #2a2c33 0%, #1A1B1F 60%, #111216 100%);
+    box-shadow:0 10px 30px rgba(26,27,31,0.18), inset 0 1px 0 rgba(255,255,255,0.14);
+  }
+  .app__name{ font-family:var(--wordmark-font); font-weight:700; font-size:clamp(26px,3.4vw,44px); letter-spacing:-0.01em; line-height:1.05; }
+  .app__tagline{ display:block; margin-top:8px; font-size:clamp(13px,1.4vw,17px); font-style:italic; font-weight:500; color:var(--muted); }
+  .app__meta-row{ display:flex; flex-wrap:wrap; gap:16px; margin-top:18px; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  .app__desc{ margin-top:16px; font-size:15px; line-height:1.85; color:var(--muted); max-width:560px; text-wrap:pretty; }
+  .app__tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:20px; }
+  .app__tags .tag{ font-size:11px; letter-spacing:0.08em; color:var(--muted); border:1px solid var(--hair); padding:5px 11px; border-radius:1px; }
+  .app__links{ display:flex; flex-wrap:wrap; gap:14px 28px; align-items:center; margin-top:26px; }
+  .app__link{ display:inline-flex; align-items:center; gap:11px; font-size:12px; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink); font-weight:600; text-decoration:none; }
+  .app__link .arrow{ width:30px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .app__link:hover .arrow{ width:48px; }
+  .app__link--muted{ color:var(--faint); cursor:default; }
+  .app__link--muted .arrow{ background:var(--faint); }
+  @media(max-width:680px){
+    .app{ grid-template-columns:1fr; gap:20px; }
+  }
+
+  footer{ padding:36px var(--gut); border-top:1px solid var(--hair);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  footer a{ color:var(--muted); text-decoration:none; transition:color .25s ease; }
+  footer a:hover{ color:var(--ink); }
+</style>
+</head>
+<body>
+  <div id="bgfx" aria-hidden="true">
+    <div class="ribbon ribbon--body"></div>
+    <div class="ribbon ribbon--core"></div>
+    <div class="dotgrid"></div>
+    <div class="grain"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="../index.html" class="nav__brand">LiberaSpace</a>
+    <div class="nav__links">
+      <a href="../index.html#works">Works</a>
+      <a href="../index.html#service">Service</a>
+      <a href="../index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ===================== INTRO ===================== -->
+    <header class="intro">
+      <p class="intro__eyebrow">LiberaSpace — Apps</p>
+      <h1 class="intro__title">Apps<em>.</em></h1>
+      <p class="intro__lead">日々の仕事を、静かに支える道具を。LiberaSpace では、データを端末の中だけで完結させる、軽くて気持ちのいい iPhone アプリをつくっています。</p>
+    </header>
+
+    <!-- ===================== APP LIST ===================== -->
+    <section class="block">
+      <div class="head" data-reveal>
+        <span class="head__num">01</span>
+        <span class="head__en">Products</span>
+        <span class="head__jp">アプリ一覧</span>
+        <span class="head__line"></span>
+      </div>
+
+      <div data-reveal>
+        <article class="app">
+          <div class="app__icon">S</div>
+          <div>
+            <h2 class="app__name">SideHub<span class="app__tagline">副業の「案件・お金・レシート」を、ひとつに。</span></h2>
+            <div class="app__meta-row"><span>iPhone App</span><span>Productivity</span><span>2026</span></div>
+            <p class="app__desc">副業・フリーランスの案件、収入・経費、レシートを端末内だけで管理するiPhoneアプリ。アカウント登録は不要で、入力したデータはすべて端末の中にのみ保存されます。レシートはカメラで読み取り、金額・日付の解析まで端末内で完結。確定申告前のあわてた集計を、日々の数タップに置き換えます。</p>
+            <div class="app__tags">
+              <span class="tag">案件管理</span>
+              <span class="tag">収支記録</span>
+              <span class="tag">レシート読取</span>
+              <span class="tag">ローカル保存</span>
+            </div>
+            <div class="app__links">
+              <a class="app__link" href="sidehub/privacy.html">Privacy Policy <span class="arrow"></span></a>
+              <span class="app__link app__link--muted">App Store — Coming soon <span class="arrow"></span></span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2025 LiberaSpace</span>
+      <div>
+        <a href="../index.html">LiberaSpace Studio</a>
+      </div>
+      <span>HOKKAIDO / REMOTE</span>
+    </footer>
+
+  </div>
+
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    function onScroll(){ if(window.scrollY > 40) nav.classList.add("scrolled"); else nav.classList.remove("scrolled"); }
+    window.addEventListener("scroll", onScroll, {passive:true});
+    onScroll();
+
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ io.observe(el); });
+    }else{
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ el.classList.add("in"); });
+    }
+  })();
+</script>
+</body>
+</html>

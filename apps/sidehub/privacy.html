@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SideHub プライバシーポリシー — LiberaSpace</title>
+<meta name="description" content="iPhoneアプリ「SideHub」のプライバシーポリシー。入力データはすべて端末内にのみ保存され、開発者を含む第三者へ送信・収集されることはありません。">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1A1B1F;
+    --muted:rgba(26,27,31,0.54);
+    --faint:rgba(26,27,31,0.34);
+    --hair:rgba(26,27,31,0.12);
+    --paper:#fbfaf8;
+    --panel:#f3f0ea;
+    --gut:clamp(24px,6vw,120px);
+    --wordmark-font:"Playfair Display", Georgia, "Times New Roman", serif;
+    --sans:"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  html,body{ overflow-x:hidden; max-width:100%; }
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    background:
+      radial-gradient(120% 80% at 6% 96%, rgba(255,243,228,0.5), rgba(255,243,228,0) 44%),
+      radial-gradient(120% 80% at 94% 4%, rgba(255,241,226,0.46), rgba(255,241,226,0) 44%),
+      radial-gradient(150% 130% at 50% 40%, #fdfcfa 0%, #f7f5f1 72%, #f1eee8 100%);
+    background-attachment:fixed;
+  }
+
+  /* ---- ambient background fx (CSS only — light, no canvas) ---- */
+  #bgfx{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .ribbon{ position:absolute; border-radius:50%; }
+  .ribbon--body{
+    width:172vmax; height:52vmax; left:-26vmax; top:24%; transform:rotate(-30deg);
+    background:radial-gradient(ellipse 48% 52% at 50% 50%,
+      rgba(176,175,179,0.40), rgba(176,175,179,0.20) 48%, rgba(176,175,179,0.07) 70%, rgba(176,175,179,0) 82%);
+    filter:blur(62px);
+  }
+  .ribbon--core{
+    width:150vmax; height:34vmax; left:-16vmax; top:30%; transform:rotate(-31deg);
+    background:radial-gradient(ellipse 44% 50% at 50% 50%,
+      rgba(255,255,255,0.70), rgba(238,237,234,0.36) 40%, rgba(210,210,212,0.10) 66%, rgba(210,210,212,0) 80%);
+    filter:blur(44px);
+  }
+  .dotgrid{ position:absolute; top:-28px; left:-28px; width:46vw; height:40vw; max-width:640px; max-height:540px;
+    background-image:radial-gradient(rgba(26,27,31,0.14) 1px, transparent 1.7px);
+    background-size:17px 17px;
+    -webkit-mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%);
+    mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%); }
+  .grain{ position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:170px 170px; opacity:0.38; mix-blend-mode:overlay; }
+
+  .page{ position:relative; z-index:1; }
+
+  /* ---------- header ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px var(--gut);
+    transition:background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+  }
+  .nav.scrolled{
+    background:rgba(251,250,248,0.72);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 var(--hair);
+  }
+  .nav__brand{
+    font-family:var(--wordmark-font); font-weight:700; font-size:20px;
+    letter-spacing:-0.01em; color:var(--ink); text-decoration:none;
+  }
+  .nav__links{ display:flex; gap:clamp(16px,2.4vw,38px); align-items:center; }
+  .nav__links a{
+    font-size:11px; letter-spacing:0.24em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none; font-weight:600; transition:color .25s ease;
+  }
+  .nav__links a:hover{ color:var(--ink); }
+
+  /* ---------- legal layout ---------- */
+  .legal{
+    position:relative;
+    max-width:780px;
+    margin:0 auto;
+    padding:clamp(120px,18vh,200px) var(--gut) clamp(72px,12vh,140px);
+  }
+  .legal__eyebrow{
+    font-size:11px; letter-spacing:0.34em; text-transform:uppercase;
+    color:var(--muted); font-weight:600; margin-bottom:22px;
+  }
+  .legal__title{
+    font-family:var(--wordmark-font); font-weight:700;
+    font-size:clamp(32px,5.4vw,58px); line-height:1.08; letter-spacing:-0.015em;
+    text-wrap:balance; margin-bottom:18px;
+  }
+  .legal__title em{ font-style:italic; font-weight:500; color:var(--muted); display:block;
+    font-size:clamp(15px,1.8vw,21px); letter-spacing:0; margin-top:14px; }
+  .legal__updated{
+    font-size:12px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--faint); font-weight:600; font-variant-numeric:tabular-nums;
+  }
+  .legal__rule{ height:1px; background:var(--hair); margin:clamp(36px,6vh,60px) 0; }
+  .legal__intro{ font-size:16px; line-height:1.95; color:var(--muted); text-wrap:pretty; }
+
+  .sec{ padding-top:clamp(36px,5vh,52px); }
+  .sec__head{ display:flex; align-items:baseline; gap:14px; margin-bottom:18px; flex-wrap:wrap; }
+  .sec__num{ font-size:12px; letter-spacing:0.12em; color:var(--faint);
+    font-variant-numeric:tabular-nums; font-weight:600; }
+  .sec__title{ font-family:var(--wordmark-font); font-weight:600;
+    font-size:clamp(20px,2.4vw,28px); letter-spacing:-0.01em; line-height:1.2; }
+  .sec p{ font-size:15px; line-height:1.95; color:var(--muted); text-wrap:pretty; }
+  .sec p + p{ margin-top:14px; }
+  .sec strong{ color:var(--ink); font-weight:700; }
+  .sec ul{ list-style:none; margin-top:6px; }
+  .sec li{ position:relative; font-size:15px; line-height:1.9; color:var(--muted); padding:6px 0 6px 22px; }
+  .sec li::before{ content:""; position:absolute; left:2px; top:15px; width:6px; height:1px; background:var(--faint); }
+  .sec a{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--hair); transition:border-color .25s ease; }
+  .sec a:hover{ border-color:var(--ink); }
+
+  .legal__contact{ margin-top:clamp(40px,6vh,64px); padding-top:clamp(32px,5vh,48px); border-top:1px solid var(--hair); }
+  .legal__contact .label{ font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:12px; }
+  .legal__mail{ font-family:var(--wordmark-font); font-size:clamp(20px,2.6vw,30px); color:var(--ink);
+    text-decoration:none; border-bottom:1px solid var(--hair); padding-bottom:4px; transition:border-color .3s ease; }
+  .legal__mail:hover{ border-color:var(--ink); }
+
+  .backlink{ display:inline-flex; align-items:center; gap:12px; margin-top:clamp(48px,7vh,72px);
+    font-size:12px; letter-spacing:0.22em; text-transform:uppercase; color:var(--ink); font-weight:600; text-decoration:none; }
+  .backlink .arrow{ width:34px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .backlink:hover .arrow{ width:54px; }
+
+  footer{ padding:36px var(--gut); border-top:1px solid var(--hair);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  footer a{ color:var(--muted); text-decoration:none; transition:color .25s ease; }
+  footer a:hover{ color:var(--ink); }
+</style>
+</head>
+<body>
+  <div id="bgfx" aria-hidden="true">
+    <div class="ribbon ribbon--body"></div>
+    <div class="ribbon ribbon--core"></div>
+    <div class="dotgrid"></div>
+    <div class="grain"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="../../index.html" class="nav__brand">LiberaSpace</a>
+    <div class="nav__links">
+      <a href="../index.html">Apps</a>
+      <a href="../../index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <main class="legal">
+      <p class="legal__eyebrow">SideHub — Privacy Policy</p>
+      <h1 class="legal__title">プライバシーポリシー<em>SideHub Privacy Policy</em></h1>
+      <p class="legal__updated">最終更新日：2026年6月28日</p>
+
+      <div class="legal__rule"></div>
+
+      <p class="legal__intro">本プライバシーポリシーは、SideHub（以下「本アプリ」）における利用者の情報の取り扱いについて定めるものです。</p>
+
+      <section class="sec">
+        <div class="sec__head"><span class="sec__num">01</span><h2 class="sec__title">基本方針</h2></div>
+        <p>本アプリは、利用者のプライバシーを最大限に尊重します。本アプリで入力・記録されたすべてのデータ（案件情報、収入・経費の記録、レシート画像など）は、<strong>利用者の端末内にのみ保存</strong>され、開発者を含む第三者のサーバーに送信・収集されることはありません。</p>
+      </section>
+
+      <section class="sec">
+        <div class="sec__head"><span class="sec__num">02</span><h2 class="sec__title">収集する情報</h2></div>
+        <p>本アプリは、利用者を識別する情報や利用状況を<strong>一切収集しません</strong>。アカウント登録は不要で、氏名・メールアドレス等の個人情報の入力も求めません。</p>
+      </section>
+
+      <section class="sec">
+        <div class="sec__head"><span class="sec__num">03</span><h2 class="sec__title">データの保存場所</h2></div>
+        <ul>
+          <li>入力されたすべてのデータは、利用者の iPhone 端末内（アプリのローカルストレージ）に保存されます。</li>
+          <li>開発者はこれらのデータにアクセスできません。</li>
+        </ul>
+      </section>
+
+      <section class="sec">
+        <div class="sec__head"><span class="sec__num">04</span><h2 class="sec__title">カメラ・写真へのアクセス</h2></div>
+        <p>レシートの読み取り機能を利用する場合のみ、カメラまたは写真ライブラリへのアクセスを求めます。撮影・選択した画像の解析（金額・日付の読み取り）は、すべて<strong>端末内で処理</strong>され、画像やその解析結果が外部に送信されることはありません。</p>
+      </section>
+
+      <section class="sec">
+        <div class="sec__head"><span class="sec__num">05</span><h2 class="sec__title">第三者への提供</h2></div>
+        <p>本アプリは利用者の情報を収集しないため、第三者へ提供する情報はありません。</p>
+      </section>
+
+      <section class="sec">
+        <div class="sec__head"><span class="sec__num">06</span><h2 class="sec__title">解析ツール・広告</h2></div>
+        <p>本アプリは、利用状況の解析ツール（アナリティクス）や広告配信を一切使用しません。</p>
+      </section>
+
+      <section class="sec">
+        <div class="sec__head"><span class="sec__num">07</span><h2 class="sec__title">課金（App内課金）について</h2></div>
+        <p>本アプリの有料機能（SideHub Pro）の購入処理は、Apple の App Store / StoreKit を通じて行われます。購入・課金に関する情報の取り扱いについては、Apple のプライバシーポリシーに従います。本アプリ自体が決済情報を取得・保存することはありません。</p>
+      </section>
+
+      <section class="sec">
+        <div class="sec__head"><span class="sec__num">08</span><h2 class="sec__title">データの削除</h2></div>
+        <p>本アプリをアンインストールすると、端末内に保存されたすべてのデータは削除されます。また、アプリの設定画面から手動でデータを削除することもできます。</p>
+      </section>
+
+      <section class="sec">
+        <div class="sec__head"><span class="sec__num">09</span><h2 class="sec__title">本ポリシーの変更</h2></div>
+        <p>本ポリシーの内容は、必要に応じて変更されることがあります。重要な変更がある場合は、本ページにて告知します。</p>
+      </section>
+
+      <section class="sec">
+        <div class="sec__head"><span class="sec__num">10</span><h2 class="sec__title">お問い合わせ</h2></div>
+        <p>本ポリシーまたは本アプリに関するお問い合わせは、以下までご連絡ください。</p>
+        <div class="legal__contact">
+          <p class="label">Email</p>
+          <a href="mailto:liberaspace3035@gmail.com" class="legal__mail">liberaspace3035@gmail.com</a>
+        </div>
+      </section>
+
+      <a href="../index.html" class="backlink"><span class="arrow"></span> Back to Apps</a>
+    </main>
+
+    <footer>
+      <span>© 2025 LiberaSpace</span>
+      <span><a href="../../index.html">LiberaSpace Studio</a></span>
+      <span>HOKKAIDO / REMOTE</span>
+    </footer>
+  </div>
+
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    function onScroll(){ if(window.scrollY > 40) nav.classList.add("scrolled"); else nav.classList.remove("scrolled"); }
+    window.addEventListener("scroll", onScroll, {passive:true});
+    onScroll();
+  })();
+</script>
+</body>
+</html>
