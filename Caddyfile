@@ -5,7 +5,13 @@
 	file_server
 	encode zstd gzip
 
-	# long-cache the immutable image assets
-	@assets path /assets/*
+	# long-cache the immutable image assets.
+	# the `file` matcher is essential: without it a 404 under /assets/* also gets
+	# max-age=1y and the CDN pins that 404 for a year (e.g. when a URL is requested
+	# just before the deploy carrying it lands). only cache what actually exists.
+	@assets {
+		path /assets/*
+		file
+	}
 	header @assets Cache-Control "public, max-age=31536000, immutable"
 }
