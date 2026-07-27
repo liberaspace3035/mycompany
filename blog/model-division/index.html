@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>司令塔はコードを書かない — AIエージェントのモデル分業とコスト設計 | LiberaSpace</title>
+<meta name="description" content="AIに何でも同じ深さで考えさせると、簡単な作業に時間とトークンを払い続けることになります。LiberaSpace では司令塔・設計・実装で担当モデルを分け、effort（思考の深さ）で二軸目を調整しています。実際の設定と、分業が損になる境目の話。">
+<link rel="canonical" href="/blog/model-division/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="司令塔はコードを書かない — AIエージェントのモデル分業とコスト設計">
+<meta property="og:description" content="司令塔・設計・実装で担当モデルを分け、effort で思考の深さを調整する。実際の設定と、分業が損になる境目の話。">
+<meta property="og:site_name" content="LiberaSpace">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "司令塔はコードを書かない — AIエージェントのモデル分業とコスト設計",
+  "description": "司令塔・設計・実装で担当モデルを分け、effort（思考の深さ）で二軸目を調整する運用と、分業が損になる境目。",
+  "inLanguage": "ja",
+  "datePublished": "2026-07-27",
+  "dateModified": "2026-07-27",
+  "author": { "@type": "Organization", "name": "LiberaSpace" },
+  "publisher": { "@type": "Organization", "name": "LiberaSpace" },
+  "keywords": "Claude Code, モデル使い分け, effort, サブエージェント, AI開発コスト"
+}
+</script>
+<style>
+  :root{
+    --ink:#1A1B1F;
+    --muted:rgba(26,27,31,0.54);
+    --faint:rgba(26,27,31,0.34);
+    --hair:rgba(26,27,31,0.12);
+    --paper:#fbfaf8;
+    --panel:#f3f0ea;
+    --gut:clamp(24px,6vw,120px);
+    --wordmark-font:"Playfair Display", Georgia, "Times New Roman", serif;
+    --sans:"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+    --jp-serif:"Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+    --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  html,body{ overflow-x:hidden; max-width:100%; }
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    background:
+      radial-gradient(120% 80% at 6% 96%, rgba(255,243,228,0.5), rgba(255,243,228,0) 44%),
+      radial-gradient(120% 80% at 94% 4%, rgba(255,241,226,0.46), rgba(255,241,226,0) 44%),
+      radial-gradient(150% 130% at 50% 40%, #fdfcfa 0%, #f7f5f1 72%, #f1eee8 100%);
+    background-attachment:fixed;
+  }
+  #bgfx{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .ribbon{ position:absolute; border-radius:50%; }
+  .ribbon--body{
+    width:172vmax; height:52vmax; left:-26vmax; top:24%; transform:rotate(-30deg);
+    background:radial-gradient(ellipse 48% 52% at 50% 50%,
+      rgba(176,175,179,0.42), rgba(176,175,179,0.22) 48%, rgba(176,175,179,0.08) 70%, rgba(176,175,179,0) 82%);
+    filter:blur(62px);
+  }
+  .ribbon--core{
+    width:150vmax; height:34vmax; left:-16vmax; top:30%; transform:rotate(-31deg);
+    background:radial-gradient(ellipse 44% 50% at 50% 50%,
+      rgba(255,255,255,0.72), rgba(238,237,234,0.38) 40%, rgba(210,210,212,0.12) 66%, rgba(210,210,212,0) 80%);
+    filter:blur(44px);
+  }
+  .dotgrid{ position:absolute; top:-28px; left:-28px; width:46vw; height:40vw; max-width:640px; max-height:540px;
+    background-image:radial-gradient(rgba(26,27,31,0.14) 1px, transparent 1.7px);
+    background-size:17px 17px;
+    -webkit-mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%);
+    mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%); }
+  .grain{ position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:170px 170px; opacity:0.38; mix-blend-mode:overlay; }
+
+  .page{ position:relative; z-index:1; }
+
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px var(--gut);
+    transition:background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+  }
+  .nav.scrolled{
+    background:rgba(251,250,248,0.72);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 var(--hair);
+  }
+  .nav__brand{
+    font-family:var(--wordmark-font); font-weight:700; font-size:20px;
+    letter-spacing:-0.01em; color:var(--ink); text-decoration:none;
+  }
+  .nav__links{ display:flex; gap:clamp(16px,2.4vw,38px); align-items:center; }
+  .nav__links a{
+    font-size:11px; letter-spacing:0.24em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none; font-weight:600; transition:color .25s ease;
+  }
+  .nav__links a:hover{ color:var(--ink); }
+  @media(max-width:560px){ .nav__links a:not(:last-child){ display:none; } }
+
+  .art{ max-width:760px; margin:0 auto; padding:clamp(124px,18vh,190px) var(--gut) 0; }
+  .art__back{
+    display:inline-flex; align-items:center; gap:10px; font-size:11px; letter-spacing:0.24em;
+    text-transform:uppercase; color:var(--muted); text-decoration:none; font-weight:600; margin-bottom:36px;
+  }
+  .art__back .arrow{ width:22px; height:1px; background:var(--muted); transition:width .3s ease; }
+  .art__back:hover{ color:var(--ink); }
+  .art__back:hover .arrow{ width:34px; background:var(--ink); }
+  .art__meta{ display:flex; flex-wrap:wrap; gap:14px 22px; font-size:11px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:26px; }
+  .art__title{
+    font-family:var(--jp-serif); font-weight:600;
+    font-size:clamp(27px,4.6vw,50px); line-height:1.42; letter-spacing:0.005em;
+    text-wrap:pretty;
+  }
+  .art__lead{
+    margin-top:clamp(26px,4vh,40px); font-size:clamp(15px,1.5vw,17px); line-height:2.0;
+    color:var(--muted); text-wrap:pretty;
+  }
+  .art__rule{ height:1px; background:var(--hair); margin:clamp(44px,7vh,72px) 0 0; }
+
+  .toc{ margin:clamp(38px,6vh,56px) 0 0; padding:26px 30px; border:1px solid var(--hair); background:rgba(255,255,255,0.42); }
+  .toc__label{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:16px; }
+  .toc ol{ list-style:none; counter-reset:toc; }
+  .toc li{ counter-increment:toc; margin:9px 0; padding-left:30px; position:relative; }
+  .toc li::before{ content:counter(toc,decimal-leading-zero); position:absolute; left:0; top:1px;
+    font-size:11px; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; }
+  .toc a{ color:var(--ink); text-decoration:none; font-size:14px; line-height:1.7; border-bottom:1px solid transparent; transition:border-color .25s ease; }
+  .toc a:hover{ border-bottom-color:var(--hair); }
+
+  .prose{ max-width:760px; margin:0 auto; padding:0 var(--gut) clamp(60px,10vh,120px); }
+  .prose h2{
+    font-family:var(--jp-serif); font-weight:600; font-size:clamp(21px,2.8vw,29px);
+    line-height:1.55; letter-spacing:0.005em; margin:clamp(56px,8vh,86px) 0 22px; scroll-margin-top:90px;
+  }
+  .prose h2 .n{ display:block; font-family:var(--wordmark-font); font-style:italic; font-weight:500;
+    font-size:13px; letter-spacing:0.08em; color:var(--faint); margin-bottom:10px; }
+  .prose h3{ font-size:16px; font-weight:700; line-height:1.7; margin:clamp(32px,4.5vh,46px) 0 14px; letter-spacing:0.01em; }
+  .prose p{ font-size:15.5px; line-height:2.05; color:rgba(26,27,31,0.76); margin:18px 0; text-wrap:pretty; }
+  .prose strong{ color:var(--ink); font-weight:700; }
+  .prose a{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--hair); transition:border-color .25s ease; }
+  .prose a:hover{ border-bottom-color:var(--ink); }
+  .prose ul{ margin:18px 0; padding-left:0; list-style:none; }
+  .prose ul li{ position:relative; padding-left:22px; font-size:15.5px; line-height:2.0; color:rgba(26,27,31,0.76); margin:10px 0; text-wrap:pretty; }
+  .prose ul li::before{ content:""; position:absolute; left:2px; top:15px; width:7px; height:1px; background:var(--faint); }
+  .prose code{ font-family:var(--mono); font-size:0.88em; background:rgba(26,27,31,0.055); padding:2px 6px; border-radius:2px; }
+  .prose pre{
+    font-family:var(--mono); font-size:12.5px; line-height:1.85; margin:26px 0;
+    padding:22px 24px; background:#1A1B1F; color:#e9e7e2; border-radius:2px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  .prose pre code{ background:none; padding:0; font-size:inherit; }
+  .prose pre .c{ color:rgba(233,231,226,0.44); }
+
+  .note{ margin:30px 0; padding:22px 26px; border-left:2px solid var(--ink); background:rgba(255,255,255,0.5); }
+  .note__label{ font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:10px; }
+  .note p{ margin:0; font-size:14.5px; line-height:1.95; }
+  .note p + p{ margin-top:12px; }
+
+  .roles{ margin:30px 0; border-top:1px solid var(--hair); }
+  .role{ display:grid; grid-template-columns:minmax(130px,180px) 1fr; gap:8px clamp(18px,3vw,40px);
+    padding:22px 0; border-bottom:1px solid var(--hair); align-items:start; }
+  .role__name{ font-family:var(--wordmark-font); font-style:italic; font-weight:500; font-size:20px; line-height:1.3; }
+  .role__tools{ display:block; font-family:var(--sans); font-style:normal; font-size:10.5px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-top:8px; }
+  .role__body{ font-size:14.5px; line-height:1.95; color:rgba(26,27,31,0.76); text-wrap:pretty; }
+  .role__body strong{ color:var(--ink); }
+  @media(max-width:600px){ .role{ grid-template-columns:1fr; gap:10px; } }
+
+  /* table */
+  .tblwrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin:28px 0; }
+  table{ border-collapse:collapse; width:100%; min-width:520px; font-size:14px; }
+  thead th{ text-align:left; font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--faint); font-weight:600; padding:0 18px 12px 0; border-bottom:1px solid var(--hair); white-space:nowrap; }
+  tbody td{ padding:14px 18px 14px 0; border-bottom:1px solid var(--hair); line-height:1.7;
+    color:rgba(26,27,31,0.76); vertical-align:top; }
+  tbody td:first-child{ color:var(--ink); font-weight:600; white-space:nowrap; }
+  tbody td.num{ font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .tblnote{ font-size:12.5px; line-height:1.85; color:var(--faint); margin-top:14px; text-wrap:pretty; }
+
+  .cta{ max-width:760px; margin:0 auto; padding:clamp(44px,7vh,72px) var(--gut) clamp(60px,10vh,110px); border-top:1px solid var(--hair); }
+  .cta__title{ font-family:var(--jp-serif); font-weight:600; font-size:clamp(19px,2.4vw,26px); line-height:1.6; }
+  .cta__body{ margin-top:16px; font-size:14.5px; line-height:2.0; color:var(--muted); text-wrap:pretty; }
+  .cta__links{ display:flex; flex-wrap:wrap; gap:14px 30px; margin-top:28px; }
+  .cta__link{ display:inline-flex; align-items:center; gap:11px; font-size:12px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--ink); font-weight:600; text-decoration:none; }
+  .cta__link .arrow{ width:30px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .cta__link:hover .arrow{ width:48px; }
+
+  footer{ padding:36px var(--gut); border-top:1px solid var(--hair);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  footer a{ color:var(--muted); text-decoration:none; transition:color .25s ease; }
+  footer a:hover{ color:var(--ink); }
+
+  [data-reveal]{ opacity:0; transform:translateY(18px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  [data-reveal].in{ opacity:1; transform:none; }
+  @media(prefers-reduced-motion:reduce){
+    [data-reveal]{ opacity:1; transform:none; transition:none; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+  <div id="bgfx" aria-hidden="true">
+    <div class="ribbon ribbon--body"></div>
+    <div class="ribbon ribbon--core"></div>
+    <div class="dotgrid"></div>
+    <div class="grain"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="../../index.html" class="nav__brand">LiberaSpace</a>
+    <div class="nav__links">
+      <a href="../../index.html#works">Works</a>
+      <a href="../../index.html#service">Service</a>
+      <a href="../index.html">Journal</a>
+      <a href="../../index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <article>
+      <header class="art">
+        <a href="../index.html" class="art__back"><span class="arrow"></span> Journal</a>
+
+        <div class="art__meta">
+          <span>2026.07.27</span>
+          <span>AI 制作フロー</span>
+          <span>コスト設計</span>
+        </div>
+
+        <h1 class="art__title">司令塔はコードを書かない<br>— AIエージェントのモデル分業とコスト設計</h1>
+
+        <p class="art__lead">AIに何でも同じ深さで考えさせると、CSSの余白を1px直すだけの作業にも、システム全体の設計と同じだけの思考が費やされます。逆に、安く速いモデルに設計まで任せると、あとで全部やり直しになる。LiberaSpace では<strong>誰が考えて、誰が書くか</strong>を先に決め、そのうえで<strong>どれくらい深く考えるか</strong>を別の軸として調整しています。実際の設定と、分業がかえって損になる境目の話です。</p>
+
+        <nav class="toc" aria-label="目次">
+          <p class="toc__label">Contents</p>
+          <ol>
+            <li><a href="#problem">「全部いちばん賢く」が高くつく理由</a></li>
+            <li><a href="#roles">司令塔・設計・実装に分ける</a></li>
+            <li><a href="#why">なぜ司令塔はコードを書かないのか</a></li>
+            <li><a href="#effort">思考の深さという、もうひとつの軸</a></li>
+            <li><a href="#tiers">モデルの階層と相場感</a></li>
+            <li><a href="#settings">実際の設定</a></li>
+            <li><a href="#pitfall">分業が損になる境目</a></li>
+            <li><a href="#closing">安さは、直す時間まで含めて数える</a></li>
+          </ol>
+        </nav>
+
+        <div class="art__rule"></div>
+      </header>
+
+      <div class="prose">
+
+        <h2 id="problem"><span class="n">01</span>「全部いちばん賢く」が高くつく理由</h2>
+
+        <p>AIに開発を任せはじめたとき、最初にやることはたぶん「いちばん賢いモデルを選ぶ」です。実際それで品質は上がります。ただ、しばらく使うと別の問題が見えてきます。</p>
+
+        <p>制作の作業は、ぜんぶが同じ難しさではありません。「この画面の余白を8px広げる」と「この業務をどうデータ構造に落とすか」は、必要な思考の量が二桁ちがう。それを同じ設定で処理すると、<strong>簡単な作業に、難しい作業と同じだけの時間とトークンを払い続ける</strong>ことになります。</p>
+
+        <p>かといって全部を安く速いほうに寄せると、今度は設計で事故ります。設計の失敗は、実装の失敗とちがって<strong>あとから静かに効いてくる</strong>のが厄介で、気づいたときには作り直しのほうが早い、という状態になっている。</p>
+
+        <div class="note">
+          <p class="note__label">前提</p>
+          <p>これは「どのモデルが優れているか」の話ではありません。<strong>同じ制作物の中に、要求される思考の深さが違う作業が混在している</strong>という話です。だから答えも、モデルを1つ選ぶことではなく、作業ごとに割り当てることになります。</p>
+        </div>
+
+        <h2 id="roles"><span class="n">02</span>司令塔・設計・実装に分ける</h2>
+
+        <p>LiberaSpace では、ひとつの案件を3つの役割に分けています。</p>
+
+        <div class="roles">
+          <div class="role">
+            <div class="role__name">司令塔<span class="role__tools">メインループ / 最上位モデル</span></div>
+            <div class="role__body">やることは<strong>計画・分解・統合だけ</strong>。要件を受け取り、作業を2〜4個に割り、担当を決め、上がってきた成果物をつなぎ、最終報告をする。プロジェクトのソースコードは書きません。</div>
+          </div>
+          <div class="role">
+            <div class="role__name">設計・レビュー<span class="role__tools">上位モデル / effort 高め</span></div>
+            <div class="role__body">データ構造の設計、複雑なデバッグ、コードレビュー。<strong>間違えると後から高くつく判断</strong>をここに集めます。時間をかけてよい場所。</div>
+          </div>
+          <div class="role">
+            <div class="role__name">実装・雑務<span class="role__tools">中位モデル / effort 中〜低</span></div>
+            <div class="role__body">決まった設計どおりに書く、定型のマークアップ、テストの追加、リネームや整形。<strong>正解が既に決まっている作業</strong>はここ。速さと量が効きます。</div>
+          </div>
+        </div>
+
+        <p>ポイントは、<strong>分け方の基準を「作業の種類」ではなく「間違えたときの損失」に置く</strong>ことです。実装は間違えてもテストで落ちるし、その場で直せます。設計の間違いは、10ファイル書いたあとに発覚します。だから設計に厚く配分する。</p>
+
+        <h2 id="why"><span class="n">03</span>なぜ司令塔はコードを書かないのか</h2>
+
+        <p>この体制でいちばん反直感的なのが、いちばん賢い担当に手を動かさせない、という部分だと思います。もったいなく見える。</p>
+
+        <p>それでもこうしている理由は、<strong>手を動かし始めた瞬間に、全体が見えなくなるから</strong>です。ファイルを開いて実装に入ると、意識はその1ファイルの中に閉じます。人間のリーダーが自分でコードを書き始めると進捗管理が止まるのと、まったく同じことが起きる。</p>
+
+        <p>司令塔が担うのは、「この案件は何と何に分けられるか」「この2つは並行して進められるか」「上がってきた3つの成果物は噛み合っているか」という判断です。これは<strong>全体を俯瞰していないとできない仕事</strong>で、しかも案件を通じてずっと必要になる。ここに最上位を置くのが結局いちばん効きました。</p>
+
+        <p>副次的な効果もあります。司令塔が実装しないと決めると、<strong>作業を分解せざるを得なくなる</strong>。丸ごと一人にやらせる逃げ道が構造的に塞がるので、自然と並列化が進みます。</p>
+
+        <h2 id="effort"><span class="n">04</span>思考の深さという、もうひとつの軸</h2>
+
+        <p>モデルの選択とは別に、もうひとつ調整できる軸があります。<strong>同じモデルのまま、どれくらい深く考えるかを段階で指定する</strong>設定です。Claude では <code>effort</code> と呼ばれていて、<code>low</code> / <code>medium</code> / <code>high</code> / <code>xhigh</code> / <code>max</code> の5段階があります。</p>
+
+        <p>この2軸を混同すると設計を誤ります。整理するとこうです。</p>
+
+        <ul>
+          <li><strong>モデルの選択</strong>＝ 頭の良さの上限を決める。難しい問題を解けるかどうかに効く。</li>
+          <li><strong>effort の選択</strong>＝ その頭をどれだけ使うかを決める。同じモデルでも、探索の量・確認の回数・出力の丁寧さが変わる。</li>
+        </ul>
+
+        <p>実感としては、<strong>effort を下げるほうがモデルを落とすより副作用が小さい</strong>場面が多いです。短くて範囲の決まった作業なら低い effort で十分に速く、品質もそこまで落ちない。逆に、長時間の自律作業やコード全体に関わる判断は、モデルを上げるより先に effort を上げたほうが効くことがあります。</p>
+
+        <div class="note">
+          <p class="note__label">運用</p>
+          <p>まず <code>high</code> を基準に置き、<strong>案件ごとに上下に振って試す</strong>のがおすすめです。「とりあえず最大」は、思っているほど良くなりません。深く考えすぎて、簡単な作業を必要以上に複雑に解こうとすることがあります。</p>
+        </div>
+
+        <h2 id="tiers"><span class="n">05</span>モデルの階層と相場感</h2>
+
+        <p>役割にどのモデルを当てるかの目安として、2026年7月時点の主要モデルを整理しておきます。金額は Anthropic の API 料金（100万トークンあたり）です。</p>
+
+        <div class="tblwrap">
+          <table>
+            <thead>
+              <tr><th>モデル</th><th>コンテキスト</th><th>入力</th><th>出力</th><th>置きどころ</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Claude Fable 5</td><td class="num">1M</td><td class="num">$10</td><td class="num">$50</td><td>最難関の長時間自律作業</td></tr>
+              <tr><td>Claude Opus 5</td><td class="num">1M</td><td class="num">$5</td><td class="num">$25</td><td>司令塔・設計・レビュー</td></tr>
+              <tr><td>Claude Sonnet 5</td><td class="num">1M</td><td class="num">$3</td><td class="num">$15</td><td>実装・テスト・雑務</td></tr>
+              <tr><td>Claude Haiku 4.5</td><td class="num">200K</td><td class="num">$1</td><td class="num">$5</td><td>分類・整形など単純作業</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="tblnote">2026年7月時点の Anthropic API 料金。Sonnet 5 には期間限定の割引価格が設定されている時期があります。最新の金額と提供状況は必ず Anthropic の公式ページでご確認ください。なお Claude Code を定額プランで使っている場合、この金額がそのまま請求されるわけではなく、利用枠の消費速度として効いてきます。</p>
+
+        <p>ざっくり言うと、<strong>出力トークンの単価は階層ひとつで2〜3倍動く</strong>。実装の担当を一段下げるだけで、量をこなす工程のコストは目に見えて変わります。逆に、設計とレビューは全体の作業量に占める割合が小さいので、ここを上位に置いてもトータルへの影響は限定的です。安くしたいなら、まず<strong>量が多い工程から下げる</strong>のが定石です。</p>
+
+        <h2 id="settings"><span class="n">06</span>実際の設定</h2>
+
+        <p>Claude Code の場合、既定のモデルと effort は設定ファイルに書けます。<code>~/.claude/settings.json</code> の実際の中身がこれです。</p>
+
+        <pre><code><span class="c">--- ~/.claude/settings.json（抜粋）</span>
+{
+  "model": "opus[1m]",
+  "effortLevel": "high"
+}</code></pre>
+
+        <p>これが「基準線」で、案件やその日の作業に応じて <code>/model</code> と <code>/effort</code> のコマンドで切り替えます。サブエージェント側は、定義ファイルごとに担当モデルを固定できます。前回の記事で紹介した制作ハーネスなら、検証担当は上位、実装担当は中位、といった具合です。</p>
+
+        <pre><code><span class="c">--- ~/.claude/agents/&lt;name&gt;.md</span>
+---
+name: friday
+description: 調べもの・文書作成・タスク整理などの汎用作業
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+---</code></pre>
+
+        <p>1行 <code>model:</code> を書くだけで担当が固定されるので、<strong>その場の判断に任せず、体制として決めておける</strong>のが大きいです。毎回「これはどのモデルでやるべきか」を考えるのは、それ自体がコストになります。</p>
+
+        <h2 id="pitfall"><span class="n">07</span>分業が損になる境目</h2>
+
+        <p>ここまで分業を推してきましたが、<strong>分けないほうが速い仕事もあります</strong>。むしろ、これを見誤ると全部が遅くなります。</p>
+
+        <p>分業には引き継ぎのコストがあります。担当を分けるということは、そのたびに「いま何をしていて、何が決まっていて、何を作ってほしいか」を説明し直すということです。上がってきた成果物を読んで統合する手間もかかる。この往復が、作業そのものより重くなる領域があります。</p>
+
+        <h3>分けないほうがいい仕事</h3>
+        <ul>
+          <li>数回のファイル読み書きで終わる作業。説明する時間で自分でやれる</li>
+          <li>直前の文脈に強く依存する修正。引き継ぎで文脈が落ちて事故る</li>
+          <li>探索的な調査。何を探すかが進めながら変わるので、指示を固定できない</li>
+        </ul>
+
+        <h3>分けたほうがいい仕事</h3>
+        <ul>
+          <li>互いに独立していて、並行して進められる作業</li>
+          <li>広い範囲を横断して読む調査。1つの担当が全部抱えると、肝心の判断のときに文脈が溢れる</li>
+          <li>作った本人以外に見てほしい検証・レビュー</li>
+        </ul>
+
+        <p>もうひとつ実際に踏んだ罠として、<strong>検証やレビューを分業しすぎない</strong>ことも挙げておきます。「念のためもう一人に確認させる」を積み重ねると、確認のほうが本編より高くつきます。二重チェックが要るのは、間違えたときに戻せない作業だけで十分でした。</p>
+
+        <h2 id="closing"><span class="n">08</span>安さは、直す時間まで含めて数える</h2>
+
+        <p>この分業をやって、いちばん考え方が変わったのはコストの数え方でした。</p>
+
+        <p>1回の作業を安く済ませること自体には、あまり意味がありません。安いモデルに設計させて3回作り直したら、最初から上位で1回やったほうが安いし速い。逆に、量をこなすだけの実装を最上位でやり続けるのは、単に払いすぎです。</p>
+
+        <p>だから見るべきは、<strong>その工程を1回通したときの金額ではなく、完成まで持っていくのに何回通ったか</strong>のほうです。設計に厚く、実装に薄く配分すると、この「通した回数」が減ります。分業の目的は節約ではなく、やり直しを減らすことでした。</p>
+
+        <p>そしてこれは、AIに限った話でもないと思っています。誰に何を任せるかを決めて、間違えると高くつくところに時間を置く。やっていることは、普通のプロジェクトマネジメントとまったく同じでした。</p>
+
+      </div>
+
+      <div class="cta">
+        <p class="cta__title">Webサイト・業務アプリのご相談</p>
+        <p class="cta__body">AIをどこまで使い、どこは人が持つか。品質と費用のバランスも含めて、率直にお話しします。まずは気軽にご相談ください。</p>
+        <div class="cta__links">
+          <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
+          <a class="cta__link" href="../agent-harness/index.html">3エージェント制作ハーネス <span class="arrow"></span></a>
+          <a class="cta__link" href="../index.html">Journal 一覧 <span class="arrow"></span></a>
+        </div>
+      </div>
+    </article>
+
+    <footer>
+      <span>© 2025 LiberaSpace</span>
+      <div>
+        <a href="../../index.html">LiberaSpace Studio</a>
+      </div>
+      <span>HOKKAIDO / REMOTE</span>
+    </footer>
+
+  </div>
+
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    function onScroll(){ if(window.scrollY > 40) nav.classList.add("scrolled"); else nav.classList.remove("scrolled"); }
+    window.addEventListener("scroll", onScroll, {passive:true});
+    onScroll();
+
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ io.observe(el); });
+    }else{
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ el.classList.add("in"); });
+    }
+  })();
+</script>
+</body>
+</html>

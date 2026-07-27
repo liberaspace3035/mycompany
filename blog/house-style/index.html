@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ハウススタイルを固定して量産する — 中小企業向け業務アプリ7本の作り方 | LiberaSpace</title>
+<meta name="description" content="AIに毎回ゼロから考えさせると、毎回ちがうものが出てきます。LiberaSpace では構成・データの持ち方・デザイントークンを固定し、変えるのは業務ロジックとアクセント色だけにして業務アプリを7本つくりました。その型と、決め打ちにした理由。">
+<link rel="canonical" href="/blog/house-style/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ハウススタイルを固定して量産する — 中小企業向け業務アプリ7本の作り方">
+<meta property="og:description" content="構成・データの持ち方・デザイントークンを固定し、変えるのは業務ロジックとアクセント色だけ。業務アプリ7本をつくった型の話。">
+<meta property="og:site_name" content="LiberaSpace">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ハウススタイルを固定して量産する — 中小企業向け業務アプリ7本の作り方",
+  "description": "構成・データの持ち方・デザイントークンを固定し、変えるのは業務ロジックとアクセント色だけにする量産の型。",
+  "inLanguage": "ja",
+  "datePublished": "2026-07-27",
+  "dateModified": "2026-07-27",
+  "author": { "@type": "Organization", "name": "LiberaSpace" },
+  "publisher": { "@type": "Organization", "name": "LiberaSpace" },
+  "keywords": "業務アプリ, 中小企業, localStorage, 単体HTML, Claude Code, デザイントークン"
+}
+</script>
+<style>
+  :root{
+    --ink:#1A1B1F;
+    --muted:rgba(26,27,31,0.54);
+    --faint:rgba(26,27,31,0.34);
+    --hair:rgba(26,27,31,0.12);
+    --paper:#fbfaf8;
+    --panel:#f3f0ea;
+    --gut:clamp(24px,6vw,120px);
+    --wordmark-font:"Playfair Display", Georgia, "Times New Roman", serif;
+    --sans:"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+    --jp-serif:"Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+    --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  html,body{ overflow-x:hidden; max-width:100%; }
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    background:
+      radial-gradient(120% 80% at 6% 96%, rgba(255,243,228,0.5), rgba(255,243,228,0) 44%),
+      radial-gradient(120% 80% at 94% 4%, rgba(255,241,226,0.46), rgba(255,241,226,0) 44%),
+      radial-gradient(150% 130% at 50% 40%, #fdfcfa 0%, #f7f5f1 72%, #f1eee8 100%);
+    background-attachment:fixed;
+  }
+  #bgfx{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .ribbon{ position:absolute; border-radius:50%; }
+  .ribbon--body{
+    width:172vmax; height:52vmax; left:-26vmax; top:24%; transform:rotate(-30deg);
+    background:radial-gradient(ellipse 48% 52% at 50% 50%,
+      rgba(176,175,179,0.42), rgba(176,175,179,0.22) 48%, rgba(176,175,179,0.08) 70%, rgba(176,175,179,0) 82%);
+    filter:blur(62px);
+  }
+  .ribbon--core{
+    width:150vmax; height:34vmax; left:-16vmax; top:30%; transform:rotate(-31deg);
+    background:radial-gradient(ellipse 44% 50% at 50% 50%,
+      rgba(255,255,255,0.72), rgba(238,237,234,0.38) 40%, rgba(210,210,212,0.12) 66%, rgba(210,210,212,0) 80%);
+    filter:blur(44px);
+  }
+  .dotgrid{ position:absolute; top:-28px; left:-28px; width:46vw; height:40vw; max-width:640px; max-height:540px;
+    background-image:radial-gradient(rgba(26,27,31,0.14) 1px, transparent 1.7px);
+    background-size:17px 17px;
+    -webkit-mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%);
+    mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%); }
+  .grain{ position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:170px 170px; opacity:0.38; mix-blend-mode:overlay; }
+
+  .page{ position:relative; z-index:1; }
+
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px var(--gut);
+    transition:background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+  }
+  .nav.scrolled{
+    background:rgba(251,250,248,0.72);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 var(--hair);
+  }
+  .nav__brand{
+    font-family:var(--wordmark-font); font-weight:700; font-size:20px;
+    letter-spacing:-0.01em; color:var(--ink); text-decoration:none;
+  }
+  .nav__links{ display:flex; gap:clamp(16px,2.4vw,38px); align-items:center; }
+  .nav__links a{
+    font-size:11px; letter-spacing:0.24em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none; font-weight:600; transition:color .25s ease;
+  }
+  .nav__links a:hover{ color:var(--ink); }
+  @media(max-width:560px){ .nav__links a:not(:last-child){ display:none; } }
+
+  .art{ max-width:760px; margin:0 auto; padding:clamp(124px,18vh,190px) var(--gut) 0; }
+  .art__back{
+    display:inline-flex; align-items:center; gap:10px; font-size:11px; letter-spacing:0.24em;
+    text-transform:uppercase; color:var(--muted); text-decoration:none; font-weight:600; margin-bottom:36px;
+  }
+  .art__back .arrow{ width:22px; height:1px; background:var(--muted); transition:width .3s ease; }
+  .art__back:hover{ color:var(--ink); }
+  .art__back:hover .arrow{ width:34px; background:var(--ink); }
+  .art__meta{ display:flex; flex-wrap:wrap; gap:14px 22px; font-size:11px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:26px; }
+  .art__title{
+    font-family:var(--jp-serif); font-weight:600;
+    font-size:clamp(27px,4.6vw,50px); line-height:1.42; letter-spacing:0.005em;
+    text-wrap:pretty;
+  }
+  .art__lead{
+    margin-top:clamp(26px,4vh,40px); font-size:clamp(15px,1.5vw,17px); line-height:2.0;
+    color:var(--muted); text-wrap:pretty;
+  }
+  .art__rule{ height:1px; background:var(--hair); margin:clamp(44px,7vh,72px) 0 0; }
+
+  .toc{ margin:clamp(38px,6vh,56px) 0 0; padding:26px 30px; border:1px solid var(--hair); background:rgba(255,255,255,0.42); }
+  .toc__label{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:16px; }
+  .toc ol{ list-style:none; counter-reset:toc; }
+  .toc li{ counter-increment:toc; margin:9px 0; padding-left:30px; position:relative; }
+  .toc li::before{ content:counter(toc,decimal-leading-zero); position:absolute; left:0; top:1px;
+    font-size:11px; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; }
+  .toc a{ color:var(--ink); text-decoration:none; font-size:14px; line-height:1.7; border-bottom:1px solid transparent; transition:border-color .25s ease; }
+  .toc a:hover{ border-bottom-color:var(--hair); }
+
+  .prose{ max-width:760px; margin:0 auto; padding:0 var(--gut) clamp(60px,10vh,120px); }
+  .prose h2{
+    font-family:var(--jp-serif); font-weight:600; font-size:clamp(21px,2.8vw,29px);
+    line-height:1.55; letter-spacing:0.005em; margin:clamp(56px,8vh,86px) 0 22px; scroll-margin-top:90px;
+  }
+  .prose h2 .n{ display:block; font-family:var(--wordmark-font); font-style:italic; font-weight:500;
+    font-size:13px; letter-spacing:0.08em; color:var(--faint); margin-bottom:10px; }
+  .prose h3{ font-size:16px; font-weight:700; line-height:1.7; margin:clamp(32px,4.5vh,46px) 0 14px; letter-spacing:0.01em; }
+  .prose p{ font-size:15.5px; line-height:2.05; color:rgba(26,27,31,0.76); margin:18px 0; text-wrap:pretty; }
+  .prose strong{ color:var(--ink); font-weight:700; }
+  .prose a{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--hair); transition:border-color .25s ease; }
+  .prose a:hover{ border-bottom-color:var(--ink); }
+  .prose ul{ margin:18px 0; padding-left:0; list-style:none; }
+  .prose ul li{ position:relative; padding-left:22px; font-size:15.5px; line-height:2.0; color:rgba(26,27,31,0.76); margin:10px 0; text-wrap:pretty; }
+  .prose ul li::before{ content:""; position:absolute; left:2px; top:15px; width:7px; height:1px; background:var(--faint); }
+  .prose code{ font-family:var(--mono); font-size:0.88em; background:rgba(26,27,31,0.055); padding:2px 6px; border-radius:2px; }
+  .prose pre{
+    font-family:var(--mono); font-size:12.5px; line-height:1.85; margin:26px 0;
+    padding:22px 24px; background:#1A1B1F; color:#e9e7e2; border-radius:2px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  .prose pre code{ background:none; padding:0; font-size:inherit; }
+  .prose pre .c{ color:rgba(233,231,226,0.44); }
+
+  .note{ margin:30px 0; padding:22px 26px; border-left:2px solid var(--ink); background:rgba(255,255,255,0.5); }
+  .note__label{ font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:10px; }
+  .note p{ margin:0; font-size:14.5px; line-height:1.95; }
+  .note p + p{ margin-top:12px; }
+
+  .tblwrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin:28px 0; }
+  table{ border-collapse:collapse; width:100%; min-width:520px; font-size:14px; }
+  thead th{ text-align:left; font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--faint); font-weight:600; padding:0 18px 12px 0; border-bottom:1px solid var(--hair); white-space:nowrap; }
+  tbody td{ padding:14px 18px 14px 0; border-bottom:1px solid var(--hair); line-height:1.7;
+    color:rgba(26,27,31,0.76); vertical-align:top; }
+  tbody td:first-child{ color:var(--faint); font-variant-numeric:tabular-nums; white-space:nowrap; font-weight:600; }
+  tbody td.name{ color:var(--ink); font-weight:700; white-space:nowrap; }
+  .tblnote{ font-size:12.5px; line-height:1.85; color:var(--faint); margin-top:14px; text-wrap:pretty; }
+
+  .cta{ max-width:760px; margin:0 auto; padding:clamp(44px,7vh,72px) var(--gut) clamp(60px,10vh,110px); border-top:1px solid var(--hair); }
+  .cta__title{ font-family:var(--jp-serif); font-weight:600; font-size:clamp(19px,2.4vw,26px); line-height:1.6; }
+  .cta__body{ margin-top:16px; font-size:14.5px; line-height:2.0; color:var(--muted); text-wrap:pretty; }
+  .cta__links{ display:flex; flex-wrap:wrap; gap:14px 30px; margin-top:28px; }
+  .cta__link{ display:inline-flex; align-items:center; gap:11px; font-size:12px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--ink); font-weight:600; text-decoration:none; }
+  .cta__link .arrow{ width:30px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .cta__link:hover .arrow{ width:48px; }
+
+  footer{ padding:36px var(--gut); border-top:1px solid var(--hair);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  footer a{ color:var(--muted); text-decoration:none; transition:color .25s ease; }
+  footer a:hover{ color:var(--ink); }
+
+  [data-reveal]{ opacity:0; transform:translateY(18px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  [data-reveal].in{ opacity:1; transform:none; }
+  @media(prefers-reduced-motion:reduce){
+    [data-reveal]{ opacity:1; transform:none; transition:none; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+  <div id="bgfx" aria-hidden="true">
+    <div class="ribbon ribbon--body"></div>
+    <div class="ribbon ribbon--core"></div>
+    <div class="dotgrid"></div>
+    <div class="grain"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="../../index.html" class="nav__brand">LiberaSpace</a>
+    <div class="nav__links">
+      <a href="../../index.html#works">Works</a>
+      <a href="../../index.html#service">Service</a>
+      <a href="../index.html">Journal</a>
+      <a href="../../index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <article>
+      <header class="art">
+        <a href="../index.html" class="art__back"><span class="arrow"></span> Journal</a>
+
+        <div class="art__meta">
+          <span>2026.07.27</span>
+          <span>プロダクト</span>
+          <span>制作フロー</span>
+        </div>
+
+        <h1 class="art__title">ハウススタイルを固定して量産する<br>— 中小企業向け業務アプリ7本の作り方</h1>
+
+        <p class="art__lead">AIに毎回ゼロから「いい感じのアプリを作って」と頼むと、毎回ちがうものが出てきます。ファイル構成も、データの持ち方も、ボタンの角丸まで違う。1本目は問題なくても、3本目には自分でどれがどれか分からなくなります。LiberaSpace では<strong>変えない部分を先に全部決めて</strong>、業務ロジックとアクセント色だけを差し替える形にしました。実際にこの型で7本つくった記録です。</p>
+
+        <nav class="toc" aria-label="目次">
+          <p class="toc__label">Contents</p>
+          <ol>
+            <li><a href="#problem">毎回ちがうものが出てくる問題</a></li>
+            <li><a href="#lineup">つくった7本</a></li>
+            <li><a href="#constraints">先に決めた、動かさない前提</a></li>
+            <li><a href="#structure">構成とデザイントークンを型にする</a></li>
+            <li><a href="#build">ダブルクリックで動く1ファイルに固める</a></li>
+            <li><a href="#lessons">7本つくって分かったこと</a></li>
+            <li><a href="#closing">型は、AIのためではなく人のためにある</a></li>
+          </ol>
+        </nav>
+
+        <div class="art__rule"></div>
+      </header>
+
+      <div class="prose">
+
+        <h2 id="problem"><span class="n">01</span>毎回ちがうものが出てくる問題</h2>
+
+        <p>AIに小さなアプリを作らせるのは、いまや簡単です。要件を書けば、動くものがその日のうちに出てきます。問題は2本目からで、<strong>同じ人が同じ道具で作ったはずなのに、まるで別のチームの成果物になる</strong>。</p>
+
+        <p>データを <code>localStorage</code> に入れるものと <code>IndexedDB</code> を使うものが混ざる。CSSの命名規則が違う。テストがあるものとないものがある。どれも単体では正しいので、指摘のしようもありません。ただ、こちらが後から手を入れるときに毎回読み直しが発生します。</p>
+
+        <p>原因ははっきりしていて、<strong>毎回ゼロから最適解を考えさせているから</strong>です。同じ条件でも、AIは毎回わずかに違う設計に着地します。人間でもそうです。</p>
+
+        <p>だから、考えさせる範囲を減らすことにしました。<strong>「業務が違う部分」だけを考えさせ、それ以外は全部こちらが決め打ちする</strong>。この線引きをはっきりさせたら、量産が一気に安定しました。</p>
+
+        <h2 id="lineup"><span class="n">02</span>つくった7本</h2>
+
+        <p>作っているのは、中小企業の現場でそのまま使える小さな業務アプリです。1フォルダ＝1アプリで、それぞれ別々の業務課題を扱います。</p>
+
+        <div class="tblwrap">
+          <table>
+            <thead>
+              <tr><th>Vol.</th><th>名前</th><th>扱う業務</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>01</td><td class="name">スッと請求書</td><td>インボイス対応の請求書・見積書</td></tr>
+              <tr><td>02</td><td class="name">シフトめいと</td><td>シフトの自動作成</td></tr>
+              <tr><td>03</td><td class="name">在庫番</td><td>在庫・発注・期限管理</td></tr>
+              <tr><td>04</td><td class="name">予約上手</td><td>予約・担当×時間のタイムライン・ダブルブッキング検出</td></tr>
+              <tr><td>05</td><td class="name">おかね帳</td><td>現金出納帳・複数口座・振替・経費集計</td></tr>
+              <tr><td>06</td><td class="name">だんどり</td><td>タスク／案件のカンバン</td></tr>
+              <tr><td>07</td><td class="name">てんけん</td><td>設備保守・定期点検</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="tblnote">新しい Vol. を足すときは、既存と業務課題が重ならないものを選びます。似た課題を2本作ると、どちらを案内すべきか自分でも判断できなくなるためです。</p>
+
+        <h2 id="constraints"><span class="n">03</span>先に決めた、動かさない前提</h2>
+
+        <p>全部のアプリに共通する前提を、最初に固定しました。ここは案件ごとに考え直しません。</p>
+
+        <ul>
+          <li><strong>完全にブラウザの中だけで動く。</strong>サーバーもデータベースも使いません</li>
+          <li><strong>データは <code>localStorage</code> のみ。</strong>外部にはいっさい送信しない</li>
+          <li><strong>登録不要・無料・依存ゼロ。</strong>フレームワークもビルド時の外部パッケージも使わない</li>
+          <li><strong>日本語UI・レスポンシブ・印刷対応・CSV出力・JSONバックアップ</strong>を全部に備える</li>
+        </ul>
+
+        <p>この前提は、技術的な好みで決めたわけではありません。<strong>想定している使い手から逆算した結果</strong>です。</p>
+
+        <p>中小企業の現場でいちばん強い抵抗にあうのは、「アカウントを作ってください」と「データはクラウドに保存されます」の2つでした。特に売上や人の名前が入るものだと顕著です。<strong>端末の中だけで完結すると言い切れると、この会話が丸ごと消えます。</strong></p>
+
+        <p>そして副作用として、<strong>この制約が実装をきれいにします</strong>。認証もサーバーもないので、AIが考える範囲が業務ロジックとUIだけに絞られる。悩みどころが減るぶん、精度も安定しました。</p>
+
+        <div class="note">
+          <p class="note__label">トレードオフ</p>
+          <p>もちろん万能ではありません。複数人でのリアルタイム共有はできませんし、端末が変わればデータは移りません（JSONバックアップの書き出し／読み込みで手動移行する形です）。<strong>「一人か少人数が、一台で使う業務」に絞る</strong>と決めたうえでの設計です。</p>
+        </div>
+
+        <h2 id="structure"><span class="n">04</span>構成とデザイントークンを型にする</h2>
+
+        <p>ファイル構成も固定です。どの Vol. を開いても同じ場所に同じものがあります。</p>
+
+        <pre><code>Vol.N/
+├── index.html
+├── css/styles.css
+├── js/            <span class="c">← ES Modules で6ファイル</span>
+│   ├── util.js         汎用ヘルパー
+│   ├── (domain).js     業務ロジック
+│   ├── sample.js       サンプルデータ
+│   ├── store.js        localStorage の読み書き
+│   ├── ui.js           描画とイベント
+│   └── app.js          起動
+├── test/*.test.mjs  <span class="c">← node で実行</span>
+├── build.mjs        <span class="c">← 単体HTMLを生成</span>
+├── start.command
+└── README.md</code></pre>
+
+        <p>この分け方でAIに伝わりやすいのは、<strong>「どのファイルを触るべきか」が名前だけで決まる</strong>ことです。「税率の計算がおかしい」なら業務ロジックのファイル、「一覧の並び順を変えたい」なら <code>ui.js</code>。指示が短くて済むうえに、関係ないファイルを巻き込む事故が減ります。</p>
+
+        <p>CSSも同じ考え方で、<strong>デザイントークンを共通化して、色のスケールだけを Vol. ごとに変えます</strong>。実際の Vol.7（てんけん）の冒頭がこれです。</p>
+
+        <pre><code><span class="c">/* ============ てんけん — styles ============ */</span>
+:root{
+  <span class="c">/* ここだけ Vol. ごとに変える */</span>
+  --brand-500:#06b6d4; --brand-600:#0891b2; --brand-700:#0e7490;
+
+  <span class="c">/* 以下は全 Vol. 共通 */</span>
+  --ink:#0c1a1e; --line:#dde9ec; --bg:#f0f5f6; --surface:#ffffff;
+  --shadow:0 4px 6px -1px rgba(8,30,35,.08), 0 2px 4px -2px rgba(8,30,35,.06);
+  --r:12px; --r-sm:8px; --r-lg:18px;
+  --sans:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Meiryo,system-ui,sans-serif;
+}</code></pre>
+
+        <p>角丸・影・文字色・区切り線・フォントは全部共通。<strong>変えるのはブランドカラーのスケールだけ</strong>です。Vol.2 は teal、Vol.3 は indigo、Vol.7 は cyan、という具合に振り分けています。</p>
+
+        <p>これが効くのは見た目の統一だけではありません。<strong>「デザインをどうするか」という一番ブレる工程を、AIの判断範囲から外せる</strong>のが大きい。放っておくと角丸カードと青いボタンの、いかにもAIが作った画面に収束していきますが、トークンを先に渡しておけばその余地がなくなります。</p>
+
+        <h2 id="build"><span class="n">05</span>ダブルクリックで動く1ファイルに固める</h2>
+
+        <p>開発中は ES Modules で分割していますが、納品するのは<strong>1個のHTMLファイル</strong>です。<code>node build.mjs</code> が import と export を取り除いて連結し、<code>てんけん.html</code> のような日本語名の単体ファイルを吐きます。実際のサイズは1本あたり76KB〜124KBほど。</p>
+
+        <p>この一手間を入れている理由は、<strong>渡した相手が確実に開けるから</strong>です。</p>
+
+        <ul>
+          <li>ダブルクリックすれば、そのままブラウザで開く。サーバーもインストールも不要</li>
+          <li>メールに添付できる。USBメモリでも渡せる</li>
+          <li>ファイルが1個なので、「フォルダごと移動しないと壊れる」が起きない</li>
+        </ul>
+
+        <p>ES Modules のままだと、ローカルの <code>file://</code> で開いたときに読み込みがブロックされます。技術者なら簡易サーバーを立てればいい話ですが、<strong>渡す相手にそれを求めた時点で使われなくなります</strong>。ビルドを1工程はさむのは、そのためだけの判断です。</p>
+
+        <p>なおこのビルドスクリプトで、置換処理の落とし穴を実際に踏みました。詳細は<a href="../memory-ops/index.html">メモリー運用の記事</a>に書いていますが、<code>String.replace</code> の置換文字列に <code>$$</code> が含まれると壊れる、というものです。</p>
+
+        <h2 id="lessons"><span class="n">06</span>7本つくって分かったこと</h2>
+
+        <h3>1本目と2本目は、作り方が違ってよかった</h3>
+        <p>Vol.1 だけは <a href="../agent-harness/index.html">Planner / Generator / Evaluator の制作ハーネス</a>を通して作りました。仕様書を書き、実装し、ブラウザで検証する流れです。フォルダの中身も他と違い、<code>SPEC.md</code> と <code>EVAL.md</code> が残っています。</p>
+        <p>そこで<strong>型そのものを作った</strong>ので、Vol.2 以降は型に乗せるだけになりました。ハーネスは「まだ型がないものを作る」ときに効き、型ができたあとは軽い流れのほうが速い。同じ道具をずっと使い続ける必要はありませんでした。</p>
+
+        <h3>テストとビルドを毎回必ず通す</h3>
+        <p>各 Vol. は <code>node test/*.test.mjs</code> と <code>node build.mjs</code> を必ず通してから完成にします。派手な仕組みではありませんが、<strong>「動いてるように見えるけど単体HTMLでは壊れている」を確実に潰せる</strong>のがここです。分割状態では動いてビルド後に壊れる、という事故が実際にありました。</p>
+
+        <h3>レビューは「壊しに行く」担当を別に立てる</h3>
+        <p>作ったあとで、意図的に穴を探すレビューを別途かけています。ここで出てきた指摘には、たとえばこういうものがありました。</p>
+        <ul>
+          <li>取り込んだJSONのID文字列に、属性を抜け出すような値が入る可能性の対策</li>
+          <li>CSV出力時の数式インジェクション対策（ただし、純粋な数値と負数まで巻き込まないこと）</li>
+          <li>先入先出の期限計算を、単純な残数の引き算ではなく<strong>時系列の再生</strong>で行う（その時点で在庫があったロットだけを消費する）</li>
+        </ul>
+        <p>いずれも普通に動作確認しても表面化しません。<strong>作る流れと壊す流れは、別の工程として持っておく</strong>必要がありました。</p>
+
+        <h3>「次に何を作るか」がいちばん難しい</h3>
+        <p>意外にも、実装より題材選びのほうが悩みます。既存7本と重ならず、かつ実際に困っている人がいる業務。いまの候補は、簡易勤怠、問い合わせ・クレーム管理、回数券やスタンプカードあたりです。<strong>型があると実装は速いので、価値の判断のほうがボトルネックになります。</strong></p>
+
+        <h2 id="closing"><span class="n">07</span>型は、AIのためではなく人のためにある</h2>
+
+        <p>ハウススタイルを固めると聞くと、AIに指示しやすくするための工夫に見えるかもしれません。実際その効果はあります。でも7本作ってみて、いちばん効いたのはそこではありませんでした。</p>
+
+        <p><strong>後から自分が手を入れられる</strong>ことです。3か月前に作った Vol.3 に修正依頼が来ても、開けば同じ場所に同じものがある。読み直しがいりません。AIに渡すときも「いつもの構成です」で通じます。</p>
+
+        <p>逆に言えば、<strong>型を持たないまま量産すると、作った本数だけ保守できない資産が増えます</strong>。速く作れることと、増やし続けられることは別の能力でした。AIで制作を速くしたいなら、速さより先に決めておくことがある、というのがいまのところの結論です。</p>
+
+      </div>
+
+      <div class="cta">
+        <p class="cta__title">業務に合わせた小さな道具、つくります</p>
+        <p class="cta__body">ここで紹介したアプリはすべて、端末の中だけで完結する構成です。「うちの業務にはこれが足りない」があれば、同じ考え方で個別におつくりできます。まずは気軽にご相談ください。</p>
+        <div class="cta__links">
+          <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
+          <a class="cta__link" href="../../apps/index.html">Apps <span class="arrow"></span></a>
+          <a class="cta__link" href="../index.html">Journal 一覧 <span class="arrow"></span></a>
+        </div>
+      </div>
+    </article>
+
+    <footer>
+      <span>© 2025 LiberaSpace</span>
+      <div>
+        <a href="../../index.html">LiberaSpace Studio</a>
+      </div>
+      <span>HOKKAIDO / REMOTE</span>
+    </footer>
+
+  </div>
+
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    function onScroll(){ if(window.scrollY > 40) nav.classList.add("scrolled"); else nav.classList.remove("scrolled"); }
+    window.addEventListener("scroll", onScroll, {passive:true});
+    onScroll();
+
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ io.observe(el); });
+    }else{
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ el.classList.add("in"); });
+    }
+  })();
+</script>
+</body>
+</html>

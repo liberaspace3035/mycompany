@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>同じバグを二度踏ませない — プロジェクト単位のメモリー運用 | LiberaSpace</title>
+<meta name="description" content="AIはセッションが変われば前回の学びを忘れます。忘れさせないためには、その場で外部に書き出すしかない。LiberaSpace のプロジェクト別メモリー運用と、実際に書き残している落とし穴（String.replace の $$ 化け、stopPropagation の誤設計）の実例。">
+<link rel="canonical" href="/blog/memory-ops/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="同じバグを二度踏ませない — プロジェクト単位のメモリー運用">
+<meta property="og:description" content="AIはセッションが変われば前回の学びを忘れる。忘れさせないための書き出し運用と、実際に残している落とし穴の実例。">
+<meta property="og:site_name" content="LiberaSpace">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "同じバグを二度踏ませない — プロジェクト単位のメモリー運用",
+  "description": "セッションをまたいで学びを引き継ぐためのメモリー運用と、実際に書き残している落とし穴の実例。",
+  "inLanguage": "ja",
+  "datePublished": "2026-07-27",
+  "dateModified": "2026-07-27",
+  "author": { "@type": "Organization", "name": "LiberaSpace" },
+  "publisher": { "@type": "Organization", "name": "LiberaSpace" },
+  "keywords": "Claude Code, メモリ, ナレッジ管理, JavaScript, バグ事例"
+}
+</script>
+<style>
+  :root{
+    --ink:#1A1B1F;
+    --muted:rgba(26,27,31,0.54);
+    --faint:rgba(26,27,31,0.34);
+    --hair:rgba(26,27,31,0.12);
+    --paper:#fbfaf8;
+    --panel:#f3f0ea;
+    --gut:clamp(24px,6vw,120px);
+    --wordmark-font:"Playfair Display", Georgia, "Times New Roman", serif;
+    --sans:"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+    --jp-serif:"Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+    --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  html,body{ overflow-x:hidden; max-width:100%; }
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    background:
+      radial-gradient(120% 80% at 6% 96%, rgba(255,243,228,0.5), rgba(255,243,228,0) 44%),
+      radial-gradient(120% 80% at 94% 4%, rgba(255,241,226,0.46), rgba(255,241,226,0) 44%),
+      radial-gradient(150% 130% at 50% 40%, #fdfcfa 0%, #f7f5f1 72%, #f1eee8 100%);
+    background-attachment:fixed;
+  }
+  #bgfx{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .ribbon{ position:absolute; border-radius:50%; }
+  .ribbon--body{
+    width:172vmax; height:52vmax; left:-26vmax; top:24%; transform:rotate(-30deg);
+    background:radial-gradient(ellipse 48% 52% at 50% 50%,
+      rgba(176,175,179,0.42), rgba(176,175,179,0.22) 48%, rgba(176,175,179,0.08) 70%, rgba(176,175,179,0) 82%);
+    filter:blur(62px);
+  }
+  .ribbon--core{
+    width:150vmax; height:34vmax; left:-16vmax; top:30%; transform:rotate(-31deg);
+    background:radial-gradient(ellipse 44% 50% at 50% 50%,
+      rgba(255,255,255,0.72), rgba(238,237,234,0.38) 40%, rgba(210,210,212,0.12) 66%, rgba(210,210,212,0) 80%);
+    filter:blur(44px);
+  }
+  .dotgrid{ position:absolute; top:-28px; left:-28px; width:46vw; height:40vw; max-width:640px; max-height:540px;
+    background-image:radial-gradient(rgba(26,27,31,0.14) 1px, transparent 1.7px);
+    background-size:17px 17px;
+    -webkit-mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%);
+    mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%); }
+  .grain{ position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:170px 170px; opacity:0.38; mix-blend-mode:overlay; }
+
+  .page{ position:relative; z-index:1; }
+
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px var(--gut);
+    transition:background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+  }
+  .nav.scrolled{
+    background:rgba(251,250,248,0.72);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 var(--hair);
+  }
+  .nav__brand{
+    font-family:var(--wordmark-font); font-weight:700; font-size:20px;
+    letter-spacing:-0.01em; color:var(--ink); text-decoration:none;
+  }
+  .nav__links{ display:flex; gap:clamp(16px,2.4vw,38px); align-items:center; }
+  .nav__links a{
+    font-size:11px; letter-spacing:0.24em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none; font-weight:600; transition:color .25s ease;
+  }
+  .nav__links a:hover{ color:var(--ink); }
+  @media(max-width:560px){ .nav__links a:not(:last-child){ display:none; } }
+
+  .art{ max-width:760px; margin:0 auto; padding:clamp(124px,18vh,190px) var(--gut) 0; }
+  .art__back{
+    display:inline-flex; align-items:center; gap:10px; font-size:11px; letter-spacing:0.24em;
+    text-transform:uppercase; color:var(--muted); text-decoration:none; font-weight:600; margin-bottom:36px;
+  }
+  .art__back .arrow{ width:22px; height:1px; background:var(--muted); transition:width .3s ease; }
+  .art__back:hover{ color:var(--ink); }
+  .art__back:hover .arrow{ width:34px; background:var(--ink); }
+  .art__meta{ display:flex; flex-wrap:wrap; gap:14px 22px; font-size:11px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:26px; }
+  .art__title{
+    font-family:var(--jp-serif); font-weight:600;
+    font-size:clamp(27px,4.6vw,50px); line-height:1.42; letter-spacing:0.005em;
+    text-wrap:pretty;
+  }
+  .art__lead{
+    margin-top:clamp(26px,4vh,40px); font-size:clamp(15px,1.5vw,17px); line-height:2.0;
+    color:var(--muted); text-wrap:pretty;
+  }
+  .art__rule{ height:1px; background:var(--hair); margin:clamp(44px,7vh,72px) 0 0; }
+
+  .toc{ margin:clamp(38px,6vh,56px) 0 0; padding:26px 30px; border:1px solid var(--hair); background:rgba(255,255,255,0.42); }
+  .toc__label{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:16px; }
+  .toc ol{ list-style:none; counter-reset:toc; }
+  .toc li{ counter-increment:toc; margin:9px 0; padding-left:30px; position:relative; }
+  .toc li::before{ content:counter(toc,decimal-leading-zero); position:absolute; left:0; top:1px;
+    font-size:11px; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; }
+  .toc a{ color:var(--ink); text-decoration:none; font-size:14px; line-height:1.7; border-bottom:1px solid transparent; transition:border-color .25s ease; }
+  .toc a:hover{ border-bottom-color:var(--hair); }
+
+  .prose{ max-width:760px; margin:0 auto; padding:0 var(--gut) clamp(60px,10vh,120px); }
+  .prose h2{
+    font-family:var(--jp-serif); font-weight:600; font-size:clamp(21px,2.8vw,29px);
+    line-height:1.55; letter-spacing:0.005em; margin:clamp(56px,8vh,86px) 0 22px; scroll-margin-top:90px;
+  }
+  .prose h2 .n{ display:block; font-family:var(--wordmark-font); font-style:italic; font-weight:500;
+    font-size:13px; letter-spacing:0.08em; color:var(--faint); margin-bottom:10px; }
+  .prose h3{ font-size:16px; font-weight:700; line-height:1.7; margin:clamp(32px,4.5vh,46px) 0 14px; letter-spacing:0.01em; }
+  .prose p{ font-size:15.5px; line-height:2.05; color:rgba(26,27,31,0.76); margin:18px 0; text-wrap:pretty; }
+  .prose strong{ color:var(--ink); font-weight:700; }
+  .prose a{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--hair); transition:border-color .25s ease; }
+  .prose a:hover{ border-bottom-color:var(--ink); }
+  .prose ul{ margin:18px 0; padding-left:0; list-style:none; }
+  .prose ul li{ position:relative; padding-left:22px; font-size:15.5px; line-height:2.0; color:rgba(26,27,31,0.76); margin:10px 0; text-wrap:pretty; }
+  .prose ul li::before{ content:""; position:absolute; left:2px; top:15px; width:7px; height:1px; background:var(--faint); }
+  .prose code{ font-family:var(--mono); font-size:0.88em; background:rgba(26,27,31,0.055); padding:2px 6px; border-radius:2px; }
+  .prose pre{
+    font-family:var(--mono); font-size:12.5px; line-height:1.85; margin:26px 0;
+    padding:22px 24px; background:#1A1B1F; color:#e9e7e2; border-radius:2px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  .prose pre code{ background:none; padding:0; font-size:inherit; }
+  .prose pre .c{ color:rgba(233,231,226,0.44); }
+  .prose pre .bad{ color:#e8a0a0; }
+  .prose pre .good{ color:#a8cf9a; }
+
+  .note{ margin:30px 0; padding:22px 26px; border-left:2px solid var(--ink); background:rgba(255,255,255,0.5); }
+  .note__label{ font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:10px; }
+  .note p{ margin:0; font-size:14.5px; line-height:1.95; }
+  .note p + p{ margin-top:12px; }
+
+  .roles{ margin:30px 0; border-top:1px solid var(--hair); }
+  .role{ display:grid; grid-template-columns:minmax(130px,180px) 1fr; gap:8px clamp(18px,3vw,40px);
+    padding:22px 0; border-bottom:1px solid var(--hair); align-items:start; }
+  .role__name{ font-family:var(--wordmark-font); font-style:italic; font-weight:500; font-size:20px; line-height:1.3; }
+  .role__tools{ display:block; font-family:var(--sans); font-style:normal; font-size:10.5px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-top:8px; }
+  .role__body{ font-size:14.5px; line-height:1.95; color:rgba(26,27,31,0.76); text-wrap:pretty; }
+  .role__body strong{ color:var(--ink); }
+  @media(max-width:600px){ .role{ grid-template-columns:1fr; gap:10px; } }
+
+  .cta{ max-width:760px; margin:0 auto; padding:clamp(44px,7vh,72px) var(--gut) clamp(60px,10vh,110px); border-top:1px solid var(--hair); }
+  .cta__title{ font-family:var(--jp-serif); font-weight:600; font-size:clamp(19px,2.4vw,26px); line-height:1.6; }
+  .cta__body{ margin-top:16px; font-size:14.5px; line-height:2.0; color:var(--muted); text-wrap:pretty; }
+  .cta__links{ display:flex; flex-wrap:wrap; gap:14px 30px; margin-top:28px; }
+  .cta__link{ display:inline-flex; align-items:center; gap:11px; font-size:12px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--ink); font-weight:600; text-decoration:none; }
+  .cta__link .arrow{ width:30px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .cta__link:hover .arrow{ width:48px; }
+
+  footer{ padding:36px var(--gut); border-top:1px solid var(--hair);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  footer a{ color:var(--muted); text-decoration:none; transition:color .25s ease; }
+  footer a:hover{ color:var(--ink); }
+
+  [data-reveal]{ opacity:0; transform:translateY(18px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  [data-reveal].in{ opacity:1; transform:none; }
+  @media(prefers-reduced-motion:reduce){
+    [data-reveal]{ opacity:1; transform:none; transition:none; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+  <div id="bgfx" aria-hidden="true">
+    <div class="ribbon ribbon--body"></div>
+    <div class="ribbon ribbon--core"></div>
+    <div class="dotgrid"></div>
+    <div class="grain"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="../../index.html" class="nav__brand">LiberaSpace</a>
+    <div class="nav__links">
+      <a href="../../index.html#works">Works</a>
+      <a href="../../index.html#service">Service</a>
+      <a href="../index.html">Journal</a>
+      <a href="../../index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <article>
+      <header class="art">
+        <a href="../index.html" class="art__back"><span class="arrow"></span> Journal</a>
+
+        <div class="art__meta">
+          <span>2026.07.27</span>
+          <span>AI 制作フロー</span>
+          <span>技術メモ</span>
+        </div>
+
+        <h1 class="art__title">同じバグを二度踏ませない<br>— プロジェクト単位のメモリー運用</h1>
+
+        <p class="art__lead">AIとの作業でいちばんもったいないのは、<strong>前回半日かけて解決した問題を、次のセッションでまた半日かけて解決すること</strong>です。会話が終われば文脈は消えるので、放っておくと必ずそうなります。防ぐ方法はひとつしかなくて、その場で外に書き出しておくこと。LiberaSpace が実際にどう書き残しているかと、実際に残っている落とし穴の中身を公開します。</p>
+
+        <nav class="toc" aria-label="目次">
+          <p class="toc__label">Contents</p>
+          <ol>
+            <li><a href="#problem">セッションが変われば、全部忘れる</a></li>
+            <li><a href="#format">1ファイル1事実で書く</a></li>
+            <li><a href="#trap1">実例1：置換文字列で <code>$$</code> が消える</a></li>
+            <li><a href="#trap2">実例2：stopPropagation でボタンが死ぬ</a></li>
+            <li><a href="#what">何を書き、何を書かないか</a></li>
+            <li><a href="#closing">資産になるのは、コードではなく判断</a></li>
+          </ol>
+        </nav>
+
+        <div class="art__rule"></div>
+      </header>
+
+      <div class="prose">
+
+        <h2 id="problem"><span class="n">01</span>セッションが変われば、全部忘れる</h2>
+
+        <p>AIとの作業は、ひとつの会話の中でならどんどん賢くなります。プロジェクトの構造を把握し、こちらの好みを覚え、さっき踏んだ失敗を避けるようになる。そこまでは快適です。</p>
+
+        <p>問題は、その会話が終わったときです。次に開いた新しいセッションは、<strong>まっさらな状態から始まります</strong>。プロジェクトのファイルは読めば分かりますが、「なぜこの実装になっているか」「前回どこでハマったか」は、コードのどこにも書かれていません。</p>
+
+        <p>結果として何が起きるか。前回と同じ落とし穴に、同じ手順で落ちます。しかも本人（AI）に自覚がないので、こちらが「それ前もやった」と気づくまで進みます。ここで失われる時間が、実際いちばん大きい。</p>
+
+        <div class="note">
+          <p class="note__label">前提</p>
+          <p>これはAIの性能の問題ではありません。<strong>会話の外に記録がないなら、次の会話が知りようがない</strong>という、ただの構造の話です。だから対策も、賢いモデルを選ぶことではなく、書き出す仕組みを作ることになります。</p>
+        </div>
+
+        <h2 id="format"><span class="n">02</span>1ファイル1事実で書く</h2>
+
+        <p>Claude Code にはプロジェクトごとのメモリー領域があります。LiberaSpace ではそこに、<strong>1ファイル＝1つの事実</strong>という粒度で書き残しています。長い議事録を1本作るのではなく、小さいメモをたくさん置く形です。</p>
+
+        <pre><code><span class="c">--- memory/vol-build-and-delegation-pitfalls.md</span>
+---
+name: vol-build-and-delegation-pitfalls
+description: Vol.N アプリで実際に踏んだ2つのバグの罠
+metadata:
+  type: reference
+---
+
+（ここに本文）</code></pre>
+
+        <p>先頭に <code>description</code> を必ず1行入れているのが肝で、これは<strong>「この記憶は今の作業に関係あるか」を判断するためだけの行</strong>です。全部の本文を読まなくても、この1行で拾うか捨てるかが決まる。メモが増えても邪魔にならないのは、この仕組みのおかげです。</p>
+
+        <p>そして、粒度を小さく保つ理由がもうひとつあります。<strong>1ファイル1事実にしておくと、間違っていたときに消せる</strong>。長い文書に埋め込んでしまうと、一部だけ古くなったときに手が出せなくなります。</p>
+
+        <p>種類も分けています。ユーザー本人のこと、仕事の進め方への指摘、プロジェクトの状況、外部リソースの場所。このうち<strong>「進め方への指摘」は必ず理由まで書く</strong>ようにしていて、これは理由が分からないルールが一番早く形骸化するからです。</p>
+
+        <p>以下、実際に残しているメモの中身をそのまま2つ紹介します。どちらも中小企業向けの業務アプリを作っている最中に踏んで、原因の特定に時間を持っていかれたものです。</p>
+
+        <h2 id="trap1"><span class="n">03</span>実例1：置換文字列で <code>$$</code> が消える</h2>
+
+        <p>作っているアプリは、最終的に<strong>ダブルクリックだけで動く単体HTML</strong>に固めています。ビルドスクリプトが JavaScript を1本に連結し、HTMLの中に埋め込む、という単純な処理です。</p>
+
+        <p>その埋め込みを、こう書いていました。</p>
+
+        <pre><code><span class="c">// 動かない</span>
+html.replace(tag, <span class="bad">`&lt;script&gt;${bundle}&lt;/script&gt;`</span>);</code></pre>
+
+        <p>これで生成したHTMLが、構文エラーで動きません。しかも壊れ方が奇妙で、<strong>元のJSファイル単体では正常に動く</strong>。連結したときだけ壊れる。</p>
+
+        <p>原因は <code>String.prototype.replace</code> の仕様でした。置換文字列の中では <code>$</code> が特殊な意味を持ちます。<code>$&amp;</code> はマッチした文字列全体、<code>$$</code> は <code>$</code> そのものを表す記号です。つまり——</p>
+
+        <p>コードの中に <code>const $$ = document.querySelectorAll...</code> のような変数があると、置換の過程で <code>$$</code> が <code>$</code> 1文字に化けます。以降その変数は未定義になり、構文エラーになる。DOM操作でよく使う書き方なので、まともに踏みました。</p>
+
+        <p>直し方は簡単で、<strong>置換文字列ではなく関数を渡す</strong>。関数の戻り値は特殊記号として解釈されません。</p>
+
+        <pre><code><span class="c">// 動く — 関数で返せば $ は特殊記号にならない</span>
+html.replace(tag, <span class="good">() =&gt;</span> `&lt;script&gt;${bundle}&lt;/script&gt;`);</code></pre>
+
+        <p>知っていれば5分、知らなければ半日溶けるタイプの罠です。そして<strong>この手のものこそ、記憶しておく価値がある</strong>。設計判断とちがって毎回ゼロから考え直す意味がなく、ただ知っているかどうかで決まるからです。</p>
+
+        <h2 id="trap2"><span class="n">04</span>実例2：stopPropagation でボタンが死ぬ</h2>
+
+        <p>もうひとつは、クリック処理の設計を誤ったケースです。</p>
+
+        <p>一覧表示のある画面で、こういう構成にしていました。<code>document.body</code> にクリックのリスナーを1つだけ置き、<code>closest('[data-act]')</code> で「押されたのはどのアクションか」を判定する。いわゆるイベント委譲です。要素が増えてもリスナーは1個で済む、素直な設計です。</p>
+
+        <p>ここで、行そのものがクリック可能（<code>&lt;tr data-act="open"&gt;</code>）で、行の中にボタン（<code>&lt;button data-act="delete"&gt;</code>）もある、という形にしたかった。ボタンを押したときに行のクリックまで発火すると困るので、こう書きました。</p>
+
+        <pre><code><span class="c">// ボタンが無反応になる</span>
+&lt;td <span class="bad">onclick="event.stopPropagation()"</span>&gt;
+  &lt;button data-act="delete"&gt;削除&lt;/button&gt;
+&lt;/td&gt;</code></pre>
+
+        <p>結果、ボタンが完全に無反応になりました。当然で、<strong>リスナーは <code>body</code> にしかいない</strong>のに、その手前で伝播を止めているからです。行の誤発火は防げましたが、ボタンのクリックも一緒に殺していました。</p>
+
+        <p>そして正解は、<strong>何もしないこと</strong>でした。<code>closest()</code> は「いちばん近い」祖先を返します。ボタンをクリックすれば、<code>closest('[data-act]')</code> が最初に見つけるのはボタン自身であって、外側の <code>&lt;tr&gt;</code> ではない。行アクションとボタンアクションは、放っておけば自然に両立します。</p>
+
+        <pre><code><span class="c">// これでいい。stopPropagation は不要</span>
+&lt;td&gt;
+  &lt;button data-act="delete"&gt;削除&lt;/button&gt;
+&lt;/td&gt;</code></pre>
+
+        <div class="note">
+          <p class="note__label">教訓</p>
+          <p>1つめは<strong>知識で防ぐ罠</strong>、2つめは<strong>設計の勘違いで作り込んだ罠</strong>です。厄介なのは後者で、こちらは「防ごうとした対策そのものが原因」になっている。<strong>直した経緯まで書き残しておかないと、次も同じ理由で同じ対策を入れます。</strong></p>
+        </div>
+
+        <h2 id="what"><span class="n">05</span>何を書き、何を書かないか</h2>
+
+        <p>やってみて分かったのは、<strong>書きすぎると使われなくなる</strong>ということでした。メモが多すぎると、どれが今の作業に関係あるか判断できなくなり、結局全部無視されます。だから、書かないものを決めておくほうが重要です。</p>
+
+        <h3>書かないもの</h3>
+        <ul>
+          <li><strong>コードを読めば分かること</strong>。ディレクトリ構成、関数の役割、使っているライブラリ。これは読ませればいい</li>
+          <li><strong>Git の履歴に残っていること</strong>。いつ何を直したかは、コミットログのほうが正確です</li>
+          <li><strong>その会話でしか意味を持たないこと</strong>。「今日はここまで」のような進行メモ</li>
+        </ul>
+
+        <h3>書くもの</h3>
+        <ul>
+          <li><strong>踏んだ罠と、その回避方法</strong>。上の2例のような、知識で防げるもの</li>
+          <li><strong>指摘されて直した進め方と、その理由</strong>。理由がないと次に別の形で再発します</li>
+          <li><strong>コードに現れない制約</strong>。「この環境ではホスト側でビルドできない」「デプロイ先は公開リポジトリにしない」など</li>
+          <li><strong>相対日付を絶対日付に直したもの</strong>。「来週」は1か月後に読むと意味不明になります</li>
+        </ul>
+
+        <p>ひとことで言うと、<strong>リポジトリを見れば分かることは書かず、リポジトリに現れないものだけを書く</strong>。この線引きに落ち着きました。</p>
+
+        <p>もうひとつ、運用上の注意があります。<strong>間違っていたと分かったメモは、その場で消す</strong>こと。古い記憶は、無いより悪い。存在しなくなったファイル名やコマンドを参照し続けて、遠回りの原因になります。書き足すのと同じ頻度で、消す作業も必要です。</p>
+
+        <h2 id="closing"><span class="n">06</span>資産になるのは、コードではなく判断</h2>
+
+        <p>この運用を続けて感じているのは、案件を重ねて溜まっていく本当の資産は、コードそのものではないということです。コードは案件ごとに違うし、フレームワークが変われば書き直します。</p>
+
+        <p>残るのは、<strong>「この方法は前に試して駄目だった」という判断のほう</strong>でした。それはコードには書かれていないし、書いた本人が忘れれば消えます。人間のチームだと、それが暗黙知としてなんとなく共有されていく。AIと組むなら、明示的にファイルにしておくしかない。</p>
+
+        <p>手間に見えますが、実際にかかるのは1件あたり数分です。それで次の半日が守れるなら、悪くない取引だと思っています。</p>
+
+      </div>
+
+      <div class="cta">
+        <p class="cta__title">Webサイト・業務アプリのご相談</p>
+        <p class="cta__body">同じ失敗を繰り返さない体制で、Webサイトと業務アプリをつくっています。はじめての方も、つくり直したい方も、まずは気軽にご相談ください。</p>
+        <div class="cta__links">
+          <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
+          <a class="cta__link" href="../agent-harness/index.html">3エージェント制作ハーネス <span class="arrow"></span></a>
+          <a class="cta__link" href="../index.html">Journal 一覧 <span class="arrow"></span></a>
+        </div>
+      </div>
+    </article>
+
+    <footer>
+      <span>© 2025 LiberaSpace</span>
+      <div>
+        <a href="../../index.html">LiberaSpace Studio</a>
+      </div>
+      <span>HOKKAIDO / REMOTE</span>
+    </footer>
+
+  </div>
+
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    function onScroll(){ if(window.scrollY > 40) nav.classList.add("scrolled"); else nav.classList.remove("scrolled"); }
+    window.addEventListener("scroll", onScroll, {passive:true});
+    onScroll();
+
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ io.observe(el); });
+    }else{
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ el.classList.add("in"); });
+    }
+  })();
+</script>
+</body>
+</html>
