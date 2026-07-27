@@ -5,6 +5,7 @@ COPY Caddyfile /etc/caddy/Caddyfile
 COPY index.html /srv/index.html
 COPY assets /srv/assets
 COPY apps /srv/apps
+COPY blog /srv/blog
 
 # Railway injects $PORT; Caddyfile reads it. EXPOSE is informational.
 EXPOSE 80

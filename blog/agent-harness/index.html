@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作らせて、検証させる — Claude Code の3エージェント制作ハーネス | LiberaSpace</title>
+<meta name="description" content="AIにWebサイトを作らせると「動いてそう」で止まる。LiberaSpace では Claude Code のサブエージェントを Planner / Generator / Evaluator の3役に割り、Playwright MCP で実機検証まで通す制作ハーネスを組んでいます。その構成と、実際に運用して分かったことを書きました。">
+<link rel="canonical" href="/blog/agent-harness/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="作らせて、検証させる — Claude Code の3エージェント制作ハーネス">
+<meta property="og:description" content="AIにWebサイトを作らせると「動いてそう」で止まる。役割を3つに割り、Playwright MCP で実機検証まで通す制作ハーネスの話。">
+<meta property="og:site_name" content="LiberaSpace">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "作らせて、検証させる — Claude Code の3エージェント制作ハーネス",
+  "description": "Claude Code のサブエージェントを Planner / Generator / Evaluator の3役に割り、Playwright MCP で実機検証まで通す制作ハーネスの構成と運用知見。",
+  "inLanguage": "ja",
+  "datePublished": "2026-07-27",
+  "dateModified": "2026-07-27",
+  "author": { "@type": "Organization", "name": "LiberaSpace" },
+  "publisher": { "@type": "Organization", "name": "LiberaSpace" },
+  "keywords": "Claude Code, サブエージェント, Playwright MCP, AI Web制作, 仕様書駆動"
+}
+</script>
+<style>
+  :root{
+    --ink:#1A1B1F;
+    --muted:rgba(26,27,31,0.54);
+    --faint:rgba(26,27,31,0.34);
+    --hair:rgba(26,27,31,0.12);
+    --paper:#fbfaf8;
+    --panel:#f3f0ea;
+    --gut:clamp(24px,6vw,120px);
+    --wordmark-font:"Playfair Display", Georgia, "Times New Roman", serif;
+    --sans:"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+    --jp-serif:"Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+    --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  html,body{ overflow-x:hidden; max-width:100%; }
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    background:
+      radial-gradient(120% 80% at 6% 96%, rgba(255,243,228,0.5), rgba(255,243,228,0) 44%),
+      radial-gradient(120% 80% at 94% 4%, rgba(255,241,226,0.46), rgba(255,241,226,0) 44%),
+      radial-gradient(150% 130% at 50% 40%, #fdfcfa 0%, #f7f5f1 72%, #f1eee8 100%);
+    background-attachment:fixed;
+  }
+
+  /* ---- ambient background fx (CSS only) ---- */
+  #bgfx{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .ribbon{ position:absolute; border-radius:50%; }
+  .ribbon--body{
+    width:172vmax; height:52vmax; left:-26vmax; top:24%; transform:rotate(-30deg);
+    background:radial-gradient(ellipse 48% 52% at 50% 50%,
+      rgba(176,175,179,0.42), rgba(176,175,179,0.22) 48%, rgba(176,175,179,0.08) 70%, rgba(176,175,179,0) 82%);
+    filter:blur(62px);
+  }
+  .ribbon--core{
+    width:150vmax; height:34vmax; left:-16vmax; top:30%; transform:rotate(-31deg);
+    background:radial-gradient(ellipse 44% 50% at 50% 50%,
+      rgba(255,255,255,0.72), rgba(238,237,234,0.38) 40%, rgba(210,210,212,0.12) 66%, rgba(210,210,212,0) 80%);
+    filter:blur(44px);
+  }
+  .dotgrid{ position:absolute; top:-28px; left:-28px; width:46vw; height:40vw; max-width:640px; max-height:540px;
+    background-image:radial-gradient(rgba(26,27,31,0.14) 1px, transparent 1.7px);
+    background-size:17px 17px;
+    -webkit-mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%);
+    mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%); }
+  .grain{ position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:170px 170px; opacity:0.38; mix-blend-mode:overlay; }
+
+  .page{ position:relative; z-index:1; }
+
+  /* ---------- header ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px var(--gut);
+    transition:background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+  }
+  .nav.scrolled{
+    background:rgba(251,250,248,0.72);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 var(--hair);
+  }
+  .nav__brand{
+    font-family:var(--wordmark-font); font-weight:700; font-size:20px;
+    letter-spacing:-0.01em; color:var(--ink); text-decoration:none;
+  }
+  .nav__links{ display:flex; gap:clamp(16px,2.4vw,38px); align-items:center; }
+  .nav__links a{
+    font-size:11px; letter-spacing:0.24em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none; font-weight:600; transition:color .25s ease;
+  }
+  .nav__links a:hover{ color:var(--ink); }
+  @media(max-width:560px){ .nav__links a:not(:last-child){ display:none; } }
+
+  /* ---------- article head ---------- */
+  .art{ max-width:760px; margin:0 auto; padding:clamp(124px,18vh,190px) var(--gut) 0; }
+  .art__back{
+    display:inline-flex; align-items:center; gap:10px; font-size:11px; letter-spacing:0.24em;
+    text-transform:uppercase; color:var(--muted); text-decoration:none; font-weight:600; margin-bottom:36px;
+  }
+  .art__back .arrow{ width:22px; height:1px; background:var(--muted); transition:width .3s ease; }
+  .art__back:hover{ color:var(--ink); }
+  .art__back:hover .arrow{ width:34px; background:var(--ink); }
+  .art__meta{ display:flex; flex-wrap:wrap; gap:14px 22px; font-size:11px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:26px; }
+  .art__title{
+    font-family:var(--jp-serif); font-weight:600;
+    font-size:clamp(27px,4.6vw,50px); line-height:1.42; letter-spacing:0.005em;
+    text-wrap:pretty;
+  }
+  .art__lead{
+    margin-top:clamp(26px,4vh,40px); font-size:clamp(15px,1.5vw,17px); line-height:2.0;
+    color:var(--muted); text-wrap:pretty;
+  }
+  .art__rule{ height:1px; background:var(--hair); margin:clamp(44px,7vh,72px) 0 0; }
+
+  /* ---------- toc ---------- */
+  .toc{ margin:clamp(38px,6vh,56px) 0 0; padding:26px 30px; border:1px solid var(--hair); background:rgba(255,255,255,0.42); }
+  .toc__label{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:16px; }
+  .toc ol{ list-style:none; counter-reset:toc; }
+  .toc li{ counter-increment:toc; margin:9px 0; padding-left:30px; position:relative; }
+  .toc li::before{ content:counter(toc,decimal-leading-zero); position:absolute; left:0; top:1px;
+    font-size:11px; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; }
+  .toc a{ color:var(--ink); text-decoration:none; font-size:14px; line-height:1.7; border-bottom:1px solid transparent; transition:border-color .25s ease; }
+  .toc a:hover{ border-bottom-color:var(--hair); }
+
+  /* ---------- prose ---------- */
+  .prose{ max-width:760px; margin:0 auto; padding:0 var(--gut) clamp(60px,10vh,120px); }
+  .prose h2{
+    font-family:var(--jp-serif); font-weight:600; font-size:clamp(21px,2.8vw,29px);
+    line-height:1.55; letter-spacing:0.005em; margin:clamp(56px,8vh,86px) 0 22px; scroll-margin-top:90px;
+  }
+  .prose h2 .n{ display:block; font-family:var(--wordmark-font); font-style:italic; font-weight:500;
+    font-size:13px; letter-spacing:0.08em; color:var(--faint); margin-bottom:10px; }
+  .prose h3{ font-size:16px; font-weight:700; line-height:1.7; margin:clamp(32px,4.5vh,46px) 0 14px; letter-spacing:0.01em; }
+  .prose p{ font-size:15.5px; line-height:2.05; color:rgba(26,27,31,0.76); margin:18px 0; text-wrap:pretty; }
+  .prose strong{ color:var(--ink); font-weight:700; }
+  .prose a{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--hair); transition:border-color .25s ease; }
+  .prose a:hover{ border-bottom-color:var(--ink); }
+  .prose ul{ margin:18px 0; padding-left:0; list-style:none; }
+  .prose ul li{ position:relative; padding-left:22px; font-size:15.5px; line-height:2.0; color:rgba(26,27,31,0.76); margin:10px 0; text-wrap:pretty; }
+  .prose ul li::before{ content:""; position:absolute; left:2px; top:15px; width:7px; height:1px; background:var(--faint); }
+  .prose code{ font-family:var(--mono); font-size:0.88em; background:rgba(26,27,31,0.055); padding:2px 6px; border-radius:2px; }
+  .prose pre{
+    font-family:var(--mono); font-size:12.5px; line-height:1.85; margin:26px 0;
+    padding:22px 24px; background:#1A1B1F; color:#e9e7e2; border-radius:2px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  .prose pre code{ background:none; padding:0; font-size:inherit; }
+  .prose pre .c{ color:rgba(233,231,226,0.44); }
+
+  /* callout */
+  .note{ margin:30px 0; padding:22px 26px; border-left:2px solid var(--ink); background:rgba(255,255,255,0.5); }
+  .note__label{ font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:10px; }
+  .note p{ margin:0; font-size:14.5px; line-height:1.95; }
+
+  /* role table */
+  .roles{ margin:30px 0; border-top:1px solid var(--hair); }
+  .role{ display:grid; grid-template-columns:minmax(130px,180px) 1fr; gap:8px clamp(18px,3vw,40px);
+    padding:22px 0; border-bottom:1px solid var(--hair); align-items:start; }
+  .role__name{ font-family:var(--wordmark-font); font-style:italic; font-weight:500; font-size:20px; line-height:1.3; }
+  .role__tools{ display:block; font-family:var(--sans); font-style:normal; font-size:10.5px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-top:8px; }
+  .role__body{ font-size:14.5px; line-height:1.95; color:rgba(26,27,31,0.76); text-wrap:pretty; }
+  .role__body strong{ color:var(--ink); }
+  @media(max-width:600px){ .role{ grid-template-columns:1fr; gap:10px; } }
+
+  /* ---------- cta ---------- */
+  .cta{ max-width:760px; margin:0 auto; padding:clamp(44px,7vh,72px) var(--gut) clamp(60px,10vh,110px); border-top:1px solid var(--hair); }
+  .cta__title{ font-family:var(--jp-serif); font-weight:600; font-size:clamp(19px,2.4vw,26px); line-height:1.6; }
+  .cta__body{ margin-top:16px; font-size:14.5px; line-height:2.0; color:var(--muted); text-wrap:pretty; }
+  .cta__links{ display:flex; flex-wrap:wrap; gap:14px 30px; margin-top:28px; }
+  .cta__link{ display:inline-flex; align-items:center; gap:11px; font-size:12px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--ink); font-weight:600; text-decoration:none; }
+  .cta__link .arrow{ width:30px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .cta__link:hover .arrow{ width:48px; }
+
+  footer{ padding:36px var(--gut); border-top:1px solid var(--hair);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  footer a{ color:var(--muted); text-decoration:none; transition:color .25s ease; }
+  footer a:hover{ color:var(--ink); }
+
+  /* reveal */
+  [data-reveal]{ opacity:0; transform:translateY(18px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  [data-reveal].in{ opacity:1; transform:none; }
+  @media(prefers-reduced-motion:reduce){
+    [data-reveal]{ opacity:1; transform:none; transition:none; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+  <div id="bgfx" aria-hidden="true">
+    <div class="ribbon ribbon--body"></div>
+    <div class="ribbon ribbon--core"></div>
+    <div class="dotgrid"></div>
+    <div class="grain"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="../../index.html" class="nav__brand">LiberaSpace</a>
+    <div class="nav__links">
+      <a href="../../index.html#works">Works</a>
+      <a href="../../index.html#service">Service</a>
+      <a href="../index.html">Journal</a>
+      <a href="../../index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <article>
+      <header class="art">
+        <a href="../index.html" class="art__back"><span class="arrow"></span> Journal</a>
+
+        <div class="art__meta">
+          <span>2026.07.27</span>
+          <span>AI 制作フロー</span>
+          <span>Claude Code</span>
+        </div>
+
+        <h1 class="art__title">作らせて、検証させる<br>— Claude Code の3エージェント制作ハーネス</h1>
+
+        <p class="art__lead">AIにWebサイトを作らせると、たいてい「動いてそう」で止まります。画面はできている、コードも読める、でも本当にクリックが通るのかは誰も確かめていない。LiberaSpace ではこの「そう」を消すために、Claude Code のサブエージェントを <strong>Planner / Generator / Evaluator</strong> の3役に分け、実際のブラウザで受け入れ条件を1つずつ踏み直すところまでを1本の流れにしています。この記事は、その構成と、実際に案件で回してみて分かったことの記録です。</p>
+
+        <nav class="toc" aria-label="目次">
+          <p class="toc__label">Contents</p>
+          <ol>
+            <li><a href="#problem">「動いてそう」はどこで生まれるか</a></li>
+            <li><a href="#roles">役割を3つに割る</a></li>
+            <li><a href="#planner">Planner — 曖昧語を仕様から追い出す</a></li>
+            <li><a href="#generator">Generator — 今回のスプリントだけ作る</a></li>
+            <li><a href="#evaluator">Evaluator — 実機で踏み直す</a></li>
+            <li><a href="#lessons">運用して分かった4つのこと</a></li>
+            <li><a href="#closing">道具ではなく、体制の話</a></li>
+          </ol>
+        </nav>
+
+        <div class="art__rule"></div>
+      </header>
+
+      <div class="prose">
+
+        <h2 id="problem"><span class="n">01</span>「動いてそう」はどこで生まれるか</h2>
+
+        <p>AIに1体で「このサイトを作って」と頼むと、同じAIが仕様を決め、実装し、最後に自分で「できました」と判定します。この3つを1体でやることが問題の根っこです。</p>
+
+        <p>まず、仕様が実装の途中で静かに動きます。作りながら「ここはこうした方が自然だ」と判断が入り、最初に想定していたものと少しずつズレる。ズレたこと自体は悪くないのですが、<strong>どこがズレたのかの記録が残りません</strong>。</p>
+
+        <p>そして最後の判定が甘くなります。自分が書いたコードを自分でレビューして「問題ありません」と言うのは、人間でも難しい。AIはさらに素直なので、読んで筋が通っていれば通ったことにします。ボタンを実際に押してはいません。</p>
+
+        <p>結果として出てくるのが「動いてそうなもの」です。納品してから、モバイルで横スクロールが出る、コンソールがエラーで埋まっている、フォームのボタンが無反応、といった形で発覚します。</p>
+
+        <div class="note">
+          <p class="note__label">前提</p>
+          <p>これは「AIの精度が足りない」という話ではありません。<strong>設計・実装・検査を同じ主体がやると品質が落ちる</strong>のは、人間の開発現場でもずっと同じです。だから解決策も同じで、役割を分ける。</p>
+        </div>
+
+        <h2 id="roles"><span class="n">02</span>役割を3つに割る</h2>
+
+        <p>Claude Code には、専用の役割・専用のツールセットを持たせた<strong>サブエージェント</strong>を自分で定義する仕組みがあります。<code>~/.claude/agents/</code> に Markdown ファイルを1枚置くだけで、名前・使えるツール・振る舞いを固定した「担当者」を作れます。</p>
+
+        <p>LiberaSpace ではここに3体を置いています。</p>
+
+        <div class="roles">
+          <div class="role">
+            <div class="role__name">Planner<span class="role__tools">Read / Glob / Grep / Write</span></div>
+            <div class="role__body">1〜4行のアイデアを、実装可能な仕様書 <code>SPEC.md</code> に展開する。<strong>書けるのは仕様だけ</strong>。実装ツールを持たせていないので、コードには触れません。</div>
+          </div>
+          <div class="role">
+            <div class="role__name">Generator<span class="role__tools">Read / Write / Edit / Glob / Grep / Bash / Skill</span></div>
+            <div class="role__body">仕様書のうち、<strong>今回のスプリントに入っている機能だけ</strong>を実装する。仕様書そのものは書き換えない。</div>
+          </div>
+          <div class="role">
+            <div class="role__name">Evaluator<span class="role__tools">Playwright MCP / Read / Bash</span></div>
+            <div class="role__body">できたものを<strong>実際のブラウザで操作して</strong>合否を出す。Generator のコードには絶対に触らない。直す権限を持たないので、判定が甘くなる動機がありません。</div>
+          </div>
+        </div>
+
+        <p>肝は<strong>ツールの与え方</strong>です。「仕様を書き換えないでね」とお願いするのではなく、Planner に <code>Edit</code> を渡さない。「勝手に直さないでね」ではなく、Evaluator に <code>Write</code> を渡さない。指示は破られることがありますが、持っていない道具は使えません。</p>
+
+        <pre><code><span class="c">--- ~/.claude/agents/website-evaluator.md</span>
+---
+name: website-evaluator
+description: Generator が作った ./site/ を実機ブラウザで動かし、
+  ./SPEC.md の受け入れ条件を検証して合否を判定する。
+tools: Read, Glob, Grep, Bash, Write,
+  mcp__playwright__browser_navigate,
+  mcp__playwright__browser_click,
+  mcp__playwright__browser_console_messages,
+  ...
+---</code></pre>
+
+        <h2 id="planner"><span class="n">03</span>Planner — 曖昧語を仕様から追い出す</h2>
+
+        <p>Planner の仕事は「何を作るか」を徹底的に言語化することだけです。機能を漏れなく並べ、依存関係を見てスプリントに割り、それぞれに<strong>「ユーザーが何をできれば合格か」</strong>を書く。出力は必ずプロジェクト直下の <code>SPEC.md</code> に落ちます。</p>
+
+        <p>ここで2つ、強く禁じていることがあります。</p>
+
+        <h3>技術的な実装詳細を書かせない</h3>
+        <p>DBスキーマ、ライブラリ選定、関数設計は書かせません。理由は単純で、<strong>仕様で間違えると、下流のGeneratorとEvaluatorにそのまま伝播するから</strong>です。仕様書に書かれた「間違った設計」は、下流から見ると与件になってしまい、誰も疑いません。実装の判断は実装する側に残しておく方が、事故が小さく済みます。</p>
+
+        <h3>曖昧な機能名を許さない</h3>
+        <p>「いい感じのUI」「使いやすいフォーム」は禁止語です。この手の言葉は、書いた時点では合意できているように見えて、検証の段になって初めて「誰も合否を判定できない」ことが分かります。受け入れ条件は、Evaluator がブラウザで<strong>そのまま再現できる粒度</strong>まで落とします。</p>
+
+        <p>機能IDは <code>F-01</code>, <code>F-02</code> …、スプリントは <code>Sprint 1</code>, <code>Sprint 2</code> … と一意に採番し、<strong>一度振ったIDは付け替えません</strong>。あとで「F-07が落ちている」という会話を、人間とAIの両方が同じ意味で扱えるようにするためです。</p>
+
+        <h2 id="generator"><span class="n">04</span>Generator — 今回のスプリントだけ作る</h2>
+
+        <p>Generator は <code>SPEC.md</code> を読み、指定されたスプリントの機能だけを <code>./site/</code> に実装します。原則1回1機能から積み上げる。「ついでにここも直しておきました」をやらせないのが大事で、スコープ外の変更は、Evaluator の判定範囲の外側で壊れる原因になります。</p>
+
+        <p>もう1つ、この工程には見た目の問題があります。放っておくと<strong>いかにもAIが作った見た目</strong>—— 中央寄せ、角丸カード、青いボタン、均一な余白 —— に収束していく。そこで Generator には、UIに手を付ける前にデザイン系のスキルを必ず通させています。スプリント開始時に配色・タイポ・スタイルの方針を固めてから実装に入る、という順番を固定するだけでも、既定値に落ちる確率はかなり下がります。</p>
+
+        <p>既存ページに機能を足すときは、既存のデザイン言語（配色・間隔・コンポーネント）に合わせる。新しいスタイルを混ぜない。これも明文化しておかないと、スプリントごとに少しずつ違うサイトになります。</p>
+
+        <div class="note">
+          <p class="note__label">境界</p>
+          <p>スキルはあくまで品質を上げる手段で、<strong>受け入れ条件やスプリント範囲を超える権限は与えていません</strong>。スキル側が良い提案をしてきても、スコープ外なら採用しない。仕様を変えたくなったら Planner に差し戻します。</p>
+        </div>
+
+        <h2 id="evaluator"><span class="n">05</span>Evaluator — 実機で踏み直す</h2>
+
+        <p>ここがこのハーネスの本体です。Evaluator は Playwright MCP を通じて実際のブラウザを立ち上げ、<code>SPEC.md</code> の受け入れ条件を1つずつ、<strong>ユーザーがやる操作そのままの順序で</strong>再現します。クリック、入力、画面遷移、表示確認、そしてリロード後もデータが残っているかまで。</p>
+
+        <p>それに加えて、案件によらず毎回見る観点を固定しています。</p>
+
+        <ul>
+          <li>コンソールに error / warning が出ていないか</li>
+          <li>ネットワークに 4xx / 5xx がないか</li>
+          <li>375 / 768 / 1280px で主要画面が崩れていないか（横スクロールの発生有無）</li>
+          <li>キーボード操作とラベル付与など、基本のアクセシビリティ</li>
+        </ul>
+
+        <p>そして各観点に<strong>閾値を先に決めておき、1つでも下回ったらそのスプリントは不合格</strong>にします。「まあ許容範囲かな」という判断が入る余地を、判定の前に潰しておく。閾値を緩める判断は、Evaluator に単独でさせません。</p>
+
+        <p>細かいところですが、効きが大きかった一文があります。</p>
+
+        <div class="note">
+          <p class="note__label">Evaluator の定義より</p>
+          <p>Playwright MCP が未導入なら、検証不能である旨を最初に報告し、判定を保留（pass: false / 理由: 環境未整備）にすること。<strong>勝手に別手段で「動いてそう」と判断しない。</strong></p>
+        </div>
+
+        <p>これを書く前は、ブラウザが使えない状況でHTMLをテキストとして読み、「構造上は問題なさそうです」と返してくることがありました。悪意はなく、頼まれた仕事を何とか果たそうとしているだけです。だからこそ<strong>「できませんでした」と言ってよい、と明示的に許可しておく</strong>必要がありました。検証の穴として一番危ないのは、失敗ではなく、失敗が成功のふりをすることです。</p>
+
+        <h2 id="lessons"><span class="n">06</span>運用して分かった4つのこと</h2>
+
+        <h3>1. 検証を回すタイミングは、人間が決める</h3>
+        <p>最初は Generator が終わるたびに自動で Evaluator を走らせていました。これは失敗でした。デザインを速く回している最中は、1スプリントごとの本検証はコストにも時間にも重すぎて、結局こちらが途中で止めることになる。今は Generator が終わったら変更点と自己チェックだけを受け取り、<strong>本検証を回すか、次に進むか、ここで終えるかは人間が判断します</strong>。ハーネスは自動化のためではなく、品質のためにあります。</p>
+
+        <h3>2. 仕様変更は必ず Planner に戻す</h3>
+        <p>作っている途中で仕様を変えたくなったとき、Generator に直接直させると、その瞬間に <code>SPEC.md</code> と実装が乖離します。乖離した仕様書で Evaluator が判定すると、正しい実装が「不合格」になる。遠回りに見えても、仕様変更は Planner に差し戻して <code>SPEC.md</code> を更新し、改訂履歴を残してから実装に降ろします。</p>
+
+        <h3>3. 踏んだ罠は、その場で外部に書き出す</h3>
+        <p>セッションが変われば文脈は消えます。一度踏んだバグを二度踏まないためには、プロジェクトごとのメモリーに残すしかない。実際に残しているものの例を挙げると、単体HTMLのビルドスクリプトで <code>String.replace</code> の置換文字列にバンドルを差し込むと、コード中の <code>$$</code> が <code>$</code> に化けて構文エラーになる（置換は関数で渡す）、といった類のものです。この手の罠は、原因を知っていれば5分、知らなければ半日溶けます。</p>
+
+        <h3>4. 3体で足りないときは、壊しに行かせる</h3>
+        <p>Planner → Generator → Evaluator は「仕様どおりに動くか」を保証する流れであって、「仕様が想定していない壊し方」までは見ません。そこは別途、複数のエージェントに<strong>意図的に反証させるレビュー</strong>を回して硬化させます。作る流れと壊す流れは、別の工程として持っておく方が素直でした。</p>
+
+        <h2 id="closing"><span class="n">07</span>道具ではなく、体制の話</h2>
+
+        <p>この構成に特別な技術は入っていません。Markdown が3枚と、ブラウザを動かすための MCP がひとつあるだけです。効いているのは、<strong>誰が何を書けて、何を書けないかを先に決めたこと</strong>だけだと思っています。</p>
+
+        <p>仕様を書く人がコードを触れない。作る人が仕様を書き換えられない。判定する人が直せない。この3つを守ると、AIに任せられる範囲がはっきりと広がりました。逆に言えば、この境界を引かずに「AIで速く作れます」と言うのは、少し無責任だとも思っています。速さは、あとから直す時間まで含めて数えないと意味がないので。</p>
+
+        <p>LiberaSpace の制作物は、この流れを通したうえでお渡ししています。同じやり方が全部の案件に最適だとは思っていませんが、少なくとも「動いてそう」を納品しないための仕組みとしては、いまのところこれが一番うまくいっています。</p>
+
+      </div>
+
+      <div class="cta">
+        <p class="cta__title">Webサイト・業務アプリのご相談</p>
+        <p class="cta__body">はじめての方も、つくり直したい方も。AIをどこまで使うか、どこは人が持つかも含めて、率直にお話しします。まずは気軽にご相談ください。</p>
+        <div class="cta__links">
+          <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
+          <a class="cta__link" href="../../index.html#works">制作実績を見る <span class="arrow"></span></a>
+          <a class="cta__link" href="../index.html">Journal 一覧 <span class="arrow"></span></a>
+        </div>
+      </div>
+    </article>
+
+    <footer>
+      <span>© 2025 LiberaSpace</span>
+      <div>
+        <a href="../../index.html">LiberaSpace Studio</a>
+      </div>
+      <span>HOKKAIDO / REMOTE</span>
+    </footer>
+
+  </div>
+
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    function onScroll(){ if(window.scrollY > 40) nav.classList.add("scrolled"); else nav.classList.remove("scrolled"); }
+    window.addEventListener("scroll", onScroll, {passive:true});
+    onScroll();
+
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ io.observe(el); });
+    }else{
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ el.classList.add("in"); });
+    }
+  })();
+</script>
+</body>
+</html>
