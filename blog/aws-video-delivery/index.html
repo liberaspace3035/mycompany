@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWSで動画販売サイトを本番運用する — S3・CloudFront・Lightsail・SESの組み方と落とし穴 | LiberaSpace</title>
+<meta name="description" content="1本20GBの動画を売るサイトを、Lightsail 1台とS3・CloudFront・SESで組みました。サムネはOAC・動画は署名URLという配信の作り分け、ブラウザから直接S3へ上げる設計、SESサンドボックスの罠、そして全ページ500になった .env の所有権問題まで、実際に踏んだ落とし穴の記録です。">
+<link rel="canonical" href="/blog/aws-video-delivery/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AWSで動画販売サイトを本番運用する — S3・CloudFront・Lightsail・SESの組み方と落とし穴">
+<meta property="og:description" content="サムネはOAC・動画は署名URL、20GBはブラウザから直接S3へ。SESサンドボックスの罠と、全ページ500になった .env の所有権問題。">
+<meta property="og:site_name" content="LiberaSpace">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "AWSで動画販売サイトを本番運用する — S3・CloudFront・Lightsail・SESの組み方と落とし穴",
+  "description": "S3・CloudFront・Lightsail・SES・IAM を組み合わせた動画販売サイトの構成と、本番運用で実際に踏んだ落とし穴。",
+  "inLanguage": "ja",
+  "datePublished": "2026-07-27",
+  "dateModified": "2026-07-27",
+  "author": { "@type": "Organization", "name": "LiberaSpace" },
+  "publisher": { "@type": "Organization", "name": "LiberaSpace" },
+  "keywords": "AWS, S3, CloudFront, Lightsail, Amazon SES, IAM, 署名URL, Laravel"
+}
+</script>
+<style>
+  :root{
+    --ink:#1A1B1F;
+    --muted:rgba(26,27,31,0.54);
+    --faint:rgba(26,27,31,0.34);
+    --hair:rgba(26,27,31,0.12);
+    --paper:#fbfaf8;
+    --panel:#f3f0ea;
+    --gut:clamp(24px,6vw,120px);
+    --wordmark-font:"Playfair Display", Georgia, "Times New Roman", serif;
+    --sans:"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+    --jp-serif:"Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+    --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  html,body{ overflow-x:hidden; max-width:100%; }
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    background:
+      radial-gradient(120% 80% at 6% 96%, rgba(255,243,228,0.5), rgba(255,243,228,0) 44%),
+      radial-gradient(120% 80% at 94% 4%, rgba(255,241,226,0.46), rgba(255,241,226,0) 44%),
+      radial-gradient(150% 130% at 50% 40%, #fdfcfa 0%, #f7f5f1 72%, #f1eee8 100%);
+    background-attachment:fixed;
+  }
+  #bgfx{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .ribbon{ position:absolute; border-radius:50%; }
+  .ribbon--body{
+    width:172vmax; height:52vmax; left:-26vmax; top:24%; transform:rotate(-30deg);
+    background:radial-gradient(ellipse 48% 52% at 50% 50%,
+      rgba(176,175,179,0.42), rgba(176,175,179,0.22) 48%, rgba(176,175,179,0.08) 70%, rgba(176,175,179,0) 82%);
+    filter:blur(62px);
+  }
+  .ribbon--core{
+    width:150vmax; height:34vmax; left:-16vmax; top:30%; transform:rotate(-31deg);
+    background:radial-gradient(ellipse 44% 50% at 50% 50%,
+      rgba(255,255,255,0.72), rgba(238,237,234,0.38) 40%, rgba(210,210,212,0.12) 66%, rgba(210,210,212,0) 80%);
+    filter:blur(44px);
+  }
+  .dotgrid{ position:absolute; top:-28px; left:-28px; width:46vw; height:40vw; max-width:640px; max-height:540px;
+    background-image:radial-gradient(rgba(26,27,31,0.14) 1px, transparent 1.7px);
+    background-size:17px 17px;
+    -webkit-mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%);
+    mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%); }
+  .grain{ position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:170px 170px; opacity:0.38; mix-blend-mode:overlay; }
+
+  .page{ position:relative; z-index:1; }
+
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px var(--gut);
+    transition:background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+  }
+  .nav.scrolled{
+    background:rgba(251,250,248,0.72);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 var(--hair);
+  }
+  .nav__brand{
+    font-family:var(--wordmark-font); font-weight:700; font-size:20px;
+    letter-spacing:-0.01em; color:var(--ink); text-decoration:none;
+  }
+  .nav__links{ display:flex; gap:clamp(16px,2.4vw,38px); align-items:center; }
+  .nav__links a{
+    font-size:11px; letter-spacing:0.24em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none; font-weight:600; transition:color .25s ease;
+  }
+  .nav__links a:hover{ color:var(--ink); }
+  @media(max-width:560px){ .nav__links a:not(:last-child){ display:none; } }
+
+  .art{ max-width:760px; margin:0 auto; padding:clamp(124px,18vh,190px) var(--gut) 0; }
+  .art__back{
+    display:inline-flex; align-items:center; gap:10px; font-size:11px; letter-spacing:0.24em;
+    text-transform:uppercase; color:var(--muted); text-decoration:none; font-weight:600; margin-bottom:36px;
+  }
+  .art__back .arrow{ width:22px; height:1px; background:var(--muted); transition:width .3s ease; }
+  .art__back:hover{ color:var(--ink); }
+  .art__back:hover .arrow{ width:34px; background:var(--ink); }
+  .art__meta{ display:flex; flex-wrap:wrap; gap:14px 22px; font-size:11px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:26px; }
+  .art__title{
+    font-family:var(--jp-serif); font-weight:600;
+    font-size:clamp(27px,4.6vw,50px); line-height:1.42; letter-spacing:0.005em;
+    text-wrap:pretty;
+  }
+  .art__lead{
+    margin-top:clamp(26px,4vh,40px); font-size:clamp(15px,1.5vw,17px); line-height:2.0;
+    color:var(--muted); text-wrap:pretty;
+  }
+  .art__rule{ height:1px; background:var(--hair); margin:clamp(44px,7vh,72px) 0 0; }
+
+  .toc{ margin:clamp(38px,6vh,56px) 0 0; padding:26px 30px; border:1px solid var(--hair); background:rgba(255,255,255,0.42); }
+  .toc__label{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:16px; }
+  .toc ol{ list-style:none; counter-reset:toc; }
+  .toc li{ counter-increment:toc; margin:9px 0; padding-left:30px; position:relative; }
+  .toc li::before{ content:counter(toc,decimal-leading-zero); position:absolute; left:0; top:1px;
+    font-size:11px; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; }
+  .toc a{ color:var(--ink); text-decoration:none; font-size:14px; line-height:1.7; border-bottom:1px solid transparent; transition:border-color .25s ease; }
+  .toc a:hover{ border-bottom-color:var(--hair); }
+
+  .prose{ max-width:760px; margin:0 auto; padding:0 var(--gut) clamp(60px,10vh,120px); }
+  .prose h2{
+    font-family:var(--jp-serif); font-weight:600; font-size:clamp(21px,2.8vw,29px);
+    line-height:1.55; letter-spacing:0.005em; margin:clamp(56px,8vh,86px) 0 22px; scroll-margin-top:90px;
+  }
+  .prose h2 .n{ display:block; font-family:var(--wordmark-font); font-style:italic; font-weight:500;
+    font-size:13px; letter-spacing:0.08em; color:var(--faint); margin-bottom:10px; }
+  .prose h3{ font-size:16px; font-weight:700; line-height:1.7; margin:clamp(32px,4.5vh,46px) 0 14px; letter-spacing:0.01em; }
+  .prose p{ font-size:15.5px; line-height:2.05; color:rgba(26,27,31,0.76); margin:18px 0; text-wrap:pretty; }
+  .prose strong{ color:var(--ink); font-weight:700; }
+  .prose a{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--hair); transition:border-color .25s ease; }
+  .prose a:hover{ border-bottom-color:var(--ink); }
+  .prose ul{ margin:18px 0; padding-left:0; list-style:none; }
+  .prose ul li{ position:relative; padding-left:22px; font-size:15.5px; line-height:2.0; color:rgba(26,27,31,0.76); margin:10px 0; text-wrap:pretty; }
+  .prose ul li::before{ content:""; position:absolute; left:2px; top:15px; width:7px; height:1px; background:var(--faint); }
+  .prose code{ font-family:var(--mono); font-size:0.88em; background:rgba(26,27,31,0.055); padding:2px 6px; border-radius:2px; }
+  .prose pre{
+    font-family:var(--mono); font-size:12.5px; line-height:1.85; margin:26px 0;
+    padding:22px 24px; background:#1A1B1F; color:#e9e7e2; border-radius:2px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  .prose pre code{ background:none; padding:0; font-size:inherit; }
+  .prose pre .c{ color:rgba(233,231,226,0.44); }
+  .prose pre .bad{ color:#e8a0a0; }
+  .prose pre .good{ color:#a8cf9a; }
+
+  .note{ margin:30px 0; padding:22px 26px; border-left:2px solid var(--ink); background:rgba(255,255,255,0.5); }
+  .note__label{ font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:10px; }
+  .note p{ margin:0; font-size:14.5px; line-height:1.95; }
+  .note p + p{ margin-top:12px; }
+
+  .roles{ margin:30px 0; border-top:1px solid var(--hair); }
+  .role{ display:grid; grid-template-columns:minmax(130px,180px) 1fr; gap:8px clamp(18px,3vw,40px);
+    padding:22px 0; border-bottom:1px solid var(--hair); align-items:start; }
+  .role__name{ font-family:var(--wordmark-font); font-style:italic; font-weight:500; font-size:20px; line-height:1.3; }
+  .role__tools{ display:block; font-family:var(--sans); font-style:normal; font-size:10.5px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-top:8px; }
+  .role__body{ font-size:14.5px; line-height:1.95; color:rgba(26,27,31,0.76); text-wrap:pretty; }
+  .role__body strong{ color:var(--ink); }
+  @media(max-width:600px){ .role{ grid-template-columns:1fr; gap:10px; } }
+
+  .tblwrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin:28px 0; }
+  table{ border-collapse:collapse; width:100%; min-width:520px; font-size:14px; }
+  thead th{ text-align:left; font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--faint); font-weight:600; padding:0 18px 12px 0; border-bottom:1px solid var(--hair); white-space:nowrap; }
+  tbody td{ padding:14px 18px 14px 0; border-bottom:1px solid var(--hair); line-height:1.7;
+    color:rgba(26,27,31,0.76); vertical-align:top; }
+  tbody td:first-child{ color:var(--ink); font-weight:700; white-space:nowrap; }
+  .tblnote{ font-size:12.5px; line-height:1.85; color:var(--faint); margin-top:14px; text-wrap:pretty; }
+
+  .cta{ max-width:760px; margin:0 auto; padding:clamp(44px,7vh,72px) var(--gut) clamp(60px,10vh,110px); border-top:1px solid var(--hair); }
+  .cta__title{ font-family:var(--jp-serif); font-weight:600; font-size:clamp(19px,2.4vw,26px); line-height:1.6; }
+  .cta__body{ margin-top:16px; font-size:14.5px; line-height:2.0; color:var(--muted); text-wrap:pretty; }
+  .cta__links{ display:flex; flex-wrap:wrap; gap:14px 30px; margin-top:28px; }
+  .cta__link{ display:inline-flex; align-items:center; gap:11px; font-size:12px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--ink); font-weight:600; text-decoration:none; }
+  .cta__link .arrow{ width:30px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .cta__link:hover .arrow{ width:48px; }
+
+  footer{ padding:36px var(--gut); border-top:1px solid var(--hair);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  footer a{ color:var(--muted); text-decoration:none; transition:color .25s ease; }
+  footer a:hover{ color:var(--ink); }
+
+  [data-reveal]{ opacity:0; transform:translateY(18px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  [data-reveal].in{ opacity:1; transform:none; }
+  @media(prefers-reduced-motion:reduce){
+    [data-reveal]{ opacity:1; transform:none; transition:none; }
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+  <div id="bgfx" aria-hidden="true">
+    <div class="ribbon ribbon--body"></div>
+    <div class="ribbon ribbon--core"></div>
+    <div class="dotgrid"></div>
+    <div class="grain"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="../../index.html" class="nav__brand">LiberaSpace</a>
+    <div class="nav__links">
+      <a href="../../index.html#works">Works</a>
+      <a href="../../index.html#service">Service</a>
+      <a href="../index.html">Journal</a>
+      <a href="../../index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <article>
+      <header class="art">
+        <a href="../index.html" class="art__back"><span class="arrow"></span> Journal</a>
+
+        <div class="art__meta">
+          <span>2026.07.27</span>
+          <span>AWS</span>
+          <span>インフラ</span>
+        </div>
+
+        <h1 class="art__title">AWSで動画販売サイトを本番運用する<br>— S3・CloudFront・Lightsail・SESの組み方と落とし穴</h1>
+
+        <p class="art__lead">1本あたり最大20GBの動画をダウンロード販売するサイトを、AWS上で組みました。使ったのは S3・CloudFront・Lightsail・SES・IAM で、豪華な構成ではありません。それでも、<strong>買った人にだけ動画を渡す</strong>という一点を守るために、配信経路とアクセス権をかなり細かく設計する必要がありました。構成の考え方と、本番で実際に踏んだ落とし穴の記録です。案件の詳細は伏せ、技術的な内容だけを書いています。</p>
+
+        <nav class="toc" aria-label="目次">
+          <p class="toc__label">Contents</p>
+          <ol>
+            <li><a href="#overview">何を作ったか</a></li>
+            <li><a href="#lightsail">なぜ EC2 ではなく Lightsail か</a></li>
+            <li><a href="#delivery">配信を2系統に分ける — サムネはOAC、動画は署名URL</a></li>
+            <li><a href="#upload">20GBの動画を、ブラウザから直接S3へ</a></li>
+            <li><a href="#ses">SESの本当の壁はサンドボックス</a></li>
+            <li><a href="#iam">IAMは「構築用」と「運用用」に分ける</a></li>
+            <li><a href="#pitfalls">デプロイで踏んだ4つの落とし穴</a></li>
+            <li><a href="#handover">課金は誰が持つか — アカウントをまたぐ移管</a></li>
+            <li><a href="#closing">小さく作って、境界だけ厳密に</a></li>
+          </ol>
+        </nav>
+
+        <div class="art__rule"></div>
+      </header>
+
+      <div class="prose">
+
+        <h2 id="overview"><span class="n">01</span>何を作ったか</h2>
+
+        <p>会員登録して、動画を購入して、ダウンロードする。それだけのサイトです。ただし動画のサイズが大きく、1本あたり最大20GBを想定しました。そして当然ながら、<strong>買っていない人には渡してはいけない</strong>。この2つが構成のほぼ全てを決めています。</p>
+
+        <div class="tblwrap">
+          <table>
+            <thead>
+              <tr><th>レイヤー</th><th>採用したもの</th><th>役割</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>アプリ</td><td>Laravel（PHP 8.4）</td><td>購入・権限・ダウンロード回数の管理</td></tr>
+              <tr><td>サーバー</td><td>Lightsail（Ubuntu 24.04 / 2GB）</td><td>nginx + PHP-FPM + MySQL + Redis + Supervisor</td></tr>
+              <tr><td>保管</td><td>S3（東京・バージョニング有効）</td><td>動画とサムネの保管。公開アクセスはブロック</td></tr>
+              <tr><td>配信</td><td>CloudFront</td><td>サムネはOAC、動画は署名URL</td></tr>
+              <tr><td>メール</td><td>Amazon SES</td><td>購入通知・問い合わせ・自動返信</td></tr>
+              <tr><td>権限</td><td>IAM</td><td>構築用と運用用を2系統に分離</td></tr>
+              <tr><td>ドメイン</td><td>Route 53 + certbot</td><td>DNSとSSL（Let's Encrypt）</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="tblnote">決済は PayPal（REST API + Webhook）。マネージドなコンテナ基盤やロードバランサーは使っていません。</p>
+
+        <h2 id="lightsail"><span class="n">02</span>なぜ EC2 ではなく Lightsail か</h2>
+
+        <p>AWSでWebアプリを本番運用すると聞くと、EC2 + ALB + RDS あたりを思い浮かべると思います。今回それを選ばなかったのは、<strong>この案件の規模に対して過剰だったから</strong>です。</p>
+
+        <p>想定される同時アクセスは多くありません。重い処理はすべてS3とCloudFrontに逃がしてあるので、アプリサーバーがやるのは購入処理と管理画面だけです。それに対してALBとRDSを立てると、月額がひと桁変わります。</p>
+
+        <p>Lightsail を選んだ理由は3つでした。</p>
+
+        <ul>
+          <li><strong>月額が固定で読める。</strong>2GBメモリのプランで月12ドル。見積もりに載せやすく、クライアントにも説明しやすい</li>
+          <li><strong>1台に全部入る。</strong>nginx、PHP-FPM、MySQL、Redis、Supervisor（キューワーカー）、cron を1インスタンスに同居させています。この規模なら分ける理由がない</li>
+          <li><strong>引き継ぎやすい。</strong>普通のUbuntuサーバーなので、あとから別の人が触っても驚きが少ない</li>
+        </ul>
+
+        <div class="note">
+          <p class="note__label">トレードオフ</p>
+          <p>当然、冗長化はされていません。このインスタンスが落ちればサイトは止まります。スケールアウトもできません。<strong>トラフィックが増えたら EC2 + ALB へ組み替える前提</strong>で、その判断ラインを最初に決めておく、という割り切りです。「将来のために今から分散構成にしておく」は、たいてい払い損になります。</p>
+        </div>
+
+        <h3>静的IPは必ず割り当てる</h3>
+        <p>Lightsail で最初に踏んだのがこれです。インスタンスを作っただけだと公開IPは動的で、<strong>再起動すると変わります</strong>。検証用のURLをクライアントに共有したあとにIPが変わり、「サイトが見られない」という連絡をもらって気づきました。</p>
+        <p>Networking から静的IPを作成してアタッチすれば固定されます。無料枠の範囲内（アタッチされている限り課金なし）なので、<strong>インスタンスを作ったらその場で必ず付ける</strong>のが正解です。</p>
+
+        <h2 id="delivery"><span class="n">03</span>配信を2系統に分ける — サムネはOAC、動画は署名URL</h2>
+
+        <p>ここが設計の中心です。同じS3バケットに置いてあっても、<strong>サムネイルと動画では要求されるアクセス制御がまったく違います</strong>。</p>
+
+        <div class="roles">
+          <div class="role">
+            <div class="role__name">サムネイル<span class="role__tools">CloudFront + OAC</span></div>
+            <div class="role__body">商品一覧に出るので<strong>誰でも見られてよい</strong>。ただしS3バケット自体は非公開のまま保ちたい。→ Origin Access Control（OAC）で、CloudFront だけがオリジンを読める状態にする。</div>
+          </div>
+          <div class="role">
+            <div class="role__name">動画<span class="role__tools">CloudFront + 署名URL</span></div>
+            <div class="role__body"><strong>購入者だけ、しかも短時間だけ</strong>渡したい。→ trusted key group による署名付きURLを、アプリが購入状態を確認したうえで有効期限つきで発行する。</div>
+          </div>
+        </div>
+
+        <p>ポイントは、<strong>S3バケットのパブリックアクセスブロックは最初から最後まで有効のまま</strong>だということです。バケットを公開して「URLを知っている人だけ」に頼るのは、URLが1度でも外に出た瞬間に終わります。実際、購入者が善意で共有リンクを貼ってしまうケースは十分ありえます。</p>
+
+        <h3>署名URLの鍵はCloudFront側で作る</h3>
+        <p>CloudFront の署名URLには、専用の鍵ペアが必要です。手順としてはこうなります。</p>
+
+        <pre><code><span class="c"># 1. 鍵ペアを作る</span>
+openssl genrsa -out private_key.pem 2048
+openssl rsa -pubout -in private_key.pem -out public_key.pem</code></pre>
+
+        <p>作った公開鍵を CloudFront コンソールの <strong>Public keys</strong> に登録して公開鍵IDを受け取り、それを <strong>Key groups</strong> にまとめます。あとは動画配信用ビヘイビアの <strong>Restrict Viewer Access</strong> を Yes にして、そのキーグループを指定するだけです。秘密鍵はアプリ側が署名生成に使います。</p>
+
+        <p><strong>秘密鍵は絶対にリポジトリに入れない</strong>こと。これを入れてしまうと、鍵の意味が丸ごと消えます。</p>
+
+        <div class="note">
+          <p class="note__label">なぜ S3 の署名URLではなく CloudFront の署名URLか</p>
+          <p>S3にも署名URLの仕組みがありますが、それだとCDNを経由せず配信することになります。<strong>大きなファイルをエッジから配信しつつ、アクセス制御もかけたい</strong>——両立させたいなら CloudFront 側で署名する必要があります。20GBのファイルを毎回オリジンから引くのは、速度的にも転送コスト的にも避けたい構成です。</p>
+        </div>
+
+        <h2 id="upload"><span class="n">04</span>20GBの動画を、ブラウザから直接S3へ</h2>
+
+        <p>管理者が動画をアップロードする側の話です。ここは早い段階で「<strong>アプリサーバーを経由させない</strong>」と決めました。</p>
+
+        <p>20GBのファイルをPHPで受け取ろうとすると、まず <code>upload_max_filesize</code> と <code>post_max_size</code> の壁があり、次にリクエストタイムアウトの壁があり、さらに一時ファイルを置くディスク容量の壁があります。2GBのLightsailインスタンスでは、そもそも置き場所がありません。</p>
+
+        <p>採ったのは、<strong>ブラウザから直接S3へマルチパートアップロードする</strong>方式です。1パート64MBで分割して送ります。アプリサーバーは、アップロード先の署名だけを発行して、あとは関与しません。</p>
+
+        <p>この方式で必要になるのが2つあります。</p>
+
+        <h3>1. S3バケットのCORS設定</h3>
+        <p>ブラウザから直接PUTするので、当然クロスオリジンになります。許可オリジンに本番ドメインを入れておかないと、開発環境では通ったのに本番で全部弾かれる、という事故になります。今回はこの設定を artisan コマンド化して、<strong>ドメインを引数で渡すだけ</strong>にしました。</p>
+
+        <pre><code>php artisan infra:setup-bucket-cors --origin=https://(本番ドメイン)</code></pre>
+
+        <h3>2. IAMのマルチパート系アクション</h3>
+        <p>これが忘れやすい。<code>PutObject</code> だけでは足りません。マルチパートアップロードには専用のアクションが必要です。</p>
+
+        <pre><code>"Action": [
+  "s3:PutObject", "s3:GetObject", "s3:DeleteObject", "s3:ListBucket",
+  <span class="good">"s3:ListBucketMultipartUploads",</span>
+  <span class="good">"s3:ListMultipartUploadParts",</span>
+  <span class="good">"s3:AbortMultipartUpload"</span>
+]</code></pre>
+
+        <p>特に <code>AbortMultipartUpload</code> は、アップロードが途中で失敗したときの後始末に使われます。これが無いと、<strong>中断された不完全なパートがバケットに残り続けて課金されます</strong>。動くかどうかのテストでは気づきにくく、請求で気づくタイプの漏れです。</p>
+
+        <h2 id="ses"><span class="n">05</span>SESの本当の壁はサンドボックス</h2>
+
+        <p>メール送信に SES を使いました。設定自体は難しくありません。ドメインを登録して、Easy DKIM を有効にして、表示されるCNAMEをDNSに入れるだけです。</p>
+
+        <p>問題は、<strong>新規のSESアカウントは全てサンドボックス状態から始まる</strong>ことです。この状態には2つの制限があります。</p>
+
+        <ul>
+          <li><strong>検証済みのアドレス宛にしか送れない</strong>（送信先を1つずつ登録する必要がある）</li>
+          <li><strong>24時間あたり200通まで</strong></li>
+        </ul>
+
+        <p>本番運用にはまったく足りないので解除申請が必要なのですが、そこに至るまでに2つ事故りました。</p>
+
+        <h3>事故1：メール確認を有効にすると、誰も登録できなくなる</h3>
+        <p>新規登録時にメールアドレス確認を必須にする機能があります。これを本番で有効にすると、どうなるか。</p>
+        <p><strong>新規登録者のアドレスは、当然まだSESに検証登録されていません。</strong>つまり確認メールが送信拒否される。届かないので確認できず、確認できないので登録が完了しない。<strong>サンドボックス中は、この機能を有効にした瞬間に新規登録が完全に不能になります。</strong></p>
+        <p>対処は単純で、<strong>サンドボックス解除が承認されるまでメール確認機能は無効のままにする</strong>。承認後に有効化する、と決めておくだけです。ただ、これは事前に気づかないと「登録できません」という問い合わせで発覚します。</p>
+
+        <h3>事故2：1通の中に未検証アドレスが混ざると、全員に届かない</h3>
+        <p>問い合わせがあったとき、管理者全員に通知メールを送る実装にしていました。コードにするとこうです。</p>
+
+        <pre><code><span class="c">// 管理者全員を宛先にして「1通」送る</span>
+Mail::to($admins-&gt;all())-&gt;send(new ContactNotification($contact));</code></pre>
+
+        <p>これはSESのサンドボックス下で危険です。宛先リストの中に<strong>未検証のアドレスが1つでも含まれていると、その送信リクエスト全体が拒否されます</strong>。結果、同じ宛先リストに入っていた<strong>検証済みのアドレスにも届きません</strong>。</p>
+
+        <p>管理者を1人追加しただけで、それまで届いていた通知が全部止まる。原因が「追加した人」ではなく「送り方」にあるので、調べ始める場所を間違えやすい事故でした。</p>
+
+        <pre><code><span class="c">// 宛先ごとにループして送れば、失敗を1件に閉じ込められる</span>
+foreach ($admins as $admin) {
+    <span class="good">try</span> {
+        Mail::to($admin)-&gt;send(new ContactNotification($contact));
+    } <span class="good">catch</span> (\Throwable $e) {
+        report($e); <span class="c">// 1件失敗しても他は送る</span>
+    }
+}</code></pre>
+
+        <p>あわせて、<strong>問い合わせの本文は必ずDBに保存して管理画面から読めるように</strong>しました。メールはあくまで通知手段で、記録の本体ではない。この分離をしておくと、送信が失敗しても内容だけは確実に残ります。</p>
+
+        <h3>解除申請と、送信元ドメイン</h3>
+        <p>サンドボックス解除は、SESコンソールの Account dashboard から <strong>Request production access</strong> で申請します。用途（Transactional）、サイトURL、連絡先を書いて送ると、初回の応答は24時間以内に来ます。</p>
+        <p>あわせて注意したいのが送信元です。検証を通すだけなら Gmail などのアドレスでも送れてしまうのですが、<strong>受信側のDMARC判定で迷惑メール扱いになりやすい</strong>。本番ドメインが決まったら、ドメイン検証とDKIMを設定して、送信元をそのドメインのアドレスに揃えるべきです。</p>
+
+        <h2 id="iam"><span class="n">06</span>IAMは「構築用」と「運用用」に分ける</h2>
+
+        <p>AWSでいちばん危ないのは、<strong>作るための強い権限を、そのままアプリに持たせてしまう</strong>ことだと思っています。今回は最初から2系統に分けました。</p>
+
+        <div class="roles">
+          <div class="role">
+            <div class="role__name">構築用<span class="role__tools">一時的・管理者相当</span></div>
+            <div class="role__body">S3バケット、CloudFrontディストリビューション、Lightsailインスタンス、SESの設定を<strong>作るため</strong>の権限。構築が終わったら外す。</div>
+          </div>
+          <div class="role">
+            <div class="role__name">アプリ運用用<span class="role__tools">最小権限・.env に入れる</span></div>
+            <div class="role__body">対象バケットへのS3操作と、SESの送信のみ。<strong>これしか持っていなくてもアプリは動く</strong>ことを確認したうえで納品する。コンソールログインは付けない。</div>
+          </div>
+        </div>
+
+        <p>運用用のポリシーは、リソースを対象バケットに限定します。</p>
+
+        <pre><code>{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3VideoBucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject", "s3:GetObject", "s3:DeleteObject", "s3:ListBucket",
+        "s3:ListBucketMultipartUploads", "s3:ListMultipartUploadParts",
+        "s3:AbortMultipartUpload"
+      ],
+      "Resource": [
+        "arn:aws:s3:::(バケット名)",
+        "arn:aws:s3:::(バケット名)/*"
+      ]
+    },
+    {
+      "Sid": "SESSend",
+      "Effect": "Allow",
+      "Action": ["ses:SendEmail", "ses:SendRawEmail"],
+      "Resource": "*"
+    }
+  ]
+}</code></pre>
+
+        <p>そして納品前に必ずやることが2つあります。<strong>構築用の権限を外すこと</strong>と、<strong>アクセスキーをローテーションすること</strong>です。</p>
+
+        <p>特に後者。開発中、認証情報をチャットやメールで受け渡すことは現実にはあります。その瞬間に、そのキーは<strong>「漏れた可能性がある」ものとして扱うべき</strong>です。動いているから大丈夫、ではなく、納品のタイミングで機械的に作り直す。手順書のチェックリストに入れておかないと、まず忘れます。</p>
+
+        <h2 id="pitfalls"><span class="n">07</span>デプロイで踏んだ4つの落とし穴</h2>
+
+        <p>ここからは、AWSというより Ubuntu + nginx + PHP-FPM の運用で踏んだものです。どれも原因が分かれば一瞬ですが、分かるまでが長かった。</p>
+
+        <h3>1. <code>.env</code> の所有権が変わって、全ページ500</h3>
+        <p>これが最悪でした。サーバー上で <code>.env</code> をちょっと直そうと、<code>ubuntu</code> ユーザーで <code>sed -i</code> をかけた。それだけです。</p>
+        <p>ところが <code>sed -i</code> は<strong>ファイルを書き換えるのではなく、作り直します</strong>。結果、所有グループが <code>www-data</code> から <code>ubuntu</code> に変わる。<code>.env</code> のパーミッションは 640 なので、<strong>グループが変わった瞬間に php-fpm（www-data）が読めなくなります</strong>。</p>
+        <p>そこから先の壊れ方が分かりにくい。環境変数が全部NULLになり、設定が全部デフォルト値になり、<strong><code>DB_CONNECTION</code> が未設定なので SQLite にフォールバックし</strong>、存在しないSQLiteファイルを掴んで全ページ500。ログに出るのは <code>SQLiteConnector</code> のエラーです。MySQLの設定は1文字も変えていないのに。</p>
+
+        <pre><code><span class="c"># 切り分け：www-data から見て何が見えているか</span>
+sudo -u www-data php artisan about   <span class="c"># Database が sqlite なら確定</span>
+sudo -u www-data head -c1 .env       <span class="c"># そもそも読めるか</span>
+
+<span class="c"># 対策：.env を触ったら必ず所有権を戻す</span>
+<span class="good">sudo chown ubuntu:www-data .env && sudo chmod 640 .env</span></code></pre>
+
+        <h3>2. <code>reload</code> では設定が反映されない</h3>
+        <p>本番のPHPは <code>opcache.validate_timestamps=0</code> にしています。ファイルの更新時刻を毎回見に行かない設定で、性能のためには正しい。ただしこれは、<strong>ファイルを更新しても自動では反映されない</strong>ということでもあります。</p>
+        <p>コードを更新したときは <code>systemctl reload php8.4-fpm</code> で足ります。しかし<strong>環境変数やPHP側の設定を変えたときは、reload では反映されませんでした</strong>。<code>restart</code> が必要です。</p>
+        <p>厄介なのは、コマンドがエラーを出さないことです。「デプロイは成功した、でも変更が反映されていない」という、いちばん疑いにくい状態になります。</p>
+
+        <h3>3. <code>route:cache</code> の実行順序</h3>
+        <p>Laravel のキャッシュ再構築で、いきなり <code>route:cache</code> を叩くと失敗します。</p>
+        <pre><code><span class="bad">Argument #1 must be of type RouteCollection, CompiledRouteCollection given</span></code></pre>
+        <p>すでにキャッシュ済みの状態から再キャッシュできない、という制約です。<strong><code>clear</code> を全部先に流してから <code>cache</code> を流す</strong>のが正解でした。</p>
+        <pre><code>sudo -u www-data php artisan route:clear
+sudo -u www-data php artisan config:clear
+sudo -u www-data php artisan view:clear
+sudo -u www-data php artisan config:cache
+sudo -u www-data php artisan route:cache
+sudo -u www-data php artisan view:cache
+sudo systemctl reload php8.4-fpm</code></pre>
+        <p>そしてこれを <code>&amp;&amp;</code> で1行に繋いでいると、<strong>途中で失敗した時点で最後の reload まで実行されません</strong>。「エラーは見えたけど、まあ再実行すればいいか」で流すと、古いコードが動き続けます。落とし穴1と組み合わさると原因追及が一気に難しくなります。</p>
+
+        <h3>4. artisan を叩くユーザーを間違える</h3>
+        <p>同じ <code>php artisan</code> でも、<strong>コマンドによって実行すべきユーザーが違います</strong>。</p>
+        <ul>
+          <li><code>key:generate</code> は <strong><code>ubuntu</code> で実行</strong>。<code>.env</code> に書き込むため。<code>www-data</code> だと書けず、<code>APP_KEY</code> が空のまま500になります</li>
+          <li>キャッシュ系（<code>config:cache</code> など）は <strong><code>sudo -u www-data</code> で実行</strong>。<code>storage/logs</code> が www-data 所有なので、ubuntu で叩くと <code>Permission denied</code> になります</li>
+        </ul>
+        <p>「artisan は全部 sudo で」でも「全部 ubuntu で」でも駄目で、コマンドごとに使い分ける必要がありました。これは手順書に書いておかないと、次に触る人が確実に踏みます。</p>
+
+        <h2 id="handover"><span class="n">08</span>課金は誰が持つか — アカウントをまたぐ移管</h2>
+
+        <p>最後に、技術というより体制の話です。この案件では<strong>開発中は自社のAWSアカウント、本番はクライアントのAWSアカウント</strong>という形をとりました。</p>
+
+        <p>理由は単純で、<strong>AWSの課金と責任はサービスのオーナーが持つべきだから</strong>です。開発者のアカウントに本番環境を置いたままにすると、請求書は開発者に届き続けます。障害が起きたときの責任範囲も曖昧になる。何より、あとで移そうとしたときのほうが大変です。</p>
+
+        <p>そのため、本番公開の段階で<strong>クライアントのアカウント側に全部作り直しました</strong>。S3バケット、CloudFrontディストリビューション、Lightsailインスタンス、SESの設定。アプリ側は <code>.env</code> の値を差し替えるだけで動くようにしてあります。</p>
+
+        <p>この移管を安全にやるために、2つ用意しました。</p>
+
+        <ul>
+          <li><strong>手順書。</strong>IAMの準備からキーローテーションまで10手順を文書化し、<strong>各手順にAWS公式ドキュメントのURLと参照日を付けました</strong>。AWSはコンソールのUIが頻繁に変わるので、「どの版を見て書いたか」が残っていないと1年後に読めなくなります</li>
+          <li><strong>構築コマンド。</strong>CloudFront作成・CORS設定・Lightsail作成・SES状態確認を artisan コマンドにしてあります。手順書の中で「ここはこのコマンド」と書けるので、コンソールでの手作業を減らせます</li>
+        </ul>
+
+        <p>それと、手順書には<strong>「公式で裏が取れていない項目」を明記した節</strong>を作りました。署名URLの鍵をアプリがどの設定キーで読むか、certbot の正確な手順、IAMポリシーの過不足など。<strong>分かっていないことを分かっていないと書いておく</strong>ほうが、あとから読む人にとっては安全です。</p>
+
+        <div class="note">
+          <p class="note__label">公開前に必ず外すもの</p>
+          <p>検証中はサイト全体に Basic認証をかけ、<code>X-Robots-Tag: noindex</code> を付けていました。公開前にこれを外すのを忘れると、<strong>決済のWebhookが401で弾かれ</strong>、かつ検索エンジンにも載りません。手順書の公開前チェックリストに入れておくべき項目です。</p>
+        </div>
+
+        <h2 id="closing"><span class="n">09</span>小さく作って、境界だけ厳密に</h2>
+
+        <p>この構成を振り返って思うのは、<strong>お金をかけるべきところと、かけなくていいところがはっきり分かれていた</strong>ということです。</p>
+
+        <p>サーバーは月12ドルの1台で足ります。冗長化もオートスケールもしていません。一方で、<strong>「買った人だけが動画を取得できる」という境界の設計には手を抜きませんでした</strong>。バケットは非公開のまま、配信はCloudFront経由、動画は期限付きの署名URL、権限は最小限のIAM。ここだけは削れません。</p>
+
+        <p>逆の作り方——立派な分散構成を組んだうえで、バケットを公開してURLを知っている人だけに頼る——のほうが、費用も高く、危険です。<strong>構成の規模と、守るべき境界の厳密さは、別々に決めていい</strong>。それがいちばんの収穫でした。</p>
+
+      </div>
+
+      <div class="cta">
+        <p class="cta__title">AWS構成のご相談</p>
+        <p class="cta__body">規模に合った構成の選定から、S3・CloudFrontを使った配信設計、本番移管とセキュリティ整理まで対応しています。「どこまで作り込むべきか分からない」段階でのご相談も歓迎です。</p>
+        <div class="cta__links">
+          <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
+          <a class="cta__link" href="../../index.html#works">制作実績を見る <span class="arrow"></span></a>
+          <a class="cta__link" href="../index.html">Journal 一覧 <span class="arrow"></span></a>
+        </div>
+      </div>
+    </article>
+
+    <footer>
+      <span>© 2025 LiberaSpace</span>
+      <div>
+        <a href="../../index.html">LiberaSpace Studio</a>
+      </div>
+      <span>HOKKAIDO / REMOTE</span>
+    </footer>
+
+  </div>
+
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    function onScroll(){ if(window.scrollY > 40) nav.classList.add("scrolled"); else nav.classList.remove("scrolled"); }
+    window.addEventListener("scroll", onScroll, {passive:true});
+    onScroll();
+
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ io.observe(el); });
+    }else{
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ el.classList.add("in"); });
+    }
+  })();
+</script>
+</body>
+</html>
