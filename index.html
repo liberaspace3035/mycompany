@@ -250,6 +250,12 @@
   .work-title .wt-sub{ display:block; margin-top:10px; font-size:clamp(14px,1.4vw,18px); font-weight:500; font-style:italic; color:var(--muted); letter-spacing:0; line-height:1.4; white-space:nowrap; }
   @media(max-width:760px){ .work-title .wt-sub{ white-space:normal; } }
   .work-desc{ font-size:15px; line-height:1.8; color:var(--muted); max-width:440px; text-wrap:pretty; line-break:strict; word-break:auto-phrase; }
+  .works-all{ margin-top:clamp(28px,4vh,44px); }
+  .works-all__link{ display:inline-flex; align-items:center; gap:12px; font-size:12px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--ink); font-weight:600; text-decoration:none; }
+  .works-all__link .arrow{ width:30px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .works-all__link:hover .arrow{ width:48px; }
+
   .tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
   .tag{ font-size:11px; letter-spacing:0.08em; color:var(--muted); border:1px solid var(--hair); padding:5px 11px; border-radius:1px; }
 
@@ -401,14 +407,14 @@
         <span class="head__line"></span>
       </div>
 
-      <a class="work-feat" id="wmMain" href="https://architect-portfolio-production-3330.up.railway.app/" target="_blank" rel="noopener" data-reveal style="text-decoration:none;color:inherit;">
+      <a class="work-feat" id="wmMain" href="works/kogure/index.html" data-reveal style="text-decoration:none;color:inherit;">
         <div class="ph"><img id="wmImgA" class="wm-layer is-on" src="assets/works/kogure.webp" alt="木暮建築工房 KOGURE CRAFT HOUSE" loading="lazy"><img id="wmImgB" class="wm-layer" alt="" loading="lazy"></div>
         <div class="work-feat__fade" id="wmText">
           <div class="work-meta-row" id="wmMeta"><span>Portfolio</span><span>Web Design</span><span>2025</span></div>
           <h3 class="work-title" id="wmTitle">木暮建築工房<span class="wt-sub">住まいに、静かな品格を。</span></h3>
           <p class="work-desc" id="wmDesc">富山の工務店を想定した自主制作のブランドサイト（ポートフォリオ）。明朝ディスプレイと余白で「静けさ」を主役にし、施工写真が引き立つ構成に。情報設計からフロントエンド実装まで一貫して制作しました。</p>
           <div class="tags" id="wmTags"><span class="tag">Art Direction</span><span class="tag">UI Design</span><span class="tag">Typography</span><span class="tag">Frontend</span></div>
-          <span class="work-visit">Visit site <span class="arrow"></span></span>
+          <span class="work-visit">View project <span class="arrow"></span></span>
         </div>
       </a>
 
@@ -421,6 +427,10 @@
         <button class="thumb" data-i="5"><img src="assets/works/salon-production.webp" alt="" loading="lazy"><span class="thumb__label">きなり</span></button>
         <button class="thumb" data-i="6"><img src="assets/works/satellite.webp" alt="" loading="lazy"><span class="thumb__label">サテライト一級建築士事務所</span></button>
         <button class="thumb" data-i="7"><img src="assets/works/hinode.webp" alt="" loading="lazy"><span class="thumb__label">日の出事務所</span></button>
+      </div>
+
+      <div class="works-all" data-reveal>
+        <a class="works-all__link" href="works/index.html">実績をすべて見る <span class="arrow"></span></a>
       </div>
     </section>
 
@@ -846,35 +856,35 @@
   var onLayer = layerA;   // currently visible image layer
 
   var WORKS = [
-    { img:"assets/works/kogure.webp", url:"https://architect-portfolio-production-3330.up.railway.app/",
+    { img:"assets/works/kogure.webp", page:"works/kogure/index.html", url:"https://architect-portfolio-production-3330.up.railway.app/",
       meta:["Portfolio","Web Design","2025"], title:"木暮建築工房<span class='wt-sub'>住まいに、静かな品格を。</span>",
       desc:"富山の工務店を想定した自主制作のブランドサイト（ポートフォリオ）。明朝ディスプレイと余白で「静けさ」を主役にし、施工写真が引き立つ構成に。情報設計からフロントエンド実装まで一貫して制作しました。",
       tags:["Art Direction","UI Design","Typography","Frontend"] },
-    { img:"assets/works/jobpro.webp", url:"https://job-marketing.jp/",
+    { img:"assets/works/jobpro.webp", page:"works/jobpro/index.html", url:"https://job-marketing.jp/",
       meta:["LP / Marketing","2025"], title:"ジョブプロマーケ<span class='wt-sub'>採用特化SNS運用</span>",
       desc:"採用特化SNS運用サービスのランディングページ。訴求と導線を整理し、無料診断の申込へつなげる設計。",
       tags:["Landing Page","Copywriting","CV Design"] },
-    { img:"assets/works/umiharuka.webp", url:"https://www.soraharuka.kyoto.jp/villaumiharuka/",
+    { img:"assets/works/umiharuka.webp", page:"works/umiharuka/index.html", url:"https://www.soraharuka.kyoto.jp/villaumiharuka/",
       meta:["Web / Resort","2024"], title:"umiharuka<span class='wt-sub'>sea side villa</span>",
       desc:"京丹後のオーシャンビュー・プライベートヴィラ。写真を主役にした、上質な宿泊予約サイト。",
       tags:["Art Direction","Photography","Web Design"] },
-    { img:"assets/works/petitmarche.webp", url:"https://cafe-portfolio-production.up.railway.app/",
+    { img:"assets/works/petitmarche.webp", page:"works/petit-marche/index.html", url:"https://cafe-portfolio-production.up.railway.app/",
       meta:["Portfolio","Cafe","2024"], title:"Petit Marché<span class='wt-sub'>cafe &amp; bakery</span>",
       desc:"街角のカフェ＆ベーカリーを想定した自主制作サイト（ポートフォリオ）。手仕事の温度感を、分割レイアウトとセリフ書体で表現。",
       tags:["Branding","UI Design","Frontend"] },
-    { img:"assets/works/hangai-v2.webp", url:"https://www.hangai.co.jp/",
+    { img:"assets/works/hangai-v2.webp", page:"works/hangai/index.html", url:"https://www.hangai.co.jp/",
       meta:["Web / Corporate","2026"], title:"株式会社 半谷<span class='wt-sub'>農業施設工事</span>",
       desc:"十勝・帯広で創業50年の農業施設工事会社。雄大な畑の風景をそのまま主役に据え、事業内容・採用・工事情報までを整理したコーポレートサイトへリニューアル。",
       tags:["Corporate","Art Direction","Web Design","Renewal"] },
-    { img:"assets/works/salon-production.webp", url:"https://salon-production-6973.up.railway.app/",
+    { img:"assets/works/salon-production.webp", page:"works/kinari/index.html", url:"https://salon-production-6973.up.railway.app/",
       meta:["Portfolio","Beauty Salon","2025"], title:"きなり<span class='wt-sub'>素材のままで、美しい。</span>",
       desc:"ナチュラル志向の美容サロンを想定した自主制作サイト（ポートフォリオ）。霧がかった余白とセリフ書体で「素材のままの美しさ」を表現し、予約導線まで落とし込みました。",
       tags:["Branding","Art Direction","UI Design","Frontend"] },
-    { img:"assets/works/satellite.webp", url:"https://satellite-arch.com/",
+    { img:"assets/works/satellite.webp", page:"works/satellite/index.html", url:"https://satellite-arch.com/",
       meta:["Web / Architecture","2026"], title:"サテライト一級建築士事務所<span class='wt-sub'>自分らしくいられる豊かさを、建築で。</span>",
       desc:"静岡の一級建築士事務所。「建築作品」「業務の流れ」「プロフィール」の各ページをデザイン・コーディングで担当。図面や写真を淡く敷いた余白の多い構成で、設計への姿勢が静かに伝わる見せ方に。",
       tags:["Web Design","Typography","Frontend"] },
-    { img:"assets/works/hinode.webp", url:"https://hinode.okadacpa.com/",
+    { img:"assets/works/hinode.webp", page:"works/hinode/index.html", url:"https://hinode.okadacpa.com/",
       meta:["Web / Corporate","2026"], title:"日の出事務所<span class='wt-sub'>税理士法人 日本綜研</span>",
       desc:"東京・江戸川区の税理士法人。デザインをもとにコーディングを担当しました。サイドバー固定ナビと大きなキービジュアルの構成を、各ページで崩れないよう実装しています。",
       tags:["Coding","Frontend","Responsive"] }
@@ -886,7 +896,7 @@
 
   function setText(){
     var w = WORKS[i];
-    main.setAttribute("href", w.url);
+    main.setAttribute("href", w.page);
     metaEl.innerHTML  = w.meta.map(function(m){ return "<span>"+m+"</span>"; }).join("");
     titleEl.innerHTML = w.title;
     descEl.innerHTML  = w.desc;
