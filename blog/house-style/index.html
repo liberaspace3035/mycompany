@@ -38,6 +38,7 @@
     --paper:#fbfaf8;
     --panel:#f3f0ea;
     --gut:clamp(24px,6vw,120px);
+    --measure:720px;
     --wordmark-font:"Playfair Display", Georgia, "Times New Roman", serif;
     --sans:"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
     --jp-serif:"Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
@@ -105,7 +106,7 @@
   .nav__links a:hover{ color:var(--ink); }
   @media(max-width:560px){ .nav__links a:not(:last-child){ display:none; } }
 
-  .art{ max-width:760px; margin:0 auto; padding:clamp(124px,18vh,190px) var(--gut) 0; }
+  .art{ max-width:calc(var(--measure) + var(--gut) * 2); margin:0 auto; padding:clamp(124px,18vh,190px) var(--gut) 0; }
   .art__back{
     display:inline-flex; align-items:center; gap:10px; font-size:11px; letter-spacing:0.24em;
     text-transform:uppercase; color:var(--muted); text-decoration:none; font-weight:600; margin-bottom:36px;
@@ -135,7 +136,7 @@
   .toc a{ color:var(--ink); text-decoration:none; font-size:14px; line-height:1.7; border-bottom:1px solid transparent; transition:border-color .25s ease; }
   .toc a:hover{ border-bottom-color:var(--hair); }
 
-  .prose{ max-width:760px; margin:0 auto; padding:0 var(--gut) clamp(60px,10vh,120px); }
+  .prose{ max-width:calc(var(--measure) + var(--gut) * 2); margin:0 auto; padding:0 var(--gut) clamp(60px,10vh,120px); }
   .prose h2{
     font-family:var(--jp-serif); font-weight:600; font-size:clamp(21px,2.8vw,29px);
     line-height:1.55; letter-spacing:0.005em; margin:clamp(56px,8vh,86px) 0 22px; scroll-margin-top:90px;
@@ -174,7 +175,7 @@
   tbody td.name{ color:var(--ink); font-weight:700; white-space:nowrap; }
   .tblnote{ font-size:12.5px; line-height:1.85; color:var(--faint); margin-top:14px; text-wrap:pretty; }
 
-  .cta{ max-width:760px; margin:0 auto; padding:clamp(44px,7vh,72px) var(--gut) clamp(60px,10vh,110px); border-top:1px solid var(--hair); }
+  .cta{ max-width:calc(var(--measure) + var(--gut) * 2); margin:0 auto; padding:clamp(44px,7vh,72px) var(--gut) clamp(60px,10vh,110px); border-top:1px solid var(--hair); }
   .cta__title{ font-family:var(--jp-serif); font-weight:600; font-size:clamp(19px,2.4vw,26px); line-height:1.6; }
   .cta__body{ margin-top:16px; font-size:14.5px; line-height:2.0; color:var(--muted); text-wrap:pretty; }
   .cta__links{ display:flex; flex-wrap:wrap; gap:14px 30px; margin-top:28px; }
@@ -188,6 +189,11 @@
     font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
   footer a{ color:var(--muted); text-decoration:none; transition:color .25s ease; }
   footer a:hover{ color:var(--ink); }
+
+  @media(min-width:900px){
+    .prose p, .prose ul li{ font-size:16.5px; }
+    .prose h3{ font-size:17px; }
+  }
 
   [data-reveal]{ opacity:0; transform:translateY(18px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
   [data-reveal].in{ opacity:1; transform:none; }
