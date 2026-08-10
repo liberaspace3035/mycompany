@@ -27,7 +27,8 @@
     { "@type": "ListItem", "position": 5, "url": "/works/petit-marche/", "name": "Petit Marché" },
     { "@type": "ListItem", "position": 6, "url": "/works/kinari/", "name": "きなり" },
     { "@type": "ListItem", "position": 7, "url": "/works/hinode/", "name": "日の出事務所" },
-    { "@type": "ListItem", "position": 8, "url": "/works/jobpro/", "name": "ジョブプロマーケ" }
+    { "@type": "ListItem", "position": 8, "url": "/works/jobpro/", "name": "ジョブプロマーケ" },
+    { "@type": "ListItem", "position": 9, "url": "/works/yamanoue/", "name": "やまのうえ農園" }
   ]
 }
 </script>
@@ -170,6 +171,10 @@
   .card:hover{ opacity:0.66; }
   .card__thumb{ overflow:hidden; border:1px solid var(--hair); background:var(--panel); }
   .card__thumb img{ display:block; width:100%; height:auto; aspect-ratio:16/10; object-fit:cover; }
+  /* パソコンとスマートフォン、2つの画面を重ねて見せるサムネイル */
+  .card__thumb--duo{ position:relative; }
+  .card__thumb--duo .sp{ position:absolute; right:4.5%; bottom:0; width:23%; height:auto; aspect-ratio:auto;
+    object-fit:contain; object-position:bottom; border:1px solid var(--hair); box-shadow:0 8px 22px rgba(26,27,31,0.2); background:var(--panel); }
   .card__meta{ display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:18px; font-size:10.5px; letter-spacing:0.2em; text-transform:uppercase; color:var(--faint); font-weight:600; }
   .card__title{ margin-top:12px; font-family:var(--jp-serif); font-weight:600; font-size:clamp(19px,2.2vw,24px); line-height:1.5; }
   .card__sub{ display:block; margin-top:7px; font-size:13px; font-style:italic; font-weight:500; color:var(--muted); }
@@ -290,6 +295,20 @@
             <h2 class="card__title">ジョブプロマーケ<span class="card__sub">採用特化SNS運用</span></h2>
             <p class="card__role">いただいたデザインをもとにした制作（デザインは担当外）</p>
             <div class="tags"><span class="tag">制作</span><span class="tag">1ページ完結型</span><span class="tag">画面幅への対応</span></div>
+            <span class="card__more">詳細を見る <span class="arrow"></span></span>
+          </div>
+        </a>
+
+        <a class="card" href="yamanoue/index.html">
+          <div class="card__thumb card__thumb--duo">
+            <img src="../assets/works/yamanoue.webp" alt="やまのうえ農園のサイトをパソコンで表示した画面" loading="lazy" decoding="async">
+            <img class="sp" src="../assets/works/yamanoue-sp.webp" alt="やまのうえ農園のサイトをスマートフォンで表示した画面" loading="lazy" decoding="async">
+          </div>
+          <div class="card__body">
+            <div class="card__meta"><span>自主制作（ポートフォリオ）</span><span>2026</span></div>
+            <h2 class="card__title">やまのうえ農園<span class="card__sub">大地のめぐみを、まっすぐに。</span></h2>
+            <p class="card__role">コンセプトづくり・デザイン・制作まで全工程</p>
+            <div class="tags"><span class="tag">ブランディング</span><span class="tag">アートディレクション</span><span class="tag">デザイン</span><span class="tag">制作</span><span class="tag">画面幅への対応</span></div>
             <span class="card__more">詳細を見る <span class="arrow"></span></span>
           </div>
         </a>
