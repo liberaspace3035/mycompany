@@ -144,7 +144,6 @@
     transition:background .25s ease, color .25s ease !important;
   }
   .nav__cta:hover{ background:var(--ink); color:var(--paper) !important; }
-  @media(max-width:680px){ .nav__links a:not(.nav__cta){ display:none; } }
 
   /* ---------- hero ---------- */
   .hero{
@@ -355,6 +354,26 @@
     .hero__sub{ font-size:13.5px; line-height:1.7; }
     .contact__note{ max-width:100%; }
   }
+
+  /* ---------- スマートフォンのメニュー（ハンバーガー） ---------- */
+  .nav__toggle{ display:none; position:relative; z-index:2; width:44px; height:44px; margin-right:-10px; padding:0; border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .nav__toggle span{ position:absolute; left:11px; right:11px; height:1.5px; background:var(--ink); transition:transform .3s ease, top .3s ease; }
+  .nav__toggle span:nth-child(1){ top:18px; }
+  .nav__toggle span:nth-child(2){ top:25px; }
+  .nav.open .nav__toggle span:nth-child(1){ top:21.5px; transform:rotate(45deg); }
+  .nav.open .nav__toggle span:nth-child(2){ top:21.5px; transform:rotate(-45deg); }
+  @media(max-width:680px){
+    .nav__toggle{ display:block; }
+    .nav__brand{ position:relative; z-index:2; }
+    .nav.open{ background:var(--paper); backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; }
+    .nav .nav__links{ position:fixed; inset:0; z-index:1; flex-direction:column; align-items:flex-start; justify-content:center; gap:6px;
+      padding:96px var(--gut) 48px; background:var(--paper); overflow-y:auto;
+      opacity:0; visibility:hidden; transition:opacity .3s ease, visibility 0s linear .3s; }
+    .nav.open .nav__links{ opacity:1; visibility:visible; transition:opacity .3s ease; }
+    .nav .nav__links a, .nav .nav__links a.nav__cta{ display:block !important; padding:14px 0 !important; border:0; border-radius:0; background:none;
+      font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
+    .nav .nav__links a.nav__cta:hover{ background:none; }
+  }
 </style>
 </head>
 <body>
@@ -369,7 +388,8 @@
 
   <nav class="nav" id="nav">
     <a href="#top" class="nav__brand">LiberaSpace</a>
-    <div class="nav__links">
+    <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
+    <div class="nav__links" id="navLinks">
       <a href="works/index.html">Works</a>
       <a href="#service">Service</a>
       <a href="apps/index.html">Apps</a>
@@ -985,6 +1005,23 @@
       .observe(document.getElementById("works"));
   }else{ start(); }
 })();
+</script>
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    var btn = nav && nav.querySelector(".nav__toggle");
+    if(!btn) return;
+    function setOpen(open){
+      nav.classList.toggle("open", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      btn.setAttribute("aria-label", open ? "メニューを閉じる" : "メニューを開く");
+      document.documentElement.style.overflow = open ? "hidden" : "";
+    }
+    btn.addEventListener("click", function(){ setOpen(!nav.classList.contains("open")); });
+    nav.querySelectorAll(".nav__links a").forEach(function(a){ a.addEventListener("click", function(){ setOpen(false); }); });
+    document.addEventListener("keydown", function(e){ if(e.key === "Escape" && nav.classList.contains("open")){ setOpen(false); btn.focus(); } });
+    window.addEventListener("resize", function(){ if(window.innerWidth > 680 && nav.classList.contains("open")) setOpen(false); });
+  })();
 </script>
 </body>
 </html>
