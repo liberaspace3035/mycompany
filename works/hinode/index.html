@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>日の出事務所｜制作実績 | LiberaSpace</title>
-<meta name="description" content="日の出事務所｜コーポレートサイト / 制作担当。東京・江戸川区の税理士法人さまのサイトです。デザインはご支給いただき、それを実際に動くサイトにする制作を担当しました。左にメニューが固定され、右に大きな写真が広がる構成を、9つのページすべてで崩さずに組んでいます。">
+<meta name="description" content="日の出事務所｜コーポレートサイト / 制作担当。東京・江戸川区の税理士法人さまのサイトです。ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当しました。左にメニューを固定し、右に大きな写真が広がる構成を、9つのページすべてで崩さずに組んでいます。">
 <link rel="canonical" href="/works/hinode/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="日の出事務所｜制作実績 | LiberaSpace">
-<meta property="og:description" content="日の出事務所｜コーポレートサイト / 制作担当。東京・江戸川区の税理士法人さまのサイトです。デザインはご支給いただき、それを実際に動くサイトにする制作を担当しました。左にメニューが固定され、右に大きな写真が広がる構成を、9つのページすべてで崩さずに組んでいます。">
+<meta property="og:description" content="日の出事務所｜コーポレートサイト / 制作担当。東京・江戸川区の税理士法人さまのサイトです。ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当しました。左にメニューを固定し、右に大きな写真が広がる構成を、9つのページすべてで崩さずに組んでいます。">
 <meta property="og:site_name" content="LiberaSpace">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@
   "@context": "https://schema.org",
   "@type": "CreativeWork",
   "name": "日の出事務所",
-  "description": "東京・江戸川区の税理士法人さまのサイトです。デザインはご支給いただき、それを実際に動くサイトにする制作を担当しました。左にメニューが固定され、右に大きな写真が広がる構成を、9つのページすべてで崩さずに組んでいます。",
+  "description": "東京・江戸川区の税理士法人さまのサイトです。ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当しました。左にメニューを固定し、右に大きな写真が広がる構成を、9つのページすべてで崩さずに組んでいます。",
   "inLanguage": "ja",
   "dateCreated": "2026",
   "creator": { "@type": "Organization", "name": "LiberaSpace" },
@@ -173,6 +173,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -188,7 +196,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../../works/index.html">Works</a>
-      <a href="../../index.html#service">Service</a>
+      <a href="../../service/index.html">Service</a>
       <a href="../../blog/index.html">Journal</a>
       <a href="../../index.html#contact">Contact</a>
     </div>
@@ -203,7 +211,7 @@
           <span>2026</span>
         </div>
         <h1 class="head__title">日の出事務所<span class="head__sub">税理士法人 日本綜研</span></h1>
-        <p class="head__lead">東京・江戸川区の税理士法人さまのサイトです。<strong>デザインはご支給いただき、それを実際に動くサイトにする制作を担当</strong>しました。左にメニューが固定され、右に大きな写真が広がる構成を、9つのページすべてで崩さずに組んでいます。</p>
+        <p class="head__lead">東京・江戸川区の税理士法人さまのサイトです。<strong>ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当</strong>しました。左にメニューを固定し、右に大きな写真が広がる構成を、9つのページすべてで崩さずに組んでいます。</p>
         <div class="tags"><span class="tag">制作</span><span class="tag">画面幅への対応</span></div>
       </header>
 
@@ -226,15 +234,15 @@
 
       <div class="wrap prose">
         <h2><span class="n">01</span>担当した範囲について</h2>
-        <p>このお仕事で担当したのは<strong>制作の部分だけ</strong>です。デザインはご支給いただいたものを、崩さずに形にすることが求められました。自分の解釈を足すのではなく、いただいた意図を正確に再現することに寄せています。</p>
+        <p>このお仕事で担当したのは<strong>制作のみ</strong>です。求められたのは、ご支給いただいたデザインを崩さずに形にすること。自分の解釈は足さず、デザインの意図を正確に再現しています。</p>
 
-        <h2><span class="n">02</span>固定メニューは、下の階層で崩れやすい</h2>
-        <p>左にメニューが固定されている構成は、トップページだけ見ると単純に思えます。難しいのはその先で、ページごとに本文の長さも内容の種類も違うのに、<strong>メニューの見え方・スクロールしたときの動き・今どこを見ているかの表示を、全ページで同じに保つ</strong>必要があります。</p>
-        <p>英語と日本語を組み合わせた9つの項目、その下の電話番号まで含めて、どのページでも同じ位置・同じ動きになるように組みました。</p>
+        <h2><span class="n">02</span>固定メニューは、奥のページで崩れやすい</h2>
+        <p>左にメニューを固定する構成は、トップページだけ見れば単純に思えます。難しいのはその先です。ページごとに本文の長さも内容も違う中で、<strong>メニューの見え方、スクロールしたときの動き、今どこを見ているかの表示を、全ページで同じに保つ</strong>必要があります。</p>
+        <p>英語と日本語を組み合わせた9つの項目から、その下の電話番号まで、どのページでも同じ位置・同じ動きになるよう組みました。</p>
 
-        <h2><span class="n">03</span>画面が狭くなったときの畳み方</h2>
-        <p>左にメニューを固定する構成は、スマートフォンの幅ではそのまま成立しません。メニューを畳んだときに項目をどう見せるか、大きな写真の見せ場をどこまで残すかを、ページの内容に合わせて調整しています。</p>
-        <p>トップページの写真を並べたブロックのように、幅が変わると印象が大きく変わる部分は、崩れる手前の段階を細かく確認しました。</p>
+        <h2><span class="n">03</span>スマートフォンでの見せ方</h2>
+        <p>左にメニューを固定する構成は、スマートフォンの画面幅ではそのまま使えません。メニューを畳んだときの項目の見せ方や、大きな写真をどこまで残すかを、ページの内容に合わせて調整しました。</p>
+        <p>トップページの写真を並べた部分など、画面幅によって印象が大きく変わる箇所は、崩れる手前まで細かく確認しています。</p>
       </div>
 
       <div class="wrap visit">
@@ -257,7 +265,7 @@
 
       <div class="wrap cta">
         <p class="cta__title">同じような制作のご相談</p>
-        <p class="cta__body">ホームページ・1ページ完結型のサイト・お仕事用のアプリをつくっています。はじめての方も、つくり直したい方も、まずは気軽にご相談ください。</p>
+        <p class="cta__body">ホームページ、1ページ完結型のサイト、業務用のアプリを制作しています。初めての方も、リニューアルをお考えの方も、お気軽にご相談ください。</p>
         <div class="cta__links">
           <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
           <a class="cta__link" href="../index.html">実績一覧 <span class="arrow"></span></a>

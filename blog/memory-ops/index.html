@@ -222,6 +222,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -237,7 +245,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../../works/index.html">Works</a>
-      <a href="../../index.html#service">Service</a>
+      <a href="../../service/index.html">Service</a>
       <a href="../index.html">Journal</a>
       <a href="../../index.html#contact">Contact</a>
     </div>
@@ -257,7 +265,7 @@
 
         <h1 class="art__title">同じバグを二度踏ませない<br>— プロジェクト単位のメモリー運用</h1>
 
-        <p class="art__lead">AIとの作業でいちばんもったいないのは、<strong>前回半日かけて解決した問題を、次のセッションでまた半日かけて解決すること</strong>です。会話が終われば文脈は消えるので、放っておくと必ずそうなります。防ぐ方法はひとつしかなくて、その場で外に書き出しておくこと。LiberaSpace が実際にどう書き残しているかと、実際に残っている落とし穴の中身を公開します。</p>
+        <p class="art__lead">AIとの作業でいちばんもったいないのは、<strong>前回半日かけて解決した問題を、次のセッションでまた半日かけて解決すること</strong>です。会話が終われば文脈は消えるため、放っておけば必ずそうなります。防ぐ方法はひとつ、その場で外に書き出しておくことです。LiberaSpace での書き残し方と、実際に残している落とし穴の中身を公開します。</p>
 
         <nav class="toc" aria-label="目次">
           <p class="toc__label">Contents</p>
@@ -282,7 +290,7 @@
 
         <p>問題は、その会話が終わったときです。次に開いた新しいセッションは、<strong>まっさらな状態から始まります</strong>。プロジェクトのファイルは読めば分かりますが、「なぜこの実装になっているか」「前回どこでハマったか」は、コードのどこにも書かれていません。</p>
 
-        <p>結果として何が起きるか。前回と同じ落とし穴に、同じ手順で落ちます。しかも本人（AI）に自覚がないので、こちらが「それ前もやった」と気づくまで進みます。ここで失われる時間が、実際いちばん大きい。</p>
+        <p>結果として何が起きるか。前回と同じ落とし穴に、同じ手順で落ちます。しかも本人（AI）に自覚がないため、こちらが「それ、前もやった」と気づくまで進み続けます。実際、ここで失われる時間がいちばん大きい。</p>
 
         <div class="note">
           <p class="note__label">前提</p>
@@ -291,7 +299,7 @@
 
         <h2 id="format"><span class="n">02</span>1ファイル1事実で書く</h2>
 
-        <p>Claude Code にはプロジェクトごとのメモリー領域があります。LiberaSpace ではそこに、<strong>1ファイル＝1つの事実</strong>という粒度で書き残しています。長い議事録を1本作るのではなく、小さいメモをたくさん置く形です。</p>
+        <p>Claude Code にはプロジェクトごとのメモリー領域があります。LiberaSpace ではそこに、<strong>1ファイル＝1つの事実</strong>という粒度で書き残しています。長い議事録を1本作るのではなく、小さなメモをたくさん置きます。</p>
 
         <pre><code><span class="c">--- memory/vol-build-and-delegation-pitfalls.md</span>
 ---
@@ -303,13 +311,13 @@ metadata:
 
 （ここに本文）</code></pre>
 
-        <p>先頭に <code>description</code> を必ず1行入れているのが肝で、これは<strong>「この記憶は今の作業に関係あるか」を判断するためだけの行</strong>です。全部の本文を読まなくても、この1行で拾うか捨てるかが決まる。メモが増えても邪魔にならないのは、この仕組みのおかげです。</p>
+        <p>肝は、先頭に必ず入れる <code>description</code> の1行です。これは<strong>「この記憶は今の作業に関係あるか」を判断するためだけの行</strong>で、本文を全部読まなくても、この1行で拾うか捨てるかが決まります。メモが増えても邪魔にならないのは、この仕組みのおかげです。</p>
 
-        <p>そして、粒度を小さく保つ理由がもうひとつあります。<strong>1ファイル1事実にしておくと、間違っていたときに消せる</strong>。長い文書に埋め込んでしまうと、一部だけ古くなったときに手が出せなくなります。</p>
+        <p>粒度を小さく保つ理由は、もうひとつあります。<strong>1ファイル1事実にしておくと、間違っていたときに消せる</strong>。長い文書に埋め込んでしまうと、一部だけ古くなったときに手が出せなくなります。</p>
 
-        <p>種類も分けています。ユーザー本人のこと、仕事の進め方への指摘、プロジェクトの状況、外部リソースの場所。このうち<strong>「進め方への指摘」は必ず理由まで書く</strong>ようにしていて、これは理由が分からないルールが一番早く形骸化するからです。</p>
+        <p>種類も分けています。ユーザー本人のこと、仕事の進め方への指摘、プロジェクトの状況、外部リソースの場所。このうち<strong>「進め方への指摘」は必ず理由まで書きます</strong>。理由の分からないルールが、いちばん早く形骸化するからです。</p>
 
-        <p>以下、実際に残しているメモの中身をそのまま2つ紹介します。どちらも中小企業向けの業務アプリを作っている最中に踏んで、原因の特定に時間を持っていかれたものです。</p>
+        <p>以下、実際に残しているメモの中身をそのまま2つ紹介します。どちらも中小企業向けの業務アプリを作っている最中に踏んで、原因の特定に時間を取られたものです。</p>
 
         <h2 id="trap1"><span class="n">03</span>実例1：置換文字列で <code>$$</code> が消える</h2>
 
@@ -326,12 +334,12 @@ html.replace(tag, <span class="bad">`&lt;script&gt;${bundle}&lt;/script&gt;`</sp
 
         <p>コードの中に <code>const $$ = document.querySelectorAll...</code> のような変数があると、置換の過程で <code>$$</code> が <code>$</code> 1文字に化けます。以降その変数は未定義になり、構文エラーになる。DOM操作でよく使う書き方なので、まともに踏みました。</p>
 
-        <p>直し方は簡単で、<strong>置換文字列ではなく関数を渡す</strong>。関数の戻り値は特殊記号として解釈されません。</p>
+        <p>直し方は簡単です。<strong>置換文字列ではなく関数を渡す</strong>。関数の戻り値は特殊記号として解釈されません。</p>
 
         <pre><code><span class="c">// 動く — 関数で返せば $ は特殊記号にならない</span>
 html.replace(tag, <span class="good">() =&gt;</span> `&lt;script&gt;${bundle}&lt;/script&gt;`);</code></pre>
 
-        <p>知っていれば5分、知らなければ半日溶けるタイプの罠です。そして<strong>この手のものこそ、記憶しておく価値がある</strong>。設計判断とちがって毎回ゼロから考え直す意味がなく、ただ知っているかどうかで決まるからです。</p>
+        <p>知っていれば5分、知らなければ半日溶けるタイプの罠です。そして<strong>この種の罠こそ、記憶しておく価値がある</strong>。設計判断とちがって毎回ゼロから考え直す意味がなく、ただ知っているかどうかで決まるからです。</p>
 
         <h2 id="trap2"><span class="n">04</span>実例2：stopPropagation でボタンが死ぬ</h2>
 
@@ -346,9 +354,9 @@ html.replace(tag, <span class="good">() =&gt;</span> `&lt;script&gt;${bundle}&lt
   &lt;button data-act="delete"&gt;削除&lt;/button&gt;
 &lt;/td&gt;</code></pre>
 
-        <p>結果、ボタンが完全に無反応になりました。当然で、<strong>リスナーは <code>body</code> にしかいない</strong>のに、その手前で伝播を止めているからです。行の誤発火は防げましたが、ボタンのクリックも一緒に殺していました。</p>
+        <p>結果、ボタンが完全に無反応になりました。当然です。<strong>リスナーは <code>body</code> にしかいない</strong>のに、その手前で伝播を止めているのですから。行の誤発火は防げましたが、ボタンのクリックも一緒に殺していました。</p>
 
-        <p>そして正解は、<strong>何もしないこと</strong>でした。<code>closest()</code> は「いちばん近い」祖先を返します。ボタンをクリックすれば、<code>closest('[data-act]')</code> が最初に見つけるのはボタン自身であって、外側の <code>&lt;tr&gt;</code> ではない。行アクションとボタンアクションは、放っておけば自然に両立します。</p>
+        <p>正解は、<strong>何もしないこと</strong>でした。<code>closest()</code> は「いちばん近い」祖先を返します。ボタンをクリックすれば、<code>closest('[data-act]')</code> が最初に見つけるのはボタン自身であって、外側の <code>&lt;tr&gt;</code> ではない。行アクションとボタンアクションは、放っておけば自然に両立します。</p>
 
         <pre><code><span class="c">// これでいい。stopPropagation は不要</span>
 &lt;td&gt;
@@ -362,7 +370,7 @@ html.replace(tag, <span class="good">() =&gt;</span> `&lt;script&gt;${bundle}&lt
 
         <h2 id="what"><span class="n">05</span>何を書き、何を書かないか</h2>
 
-        <p>やってみて分かったのは、<strong>書きすぎると使われなくなる</strong>ということでした。メモが多すぎると、どれが今の作業に関係あるか判断できなくなり、結局全部無視されます。だから、書かないものを決めておくほうが重要です。</p>
+        <p>運用して分かったのは、<strong>書きすぎると使われなくなる</strong>ということでした。メモが多すぎると、どれが今の作業に関係あるか判断できなくなり、結局全部無視されます。だから、書かないものを決めておくほうが重要です。</p>
 
         <h3>書かないもの</h3>
         <ul>
@@ -385,9 +393,9 @@ html.replace(tag, <span class="good">() =&gt;</span> `&lt;script&gt;${bundle}&lt
 
         <h2 id="closing"><span class="n">06</span>資産になるのは、コードではなく判断</h2>
 
-        <p>この運用を続けて感じているのは、案件を重ねて溜まっていく本当の資産は、コードそのものではないということです。コードは案件ごとに違うし、フレームワークが変われば書き直します。</p>
+        <p>この運用を続けて感じるのは、案件を重ねて溜まる本当の資産はコードそのものではない、ということです。コードは案件ごとに違うし、フレームワークが変われば書き直します。</p>
 
-        <p>残るのは、<strong>「この方法は前に試して駄目だった」という判断のほう</strong>でした。それはコードには書かれていないし、書いた本人が忘れれば消えます。人間のチームだと、それが暗黙知としてなんとなく共有されていく。AIと組むなら、明示的にファイルにしておくしかない。</p>
+        <p>残るのは、<strong>「この方法は前に試して駄目だった」という判断のほう</strong>でした。それはコードには書かれていないし、書いた本人が忘れれば消えます。人間のチームなら、それは暗黙知としてなんとなく共有されていきます。AIと組むなら、明示的にファイルにしておくしかありません。</p>
 
         <p>手間に見えますが、実際にかかるのは1件あたり数分です。それで次の半日が守れるなら、悪くない取引だと思っています。</p>
 
@@ -395,7 +403,7 @@ html.replace(tag, <span class="good">() =&gt;</span> `&lt;script&gt;${bundle}&lt
 
       <div class="cta">
         <p class="cta__title">Webサイト・業務アプリのご相談</p>
-        <p class="cta__body">同じ失敗を繰り返さない体制で、Webサイトと業務アプリをつくっています。はじめての方も、つくり直したい方も、まずは気軽にご相談ください。</p>
+        <p class="cta__body">同じ失敗を繰り返さない体制で、Webサイトと業務アプリをつくっています。はじめての方も、つくり直したい方も、まずはお気軽にご相談ください。</p>
         <div class="cta__links">
           <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
           <a class="cta__link" href="../agent-harness/index.html">3エージェント制作ハーネス <span class="arrow"></span></a>

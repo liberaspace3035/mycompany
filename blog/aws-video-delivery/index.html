@@ -231,6 +231,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -246,7 +254,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../../works/index.html">Works</a>
-      <a href="../../index.html#service">Service</a>
+      <a href="../../service/index.html">Service</a>
       <a href="../index.html">Journal</a>
       <a href="../../index.html#contact">Contact</a>
     </div>
@@ -313,7 +321,7 @@
 
         <h2 id="lightsail"><span class="n">02</span>なぜ EC2 ではなく Lightsail か</h2>
 
-        <p>AWSでWebアプリを本番運用すると聞くと、EC2 + ALB + RDS あたりを思い浮かべると思います。今回それを選ばなかったのは、<strong>この案件の規模に対して過剰だったから</strong>です。</p>
+        <p>AWSでWebアプリを本番運用すると聞くと、EC2 + ALB + RDS あたりを思い浮かべる人が多いでしょう。今回それを選ばなかったのは、<strong>この案件の規模に対して過剰だったから</strong>です。</p>
 
         <p>想定される同時アクセスは多くありません。重い処理はすべてS3とCloudFrontに逃がしてあるので、アプリサーバーがやるのは購入処理と管理画面だけです。それに対してALBとRDSを立てると、月額がひと桁変わります。</p>
 
@@ -349,10 +357,10 @@
           </div>
         </div>
 
-        <p>ポイントは、<strong>S3バケットのパブリックアクセスブロックは最初から最後まで有効のまま</strong>だということです。バケットを公開して「URLを知っている人だけ」に頼るのは、URLが1度でも外に出た瞬間に終わります。実際、購入者が善意で共有リンクを貼ってしまうケースは十分ありえます。</p>
+        <p>ポイントは、<strong>S3バケットのパブリックアクセスブロックは最初から最後まで有効のまま</strong>だということです。バケットを公開して「URLを知っている人だけ」に頼る方式は、URLが一度でも外に出た瞬間に破綻します。実際、購入者が善意で共有リンクを貼ってしまうケースは十分ありえます。</p>
 
         <h3>署名URLの鍵はCloudFront側で作る</h3>
-        <p>CloudFront の署名URLには、専用の鍵ペアが必要です。手順としてはこうなります。</p>
+        <p>CloudFront の署名URLには、専用の鍵ペアが必要です。手順は次のとおりです。</p>
 
         <pre><code><span class="c"># 1. 鍵ペアを作る</span>
 openssl genrsa -out private_key.pem 2048
@@ -360,11 +368,11 @@ openssl rsa -pubout -in private_key.pem -out public_key.pem</code></pre>
 
         <p>作った公開鍵を CloudFront コンソールの <strong>Public keys</strong> に登録して公開鍵IDを受け取り、それを <strong>Key groups</strong> にまとめます。あとは動画配信用ビヘイビアの <strong>Restrict Viewer Access</strong> を Yes にして、そのキーグループを指定するだけです。秘密鍵はアプリ側が署名生成に使います。</p>
 
-        <p><strong>秘密鍵は絶対にリポジトリに入れない</strong>こと。これを入れてしまうと、鍵の意味が丸ごと消えます。</p>
+        <p><strong>秘密鍵は絶対にリポジトリに入れない</strong>こと。入れた時点で、鍵の意味がなくなります。</p>
 
         <div class="note">
           <p class="note__label">なぜ S3 の署名URLではなく CloudFront の署名URLか</p>
-          <p>S3にも署名URLの仕組みがありますが、それだとCDNを経由せず配信することになります。<strong>大きなファイルをエッジから配信しつつ、アクセス制御もかけたい</strong>——両立させたいなら CloudFront 側で署名する必要があります。20GBのファイルを毎回オリジンから引くのは、速度的にも転送コスト的にも避けたい構成です。</p>
+          <p>S3にも署名URLの仕組みはありますが、それではCDNを経由せずに配信することになります。<strong>大きなファイルをエッジから配信しつつ、アクセス制御もかけたい</strong>——両立させたいなら CloudFront 側で署名する必要があります。20GBのファイルを毎回オリジンから引くのは、速度的にも転送コスト的にも避けたい構成です。</p>
         </div>
 
         <h2 id="upload"><span class="n">04</span>20GBの動画を、ブラウザから直接S3へ</h2>
@@ -373,9 +381,9 @@ openssl rsa -pubout -in private_key.pem -out public_key.pem</code></pre>
 
         <p>20GBのファイルをPHPで受け取ろうとすると、まず <code>upload_max_filesize</code> と <code>post_max_size</code> の壁があり、次にリクエストタイムアウトの壁があり、さらに一時ファイルを置くディスク容量の壁があります。2GBのLightsailインスタンスでは、そもそも置き場所がありません。</p>
 
-        <p>採ったのは、<strong>ブラウザから直接S3へマルチパートアップロードする</strong>方式です。1パート64MBで分割して送ります。アプリサーバーは、アップロード先の署名だけを発行して、あとは関与しません。</p>
+        <p>採ったのは、<strong>ブラウザから直接S3へマルチパートアップロードする</strong>方式です。1パート64MBで分割して送ります。アプリサーバーはアップロード先の署名を発行するだけで、あとは関与しません。</p>
 
-        <p>この方式で必要になるのが2つあります。</p>
+        <p>この方式では、次の2つが必要になります。</p>
 
         <h3>1. S3バケットのCORS設定</h3>
         <p>ブラウザから直接PUTするので、当然クロスオリジンになります。許可オリジンに本番ドメインを入れておかないと、開発環境では通ったのに本番で全部弾かれる、という事故になります。今回はこの設定を artisan コマンド化して、<strong>ドメインを引数で渡すだけ</strong>にしました。</p>
@@ -405,12 +413,12 @@ openssl rsa -pubout -in private_key.pem -out public_key.pem</code></pre>
           <li><strong>24時間あたり200通まで</strong></li>
         </ul>
 
-        <p>本番運用にはまったく足りないので解除申請が必要なのですが、そこに至るまでに2つ事故りました。</p>
+        <p>本番運用にはまったく足りないため、解除申請が必要です。ただ、そこに至るまでに事故が2つ起きました。</p>
 
         <h3>事故1：メール確認を有効にすると、誰も登録できなくなる</h3>
         <p>新規登録時にメールアドレス確認を必須にする機能があります。これを本番で有効にすると、どうなるか。</p>
         <p><strong>新規登録者のアドレスは、当然まだSESに検証登録されていません。</strong>つまり確認メールが送信拒否される。届かないので確認できず、確認できないので登録が完了しない。<strong>サンドボックス中は、この機能を有効にした瞬間に新規登録が完全に不能になります。</strong></p>
-        <p>対処は単純で、<strong>サンドボックス解除が承認されるまでメール確認機能は無効のままにする</strong>。承認後に有効化する、と決めておくだけです。ただ、これは事前に気づかないと「登録できません」という問い合わせで発覚します。</p>
+        <p>対処は単純です。<strong>サンドボックス解除が承認されるまでメール確認機能は無効のままにする</strong>。承認後に有効化する、と決めておくだけです。ただ、事前に気づかなければ「登録できません」という問い合わせで初めて発覚します。</p>
 
         <h3>事故2：1通の中に未検証アドレスが混ざると、全員に届かない</h3>
         <p>問い合わせがあったとき、管理者全員に通知メールを送る実装にしていました。コードにするとこうです。</p>
@@ -435,7 +443,7 @@ foreach ($admins as $admin) {
 
         <h3>解除申請と、送信元ドメイン</h3>
         <p>サンドボックス解除は、SESコンソールの Account dashboard から <strong>Request production access</strong> で申請します。用途（Transactional）、サイトURL、連絡先を書いて送ると、初回の応答は24時間以内に来ます。</p>
-        <p>あわせて注意したいのが送信元です。検証を通すだけなら Gmail などのアドレスでも送れてしまうのですが、<strong>受信側のDMARC判定で迷惑メール扱いになりやすい</strong>。本番ドメインが決まったら、ドメイン検証とDKIMを設定して、送信元をそのドメインのアドレスに揃えるべきです。</p>
+        <p>もうひとつ注意したいのが送信元です。検証さえ通せば Gmail などのアドレスでも送れてしまいますが、<strong>受信側のDMARC判定で迷惑メール扱いになりやすい</strong>。本番ドメインが決まったら、ドメイン検証とDKIMを設定して、送信元をそのドメインのアドレスに揃えるべきです。</p>
 
         <h2 id="iam"><span class="n">06</span>IAMは「構築用」と「運用用」に分ける</h2>
 
@@ -481,14 +489,14 @@ foreach ($admins as $admin) {
 
         <p>そして納品前に必ずやることが2つあります。<strong>構築用の権限を外すこと</strong>と、<strong>アクセスキーをローテーションすること</strong>です。</p>
 
-        <p>特に後者。開発中、認証情報をチャットやメールで受け渡すことは現実にはあります。その瞬間に、そのキーは<strong>「漏れた可能性がある」ものとして扱うべき</strong>です。動いているから大丈夫、ではなく、納品のタイミングで機械的に作り直す。手順書のチェックリストに入れておかないと、まず忘れます。</p>
+        <p>特に後者が重要です。開発中に認証情報をチャットやメールで受け渡すことは、現実にはあります。その瞬間に、そのキーは<strong>「漏れた可能性がある」ものとして扱うべき</strong>です。動いているから大丈夫、ではなく、納品のタイミングで機械的に作り直す。手順書のチェックリストに入れておかないと、まず忘れます。</p>
 
         <h2 id="pitfalls"><span class="n">07</span>デプロイで踏んだ4つの落とし穴</h2>
 
         <p>ここからは、AWSというより Ubuntu + nginx + PHP-FPM の運用で踏んだものです。どれも原因が分かれば一瞬ですが、分かるまでが長かった。</p>
 
         <h3>1. <code>.env</code> の所有権が変わって、全ページ500</h3>
-        <p>これが最悪でした。サーバー上で <code>.env</code> をちょっと直そうと、<code>ubuntu</code> ユーザーで <code>sed -i</code> をかけた。それだけです。</p>
+        <p>これが最悪でした。サーバー上で <code>.env</code> を少し直そうと、<code>ubuntu</code> ユーザーで <code>sed -i</code> をかけた。それだけです。</p>
         <p>ところが <code>sed -i</code> は<strong>ファイルを書き換えるのではなく、作り直します</strong>。結果、所有グループが <code>www-data</code> から <code>ubuntu</code> に変わる。<code>.env</code> のパーミッションは 640 なので、<strong>グループが変わった瞬間に php-fpm（www-data）が読めなくなります</strong>。</p>
         <p>そこから先の壊れ方が分かりにくい。環境変数が全部NULLになり、設定が全部デフォルト値になり、<strong><code>DB_CONNECTION</code> が未設定なので SQLite にフォールバックし</strong>、存在しないSQLiteファイルを掴んで全ページ500。ログに出るのは <code>SQLiteConnector</code> のエラーです。MySQLの設定は1文字も変えていないのに。</p>
 
@@ -515,7 +523,7 @@ sudo -u www-data php artisan config:cache
 sudo -u www-data php artisan route:cache
 sudo -u www-data php artisan view:cache
 sudo systemctl reload php8.4-fpm</code></pre>
-        <p>そしてこれを <code>&amp;&amp;</code> で1行に繋いでいると、<strong>途中で失敗した時点で最後の reload まで実行されません</strong>。「エラーは見えたけど、まあ再実行すればいいか」で流すと、古いコードが動き続けます。落とし穴1と組み合わさると原因追及が一気に難しくなります。</p>
+        <p>また、これを <code>&amp;&amp;</code> で1行に繋いでいると、<strong>途中で失敗した時点で最後の reload まで実行されません</strong>。「エラーは見えたけど、まあ再実行すればいいか」で流すと、古いコードが動き続けます。落とし穴1と組み合わさると原因追及が一気に難しくなります。</p>
 
         <h3>4. artisan を叩くユーザーを間違える</h3>
         <p>同じ <code>php artisan</code> でも、<strong>コマンドによって実行すべきユーザーが違います</strong>。</p>
@@ -527,20 +535,20 @@ sudo systemctl reload php8.4-fpm</code></pre>
 
         <h2 id="handover"><span class="n">08</span>課金は誰が持つか — アカウントをまたぐ移管</h2>
 
-        <p>最後に、技術というより体制の話です。この案件では<strong>開発中は自社のAWSアカウント、本番はクライアントのAWSアカウント</strong>という形をとりました。</p>
+        <p>最後に、技術というより体制の話です。この案件では<strong>開発中は自社のAWSアカウント、本番はクライアントのAWSアカウント</strong>という体制をとりました。</p>
 
         <p>理由は単純で、<strong>AWSの課金と責任はサービスのオーナーが持つべきだから</strong>です。開発者のアカウントに本番環境を置いたままにすると、請求書は開発者に届き続けます。障害が起きたときの責任範囲も曖昧になる。何より、あとで移そうとしたときのほうが大変です。</p>
 
         <p>そのため、本番公開の段階で<strong>クライアントのアカウント側に全部作り直しました</strong>。S3バケット、CloudFrontディストリビューション、Lightsailインスタンス、SESの設定。アプリ側は <code>.env</code> の値を差し替えるだけで動くようにしてあります。</p>
 
-        <p>この移管を安全にやるために、2つ用意しました。</p>
+        <p>移管を安全に進めるため、2つのものを用意しました。</p>
 
         <ul>
           <li><strong>手順書。</strong>IAMの準備からキーローテーションまで10手順を文書化し、<strong>各手順にAWS公式ドキュメントのURLと参照日を付けました</strong>。AWSはコンソールのUIが頻繁に変わるので、「どの版を見て書いたか」が残っていないと1年後に読めなくなります</li>
           <li><strong>構築コマンド。</strong>CloudFront作成・CORS設定・Lightsail作成・SES状態確認を artisan コマンドにしてあります。手順書の中で「ここはこのコマンド」と書けるので、コンソールでの手作業を減らせます</li>
         </ul>
 
-        <p>それと、手順書には<strong>「公式で裏が取れていない項目」を明記した節</strong>を作りました。署名URLの鍵をアプリがどの設定キーで読むか、certbot の正確な手順、IAMポリシーの過不足など。<strong>分かっていないことを分かっていないと書いておく</strong>ほうが、あとから読む人にとっては安全です。</p>
+        <p>また、手順書には<strong>「公式で裏が取れていない項目」を明記した節</strong>を作りました。署名URLの鍵をアプリがどの設定キーで読むか、certbot の正確な手順、IAMポリシーの過不足など。<strong>分かっていないことを分かっていないと書いておく</strong>ほうが、あとから読む人にとっては安全です。</p>
 
         <div class="note">
           <p class="note__label">公開前に必ず外すもの</p>

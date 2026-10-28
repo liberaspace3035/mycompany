@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apps — LiberaSpace</title>
-<meta name="description" content="LiberaSpace のアプリ開発。日々の仕事を静かに支える、端末内で完結するiPhoneアプリをつくっています。">
+<meta name="description" content="LiberaSpace のアプリ開発。日々の仕事を静かに支える、端末内で完結するiPhoneアプリを開発しています。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
@@ -158,6 +158,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -173,7 +181,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../works/index.html">Works</a>
-      <a href="../index.html#service">Service</a>
+      <a href="../service/index.html">Service</a>
       <a href="../blog/index.html">Journal</a>
       <a href="../index.html#contact">Contact</a>
     </div>
@@ -185,7 +193,7 @@
     <header class="intro">
       <p class="intro__eyebrow">LiberaSpace — Apps</p>
       <h1 class="intro__title">Apps<em>.</em></h1>
-      <p class="intro__lead">日々の仕事を、静かに支える道具を。LiberaSpace では、データを端末の中だけで完結させる、軽くて気持ちのいい iPhone アプリをつくっています。</p>
+      <p class="intro__lead">日々の仕事を、静かに支える道具を。データを端末の中だけで扱う、軽快で使い心地のよい iPhone アプリを開発しています。</p>
     </header>
 
     <!-- ===================== APP LIST ===================== -->
@@ -203,7 +211,7 @@
           <div>
             <h2 class="app__name">SideHub<span class="app__tagline">副業の「案件・お金・レシート」を、ひとつに。</span></h2>
             <div class="app__meta-row"><span>iPhone App</span><span>Productivity</span><span>2026</span></div>
-            <p class="app__desc">副業・フリーランスの案件、収入・経費、レシートを端末内だけで管理するiPhoneアプリ。アカウント登録は不要で、入力したデータはすべて端末の中にのみ保存されます。レシートはカメラで読み取り、金額・日付の解析まで端末内で完結。確定申告前のあわてた集計を、日々の数タップに置き換えます。</p>
+            <p class="app__desc">副業・フリーランスの案件、収支、レシートをまとめて管理するiPhoneアプリ。アカウント登録は不要で、データはすべて端末内にのみ保存されます。レシートはカメラで読み取り、金額・日付の解析まで端末内で完結。確定申告前の慌ただしい集計を、日々の数タップに置き換えます。</p>
             <div class="app__tags">
               <span class="tag">案件管理</span>
               <span class="tag">収支記録</span>

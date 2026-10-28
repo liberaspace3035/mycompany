@@ -161,6 +161,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>

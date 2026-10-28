@@ -245,10 +245,10 @@
   .work-feat .ph{ aspect-ratio:3360/1852; }
   .work-feat:hover .ph img.is-on{ transform:scale(1.03); filter:saturate(1); }
   .work-meta-row{ display:flex; gap:18px; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:16px; }
-  .work-title{ font-family:var(--wordmark-font); font-weight:700; font-size:clamp(28px,3.4vw,50px); line-height:1.08; letter-spacing:-0.01em; margin-bottom:16px; text-wrap:balance; line-break:strict; word-break:auto-phrase; }
+  .work-title{ font-family:var(--wordmark-font); font-weight:700; font-size:clamp(28px,3.4vw,50px); line-height:1.08; letter-spacing:-0.01em; margin-bottom:16px; text-wrap:balance; line-break:strict; }
   .work-title .wt-sub{ display:block; margin-top:10px; font-size:clamp(14px,1.4vw,18px); font-weight:500; font-style:italic; color:var(--muted); letter-spacing:0; line-height:1.4; white-space:nowrap; }
   @media(max-width:760px){ .work-title .wt-sub{ white-space:normal; } }
-  .work-desc{ font-size:15px; line-height:1.8; color:var(--muted); max-width:440px; text-wrap:pretty; line-break:strict; word-break:auto-phrase; }
+  .work-desc{ font-size:15px; line-height:1.8; color:var(--muted); max-width:440px; text-wrap:pretty; line-break:strict; }
   .works-all{ margin-top:clamp(28px,4vh,44px); }
   .works-all__link{ display:inline-flex; align-items:center; gap:12px; font-size:12px; letter-spacing:0.2em;
     text-transform:uppercase; color:var(--ink); font-weight:600; text-decoration:none; }
@@ -302,7 +302,7 @@
   .svc-no{ font-size:12px; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; padding-top:6px; }
   .svc-name{ font-family:var(--wordmark-font); font-weight:600; font-size:clamp(22px,2.6vw,34px); letter-spacing:-0.01em; }
   .svc-name span{ display:block; font-family:var(--sans); font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-top:8px; }
-  .svc-desc{ font-size:14px; line-height:1.8; color:var(--muted); text-wrap:pretty; line-break:strict; word-break:auto-phrase; }
+  .svc-desc{ font-size:14px; line-height:1.8; color:var(--muted); text-wrap:pretty; line-break:strict; }
   .svc-price{ text-align:right; }
   .svc-price .from{ font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--faint); display:block; margin-bottom:6px; }
   .svc-price .amt{ font-family:var(--wordmark-font); font-weight:600; font-size:clamp(20px,2.2vw,28px); font-variant-numeric:tabular-nums; }
@@ -317,7 +317,7 @@
   .about{ display:block; }
   .about__lead{ font-family:var(--wordmark-font); font-style:italic; font-weight:500; font-size:clamp(26px,3.6vw,52px); line-height:1.24; letter-spacing:-0.015em; margin-bottom:clamp(48px,7vh,84px); line-break:strict; }
   .about__row{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:clamp(40px,7vw,110px); align-items:start; padding-top:clamp(36px,5vh,56px); border-top:1px solid var(--hair); }
-  .about__p{ font-size:15px; line-height:1.95; color:var(--muted); margin-bottom:20px; max-width:520px; text-wrap:pretty; line-break:strict; word-break:auto-phrase; }
+  .about__p{ font-size:15px; line-height:1.95; color:var(--muted); margin-bottom:20px; max-width:520px; text-wrap:pretty; line-break:strict; }
   .about__p:last-of-type{ margin-bottom:0; }
   .about__meta{ display:grid; grid-template-columns:1fr 1fr; gap:28px 48px; }
   .about__meta h4{ font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:16px; }
@@ -333,7 +333,7 @@
   .contact__row{ display:flex; flex-wrap:wrap; gap:clamp(20px,4vw,60px); align-items:flex-end; margin-top:clamp(40px,6vh,72px); }
   .contact__mail{ font-family:var(--wordmark-font); font-size:clamp(20px,2.4vw,30px); color:var(--ink); text-decoration:none; border-bottom:1px solid var(--hair); padding-bottom:4px; transition:border-color .3s ease; }
   .contact__mail:hover{ border-color:var(--ink); }
-  .contact__note{ font-size:13px; line-height:1.7; color:var(--muted); max-width:none; white-space:nowrap; line-break:strict; word-break:auto-phrase; }
+  .contact__note{ font-size:13px; line-height:1.7; color:var(--muted); max-width:none; white-space:nowrap; line-break:strict; }
 
   footer{ padding:36px var(--gut); border-top:1px solid var(--hair); display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
     font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
@@ -374,6 +374,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -394,7 +402,7 @@
       <a href="#service">Service</a>
       <a href="apps/index.html">Apps</a>
       <a href="blog/index.html">Journal</a>
-      <a href="#about">About</a>
+      <a href="about/index.html">About</a>
       <a href="#contact" class="nav__cta">Contact</a>
     </div>
   </nav>
@@ -410,8 +418,8 @@
 
       <div class="hero__copy">
         <p class="hero__name">リベラスペース</p>
-        <p class="hero__tagline">あなたの想いを、ちゃんと伝わるかたちに。</p>
-        <p class="hero__sub">はじめての方も、つくり直したい方も。まずは気軽にご相談ください。</p>
+        <p class="hero__tagline">あなたの想いを、確かに伝わるかたちに。</p>
+        <p class="hero__sub">新しくつくる方も、リニューアルをお考えの方も。まずはお気軽にご相談ください。</p>
       </div>
 
       <div class="hero__meta" id="meta">SYS / STABLE · 00.00</div>
@@ -427,28 +435,28 @@
         <span class="head__line"></span>
       </div>
 
-      <a class="work-feat" id="wmMain" href="works/kogure/index.html" data-reveal style="text-decoration:none;color:inherit;">
-        <div class="ph"><img id="wmImgA" class="wm-layer is-on" src="assets/works/kogure.webp" alt="木暮建築工房 KOGURE CRAFT HOUSE" loading="lazy"><img id="wmImgB" class="wm-layer" alt="" loading="lazy"></div>
+      <a class="work-feat" id="wmMain" href="works/hangai/index.html" data-reveal style="text-decoration:none;color:inherit;">
+        <div class="ph"><img id="wmImgA" class="wm-layer is-on" src="assets/works/hangai-v2.webp" alt="株式会社 半谷 コーポレートサイト" loading="lazy"><img id="wmImgB" class="wm-layer" alt="" loading="lazy"></div>
         <div class="work-feat__fade" id="wmText">
-          <div class="work-meta-row" id="wmMeta"><span>Portfolio</span><span>Web Design</span><span>2025</span></div>
-          <h3 class="work-title" id="wmTitle">木暮建築工房<span class="wt-sub">住まいに、静かな品格を。</span></h3>
-          <p class="work-desc" id="wmDesc">富山の工務店を想定した自主制作のブランドサイト（ポートフォリオ）。明朝ディスプレイと余白で「静けさ」を主役にし、施工写真が引き立つ構成に。情報設計からフロントエンド実装まで一貫して制作しました。</p>
-          <div class="tags" id="wmTags"><span class="tag">Art Direction</span><span class="tag">UI Design</span><span class="tag">Typography</span><span class="tag">Frontend</span></div>
+          <div class="work-meta-row" id="wmMeta"><span>Web / Corporate</span><span>2026</span></div>
+          <h3 class="work-title" id="wmTitle">株式会社 半谷<span class="wt-sub">農業施設工事</span></h3>
+          <p class="work-desc" id="wmDesc">十勝・帯広で創業50年を迎える農業施設工事会社のサイトを全面リニューアル。畑の風景を主役に据え、事業内容から採用、工事情報までを整理しました。</p>
+          <div class="tags" id="wmTags"><span class="tag">Corporate</span><span class="tag">Art Direction</span><span class="tag">Web Design</span><span class="tag">Renewal</span></div>
           <span class="work-visit">View project <span class="arrow"></span></span>
         </div>
       </a>
 
       <div class="slider__thumbs" id="sliderThumbs" data-reveal>
-        <button class="thumb active" data-i="0"><img src="assets/works/kogure.webp" alt="" loading="lazy"><span class="thumb__label">木暮建築工房</span></button>
-        <button class="thumb" data-i="1"><img src="assets/works/jobpro.webp" alt="" loading="lazy"><span class="thumb__label">ジョブプロマーケ</span></button>
-        <button class="thumb" data-i="2"><img src="assets/works/umiharuka.webp" alt="" loading="lazy"><span class="thumb__label">umiharuka</span></button>
-        <button class="thumb" data-i="3"><img src="assets/works/petitmarche.webp" alt="" loading="lazy"><span class="thumb__label">Petit Marché</span></button>
-        <button class="thumb" data-i="4"><img src="assets/works/hangai-v2.webp" alt="" loading="lazy"><span class="thumb__label">株式会社 半谷</span></button>
-        <button class="thumb" data-i="5"><img src="assets/works/salon-production.webp" alt="" loading="lazy"><span class="thumb__label">きなり</span></button>
-        <button class="thumb" data-i="6"><img src="assets/works/satellite.webp" alt="" loading="lazy"><span class="thumb__label">サテライト一級建築士事務所</span></button>
-        <button class="thumb" data-i="7"><img src="assets/works/hinode.webp" alt="" loading="lazy"><span class="thumb__label">日の出事務所</span></button>
+        <button class="thumb active" data-i="0"><img src="assets/works/hangai-v2.webp" alt="" loading="lazy"><span class="thumb__label">株式会社 半谷</span></button>
+        <button class="thumb" data-i="1"><img src="assets/works/hangul.webp" alt="" loading="lazy"><span class="thumb__label">ハングル語学堂</span></button>
+        <button class="thumb" data-i="2"><img src="assets/works/satellite.webp" alt="" loading="lazy"><span class="thumb__label">サテライト一級建築士事務所</span></button>
+        <button class="thumb" data-i="3"><img src="assets/works/hinode.webp" alt="" loading="lazy"><span class="thumb__label">日の出事務所</span></button>
+        <button class="thumb" data-i="4"><img src="assets/works/jobpro.webp" alt="" loading="lazy"><span class="thumb__label">ジョブプロマーケ</span></button>
+        <button class="thumb" data-i="5"><img src="assets/works/umiharuka.webp" alt="" loading="lazy"><span class="thumb__label">umiharuka</span></button>
+        <button class="thumb" data-i="6"><img src="assets/works/kogure.webp" alt="" loading="lazy"><span class="thumb__label">木暮建築工房</span></button>
+        <button class="thumb" data-i="7"><img src="assets/works/salon-production.webp" alt="" loading="lazy"><span class="thumb__label">きなり</span></button>
         <button class="thumb" data-i="8"><img src="assets/works/yamanoue.webp" alt="" loading="lazy"><span class="thumb__label">やまのうえ農園</span></button>
-        <button class="thumb" data-i="9"><img src="assets/works/hangul.webp" alt="" loading="lazy"><span class="thumb__label">ハングル語学堂</span></button>
+        <button class="thumb" data-i="9"><img src="assets/works/petitmarche.webp" alt="" loading="lazy"><span class="thumb__label">Petit Marché</span></button>
       </div>
 
       <div class="works-all" data-reveal>
@@ -469,27 +477,37 @@
         <div class="svc-row">
           <div class="svc-no">S—01</div>
           <div class="svc-name">Web Production<span>ホームページ制作</span></div>
-          <div class="svc-desc">AIで原稿・デザイン・コードを高速生成。打ち合わせは「赤入れだけ」でOK、本業の手を止めずに完成する丸ごとお任せのサイト制作。初期＋月額型・月額のみ型・単発買い切り型から選べます。</div>
-          <div class="svc-price"><span class="from">From</span><span class="amt">¥180,000</span></div>
+          <div class="svc-desc">原稿から公開まで、一括でお任せいただけます。下書きはAIを活用してこちらで用意するため、お客様は確認と修正指示だけ。ページ数や機能に応じて、個別にお見積りします。</div>
+          <div class="svc-price"><span class="from">From</span><span class="amt">¥150,000</span></div>
         </div>
         <div class="svc-row">
           <div class="svc-no">S—02</div>
           <div class="svc-name">Maintenance<span>保守・運用</span></div>
-          <div class="svc-desc">更新監視・バックアップ・WordPress更新から軽微な修正まで。「作って終わりにしない」AI伴走型で、公開後も安心して任せられる運用体制を整えます。</div>
+          <div class="svc-desc">定期点検、バックアップ、WordPressの更新から軽微な修正まで。公開後のサイトを止めず、古びさせない運用体制を整えます。</div>
           <div class="svc-price"><span class="from">From</span><span class="amt">¥8,000<small>/月</small></span></div>
         </div>
         <div class="svc-row">
           <div class="svc-no">S—03</div>
           <div class="svc-name">SEO &amp; AIO<span>SEO・AI引用対策</span></div>
-          <div class="svc-desc">ChatGPTやPerplexityなどの生成AIに自社情報を載せる新領域（AIO／LLMO）対策。SEOを土台に、AI回答での引用獲得まで月次でモニタリングします。</div>
-          <div class="svc-price"><span class="from">From</span><span class="amt">¥30,000<small>/月</small></span></div>
+          <div class="svc-desc">検索対策に加え、ChatGPTなどのAIに尋ねられたとき、御社の名前が挙がるための対策を行います。AIでの紹介状況を毎月確認し、改善を重ねます。</div>
+          <div class="svc-price"><span class="from">From</span><span class="amt">¥10,000<small>/月</small></span></div>
         </div>
         <div class="svc-row">
           <div class="svc-no">S—04</div>
           <div class="svc-name">AI Diagnosis<span>無料AI診断</span></div>
-          <div class="svc-desc">30分であなたの会社をAIに質問し、「今どう見られているか」を画面共有で可視化。現状診断から施策ロードマップまで、まずは無料相談から始められます。</div>
+          <div class="svc-desc">御社についてAIに質問し、現在どのように紹介されているかを30分で確認します。結果は画面共有でご覧いただき、改善の方向性までお伝えします。</div>
           <div class="svc-price"><span class="from">初回</span><span class="amt">¥0</span></div>
         </div>
+        <div class="svc-row">
+          <div class="svc-no">S—05</div>
+          <div class="svc-name">AI Support<span>AI導入サポート</span></div>
+          <div class="svc-desc">社内のルールと仕組みを整え、定型業務をAIに任せられる状態まで、12か月かけて伴走します。初回相談（90分）は無料、最初の3か月はお試し期間です。</div>
+          <div class="svc-price"><span class="from">お試し</span><span class="amt">¥10,000<small>/月</small></span></div>
+        </div>
+      </div>
+
+      <div class="works-all" data-reveal>
+        <a class="works-all__link" href="service/index.html">料金・ご依頼の流れ・よくあるご質問 <span class="arrow"></span></a>
       </div>
     </section>
 
@@ -503,16 +521,17 @@
       </div>
 
       <div class="about">
-        <p class="about__lead" data-reveal>作って終わり、にしない。<br>育てつづけるWEBパートナー。</p>
+        <p class="about__lead" data-reveal>作って終わりにしない。<br>育て続けるWebパートナー。</p>
         <div class="about__row">
           <div data-reveal>
-            <p class="about__p">ホームページ制作から保守・運用、SEO・AI引用対策までをひとりで一気通貫。AI（Claude等）を制作・分析・運用の中核に据え、相場の半分以下の工数で、相場どおりの品質をお届けします。</p>
-            <p class="about__p">大切にしているのは「速い・安い」より「安心して丸ごと任せられること」。専門用語は使わず、紙と対面で。難しいことは全部こちらで引き受け、作って終わりにしないWEBパートナーであり続けます。</p>
+            <p class="about__p">リベラスペース代表、加藤 真生。札幌を拠点に、ホームページ制作から保守・運用、SEO・AI引用対策、社内へのAI導入までを一貫して担当しています。制作・分析・運用の中核にAIを据え、相場の半分以下の工数で、相場どおりの品質を実現します。</p>
+            <p class="about__p">大切にしているのは、速さや安さよりも「安心して任せられること」。専門用語は使わず、わかる言葉でご説明します。難しいことはすべて引き受け、公開後も伴走し続けます。</p>
+            <a class="works-all__link" href="about/index.html" style="margin-top:28px">プロフィールと事業者情報 <span class="arrow"></span></a>
           </div>
           <div class="about__meta" data-reveal style="transition-delay:.1s">
             <div>
               <h4>Services</h4>
-              <ul><li>ホームページ制作</li><li>保守・運用代行</li><li>SEO・AIO対策</li><li>補助金活用の提案</li></ul>
+              <ul><li>ホームページ制作</li><li>保守・運用代行</li><li>SEO・AIO対策</li><li>AI導入サポート</li><li>補助金活用の提案</li></ul>
             </div>
             <div>
               <h4>AI &amp; Tools</h4>
@@ -536,7 +555,7 @@
 
       <div class="contact__row" data-reveal>
         <a href="mailto:liberaspace3035@gmail.com" class="contact__mail">liberaspace3035@gmail.com</a>
-        <p class="contact__note">お問い合わせは数日以内に返信します。新規のご相談は現在受付中です。</p>
+        <p class="contact__note">新規のご相談を受け付けています。お問い合わせには、数日以内にご返信します。</p>
       </div>
     </section>
 
@@ -878,46 +897,46 @@
   var onLayer = layerA;   // currently visible image layer
 
   var WORKS = [
-    { img:"assets/works/kogure.webp", page:"works/kogure/index.html", url:"https://architect-portfolio-production-3330.up.railway.app/",
-      meta:["Portfolio","Web Design","2025"], title:"木暮建築工房<span class='wt-sub'>住まいに、静かな品格を。</span>",
-      desc:"富山の工務店を想定した自主制作のブランドサイト（ポートフォリオ）。明朝ディスプレイと余白で「静けさ」を主役にし、施工写真が引き立つ構成に。情報設計からフロントエンド実装まで一貫して制作しました。",
-      tags:["Art Direction","UI Design","Typography","Frontend"] },
-    { img:"assets/works/jobpro.webp", page:"works/jobpro/index.html", url:"https://job-marketing.jp/",
-      meta:["LP / Coding","2025"], title:"ジョブプロマーケ<span class='wt-sub'>採用特化SNS運用</span>",
-      desc:"採用特化SNS運用サービスのランディングページ。支給デザインをもとにコーディングを担当しました。縦に長い11ブロック構成を、画面幅が変わっても崩れないよう実装しています。",
-      tags:["Coding","Frontend","Responsive"] },
-    { img:"assets/works/umiharuka.webp", page:"works/umiharuka/index.html", url:"https://www.soraharuka.kyoto.jp/villaumiharuka/",
-      meta:["Web / Coding","2024"], title:"umiharuka<span class='wt-sub'>sea side villa</span>",
-      desc:"京丹後のオーシャンビュー・プライベートヴィラ。支給デザインをもとにコーディングを担当しました。大きな写真を多用する構成を、画質を保ちながら軽く表示できるよう実装しています。",
-      tags:["Coding","Frontend","Responsive"] },
-    { img:"assets/works/petitmarche.webp", page:"works/petit-marche/index.html", url:"https://cafe-portfolio-production.up.railway.app/",
-      meta:["Portfolio","Cafe","2024"], title:"Petit Marché<span class='wt-sub'>cafe &amp; bakery</span>",
-      desc:"街角のカフェ＆ベーカリーを想定した自主制作サイト（ポートフォリオ）。手仕事の温度感を、分割レイアウトとセリフ書体で表現。",
-      tags:["Branding","UI Design","Frontend"] },
     { img:"assets/works/hangai-v2.webp", page:"works/hangai/index.html", url:"https://www.hangai.co.jp/",
       meta:["Web / Corporate","2026"], title:"株式会社 半谷<span class='wt-sub'>農業施設工事</span>",
-      desc:"十勝・帯広で創業50年の農業施設工事会社。雄大な畑の風景をそのまま主役に据え、事業内容・採用・工事情報までを整理したコーポレートサイトへリニューアル。",
+      desc:"十勝・帯広で創業50年を迎える農業施設工事会社のサイトを全面リニューアル。畑の風景を主役に据え、事業内容から採用、工事情報までを整理しました。",
       tags:["Corporate","Art Direction","Web Design","Renewal"] },
-    { img:"assets/works/salon-production.webp", page:"works/kinari/index.html", url:"https://salon-production-6973.up.railway.app/",
-      meta:["Portfolio","Beauty Salon","2025"], title:"きなり<span class='wt-sub'>素材のままで、美しい。</span>",
-      desc:"ナチュラル志向の美容サロンを想定した自主制作サイト（ポートフォリオ）。霧がかった余白とセリフ書体で「素材のままの美しさ」を表現し、予約導線まで落とし込みました。",
-      tags:["Branding","Art Direction","UI Design","Frontend"] },
+    { img:"assets/works/hangul.webp", page:"works/hangul/index.html", url:"https://www.chingu-net.com/",
+      meta:["Web / School","2026"], title:"ハングル語学堂<span class='wt-sub'>韓国語教室</span>",
+      desc:"名古屋・金山を本校に9校を展開する韓国語教室。入会金・月会費が不要であることを最初の画面で伝え、教室選びから無料体験の申し込みまで迷わず進める構成にしました。",
+      tags:["Web Design","Renewal","Form","Responsive"] },
     { img:"assets/works/satellite.webp", page:"works/satellite/index.html", url:"https://satellite-arch.com/",
       meta:["Web / Architecture","2026"], title:"サテライト一級建築士事務所<span class='wt-sub'>自分らしくいられる豊かさを、建築で。</span>",
-      desc:"静岡の一級建築士事務所。「建築作品」「業務の流れ」「プロフィール」の各ページをデザイン・コーディングで担当。図面や写真を淡く敷いた余白の多い構成で、設計への姿勢が静かに伝わる見せ方に。",
+      desc:"静岡の一級建築士事務所。「建築作品」「業務の流れ」「プロフィール」の3ページを、デザインから制作まで担当しました。図面や写真を淡く敷いた余白のある構成で、設計への姿勢を伝えます。",
       tags:["Web Design","Typography","Frontend"] },
     { img:"assets/works/hinode.webp", page:"works/hinode/index.html", url:"https://hinode.okadacpa.com/",
       meta:["Web / Corporate","2026"], title:"日の出事務所<span class='wt-sub'>税理士法人 日本綜研</span>",
-      desc:"東京・江戸川区の税理士法人。デザインをもとにコーディングを担当しました。サイドバー固定ナビと大きなキービジュアルの構成を、各ページで崩れないよう実装しています。",
+      desc:"東京・江戸川区の税理士法人。ご支給のデザインをもとに制作を担当しました。左に固定したメニューと大きな写真の構成を、全9ページで崩さず仕上げています。",
       tags:["Coding","Frontend","Responsive"] },
+    { img:"assets/works/jobpro.webp", page:"works/jobpro/index.html", url:"https://job-marketing.jp/",
+      meta:["LP / Coding","2025"], title:"ジョブプロマーケ<span class='wt-sub'>採用特化SNS運用</span>",
+      desc:"採用に特化したSNS運用サービスの、1ページ完結型サイト。ご支給のデザインをもとに制作を担当し、縦に長い11の区画を、どの画面幅でも崩れないよう仕上げました。",
+      tags:["Coding","Frontend","Responsive"] },
+    { img:"assets/works/umiharuka.webp", page:"works/umiharuka/index.html", url:"https://www.soraharuka.kyoto.jp/villaumiharuka/",
+      meta:["Web / Coding","2024"], title:"umiharuka<span class='wt-sub'>sea side villa</span>",
+      desc:"京丹後の、海を望む一棟貸しヴィラ。ご支給のデザインをもとに制作を担当しました。大きな写真を多用しながら、画質を保ったまま軽快に表示されるよう仕上げています。",
+      tags:["Coding","Frontend","Responsive"] },
+    { img:"assets/works/kogure.webp", page:"works/kogure/index.html", url:"https://architect-portfolio-production-3330.up.railway.app/",
+      meta:["Portfolio","Web Design","2025"], title:"木暮建築工房<span class='wt-sub'>住まいに、静かな品格を。</span>",
+      desc:"富山の工務店を想定した自主制作のサイト。明朝体と余白で静けさを演出し、施工写真が引き立つ構成にしました。設計から実装まで一貫して制作しています。",
+      tags:["Art Direction","UI Design","Typography","Frontend"] },
+    { img:"assets/works/salon-production.webp", page:"works/kinari/index.html", url:"https://salon-production-6973.up.railway.app/",
+      meta:["Portfolio","Beauty Salon","2025"], title:"きなり<span class='wt-sub'>素材のままで、美しい。</span>",
+      desc:"自然志向の美容サロンを想定した自主制作のサイト。霧がかったような余白で「素材のままの美しさ」を表現し、ご予約までの流れも設計しました。",
+      tags:["Branding","Art Direction","UI Design","Frontend"] },
     { img:"assets/works/yamanoue.webp", page:"works/yamanoue/index.html", url:"https://yamanoue-farm-production.up.railway.app/",
       meta:["Portfolio","Farm","2026"], title:"やまのうえ農園<span class='wt-sub'>大地のめぐみを、まっすぐに。</span>",
-      desc:"北海道十勝の農園を想定した自主制作サイト（ポートフォリオ）。畑の写真を曲線で切り抜いて風景のまま見せつつ、縦書きのコピーはスマートフォンでは横書きへ切り替え。野菜の販売とお問い合わせまでを一本の流れに。",
+      desc:"北海道十勝の農園を想定した自主制作のサイト。産地の風景で興味を引き、野菜選びから注文・お問い合わせまでを迷わず進める流れにまとめました。",
       tags:["Branding","Art Direction","UI Design","Responsive"] },
-    { img:"assets/works/hangul.webp", page:"works/hangul/index.html", url:"https://www.chingu-net.com/",
-      meta:["Web / School","2026"], title:"ハングル語学堂<span class='wt-sub'>韓国語教室</span>",
-      desc:"名古屋・金山を本校に全9校を開く韓国語教室。入会金や月会費がかからないことを最初の画面で伝え、スマートフォンでは体験申込とLINEのボタンを常に表示。教室選びから無料体験の申し込みまでを一本の流れに。",
-      tags:["Web Design","Renewal","Form","Responsive"] }
+    { img:"assets/works/petitmarche.webp", page:"works/petit-marche/index.html", url:"https://cafe-portfolio-production.up.railway.app/",
+      meta:["Portfolio","Cafe","2024"], title:"Petit Marché<span class='wt-sub'>cafe &amp; bakery</span>",
+      desc:"街角のカフェ＆ベーカリーを想定した自主制作のサイト。手仕事の温かさを、画面を二分する構成と書体で表現しました。",
+      tags:["Branding","UI Design","Frontend"] }
   ];
 
   var n = WORKS.length, i = 0, timer = null, busy = false;

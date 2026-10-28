@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>木暮建築工房｜制作実績 | LiberaSpace</title>
-<meta name="description" content="木暮建築工房｜自主制作（ポートフォリオ）。富山の工務店を想定してつくった、自主制作のサイトです。実際のご依頼では試しにくい「決めごとを先に全部固めてからつくる」やり方を最後まで通すことを目的に、9ページのサイトをまるごと1本つくりました。">
+<meta name="description" content="木暮建築工房｜自主制作（ポートフォリオ）。富山の工務店を想定した自主制作のサイトです。実際のご依頼では試しにくい「決めごとを先にすべて固めてから作る」進め方を、9ページのサイト1本で最後まで通しました。">
 <link rel="canonical" href="/works/kogure/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="木暮建築工房｜制作実績 | LiberaSpace">
-<meta property="og:description" content="木暮建築工房｜自主制作（ポートフォリオ）。富山の工務店を想定してつくった、自主制作のサイトです。実際のご依頼では試しにくい「決めごとを先に全部固めてからつくる」やり方を最後まで通すことを目的に、9ページのサイトをまるごと1本つくりました。">
+<meta property="og:description" content="木暮建築工房｜自主制作（ポートフォリオ）。富山の工務店を想定した自主制作のサイトです。実際のご依頼では試しにくい「決めごとを先にすべて固めてから作る」進め方を、9ページのサイト1本で最後まで通しました。">
 <meta property="og:site_name" content="LiberaSpace">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@
   "@context": "https://schema.org",
   "@type": "CreativeWork",
   "name": "木暮建築工房",
-  "description": "富山の工務店を想定してつくった、自主制作のサイトです。実際のご依頼では試しにくい「決めごとを先に全部固めてからつくる」やり方を最後まで通すことを目的に、9ページのサイトをまるごと1本つくりました。",
+  "description": "富山の工務店を想定した自主制作のサイトです。実際のご依頼では試しにくい「決めごとを先にすべて固めてから作る」進め方を、9ページのサイト1本で最後まで通しました。",
   "inLanguage": "ja",
   "dateCreated": "2025",
   "creator": { "@type": "Organization", "name": "LiberaSpace" },
@@ -173,6 +173,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -188,7 +196,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../../works/index.html">Works</a>
-      <a href="../../index.html#service">Service</a>
+      <a href="../../service/index.html">Service</a>
       <a href="../../blog/index.html">Journal</a>
       <a href="../../index.html#contact">Contact</a>
     </div>
@@ -203,7 +211,7 @@
           <span>2025</span>
         </div>
         <h1 class="head__title">木暮建築工房<span class="head__sub">住まいに、静かな品格を。</span></h1>
-        <p class="head__lead">富山の工務店を想定してつくった、自主制作のサイトです。実際のご依頼では試しにくい<strong>「決めごとを先に全部固めてからつくる」やり方</strong>を最後まで通すことを目的に、9ページのサイトをまるごと1本つくりました。</p>
+        <p class="head__lead">富山の工務店を想定した自主制作のサイトです。実際のご依頼では試しにくい<strong>「決めごとを先にすべて固めてから作る」進め方</strong>を、9ページのサイト1本で最後まで通しました。</p>
         <div class="tags"><span class="tag">アートディレクション</span><span class="tag">デザイン</span><span class="tag">文字組み</span><span class="tag">立体表現</span></div>
       </header>
 
@@ -224,20 +232,20 @@
       </dl>
 
       <div class="wrap prose">
-        <h2><span class="n">01</span>なぜ9ページもつくったか</h2>
-        <p>見た目を見てもらうだけなら、1ページでも足ります。それでもページ数を増やしたのは、<strong>ページをまたいだときに世界観と分かりやすさが保てるか</strong>を確かめたかったからです。トップだけ整っていて、下の階層に行くと雑になる——実際のサイトでよく起きることを、自分でやらずに済むか試しています。</p>
-        <p>会社名・代表者・設立年・所在地といった架空の設定を先に決めきって、全ページで同じ値を使う形にしました。実際のご依頼でいえば、最初のヒアリングにあたる部分です。</p>
+        <h2><span class="n">01</span>なぜ9ページ作ったのか</h2>
+        <p>デザインを見せるだけなら、1ページで足ります。あえてページを増やしたのは、<strong>どのページに移っても、雰囲気と分かりやすさが保てるか</strong>を確かめるためです。トップページだけ整っていて、奥のページほど雑になる。実際のサイトでよく起きるこの問題を避けられるか、試しました。</p>
+        <p>会社名・代表者・設立年・所在地といった架空の設定は最初に決めきり、全ページで同じ内容を使っています。実際のご依頼でいえば、最初のヒアリングにあたる工程です。</p>
 
         <h2><span class="n">02</span>色は抑えて、動きは大きく</h2>
-        <p>色は、生成り・砂・墨・木肌といった自然な色みだけに絞り、鮮やかな色は使っていません。日本語の明朝体を主役にして、英語の小見出しを添える組み方で、落ち着いた印象にまとめています。</p>
-        <p>そのぶん、動きのほうは思いきり大きくしました。<strong>色と装飾は徹底して抑え、動きだけで見ごたえをつくる</strong>という切り分けです。両方を派手にすると、途端に品がなくなります。</p>
+        <p>色は生成り・砂・墨・木肌といった自然な色みに絞り、鮮やかな色は使っていません。文字は明朝体を主役に英語の小見出しを添え、落ち着いた印象にまとめました。</p>
+        <p>その分、動きは大胆にしました。<strong>色と装飾は徹底して抑え、見ごたえは動きでつくる</strong>という役割分担です。両方を派手にすると、品が失われるためです。</p>
 
-        <h2><span class="n">03</span>動かない環境でも、ちゃんと読める</h2>
-        <p>立体的な表現や画面全体を使った演出も入れていますが、これらは<strong>「あれば良いもの」として後から重ねる形</strong>にしています。動きを減らす設定にしている方、うまく表示できない環境の方でも、サイトの中身と申し込み機能はすべて問題なく使えます。</p>
-        <p>演出が前提になっていると、動かなかったときに何も読めないサイトになってしまいます。派手なものを載せるほど、載らなかったときの備えが必要だという考え方です。</p>
+        <h2><span class="n">03</span>演出が動かなくても、中身はすべて使える</h2>
+        <p>立体的な表現や画面全体を使った演出は、<strong>「あれば良いもの」として後から重ねる形</strong>にしています。動きを減らす設定にしている方や、演出がうまく表示されない環境の方でも、サイトの内容と申し込み機能はすべて使えます。</p>
+        <p>演出を前提にすると、動かなかったときに何も読めないサイトになります。派手な演出を入れるほど、表示されなかったときの備えが欠かせません。</p>
 
-        <h2><span class="n">04</span>つくり方そのものを試した</h2>
-        <p>この制作では、必要な機能と「どうなっていれば完成か」を先に書き出し、7つの区切りに分けて積み上げました。区切りごとに実際のブラウザで動かして確認し、その記録も残しています。</p>
+        <h2><span class="n">04</span>進め方そのものを検証する</h2>
+        <p>この制作では、必要な機能と「どうなっていれば完成か」を先に書き出し、7つの工程に分けて積み上げました。工程ごとに実際の画面で動作を確かめ、その記録も残しています。</p>
         <p>この進め方については、<a href="../../blog/agent-harness/index.html">Journalの記事</a>で詳しく書いています。</p>
       </div>
 
@@ -261,7 +269,7 @@
 
       <div class="wrap cta">
         <p class="cta__title">同じような制作のご相談</p>
-        <p class="cta__body">ホームページ・1ページ完結型のサイト・お仕事用のアプリをつくっています。はじめての方も、つくり直したい方も、まずは気軽にご相談ください。</p>
+        <p class="cta__body">ホームページ、1ページ完結型のサイト、業務用のアプリを制作しています。初めての方も、リニューアルをお考えの方も、お気軽にご相談ください。</p>
         <div class="cta__links">
           <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
           <a class="cta__link" href="../index.html">実績一覧 <span class="arrow"></span></a>

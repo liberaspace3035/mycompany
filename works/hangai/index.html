@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>株式会社 半谷｜制作実績 | LiberaSpace</title>
-<meta name="description" content="株式会社 半谷｜コーポレートサイト / リニューアル。北海道・十勝／帯広で農業用の建物を手がける建築会社さまのサイトを、全面的につくり直しました。牛舎や倉庫といった、写真だけでは伝わりにくい題材です。飾りを足すのではなく文字の形と余白で品よく見せる方向にまとめ、あわせて検索から見つけてもらうための土台と、人を採るた">
+<meta name="description" content="株式会社 半谷｜コーポレートサイト / リニューアル。北海道・十勝／帯広で農業用の建物を手がける建築会社さまのサイトを、全面的にリニューアルしました。牛舎や倉庫は、写真だけでは伝わりにくい題材です。飾りを足すのではなく、文字の形と余白で品よく見せる方向にまとめました。あわせて、検索から見つけてもらうための土台と、採用の仕組みも整えています。">
 <link rel="canonical" href="/works/hangai/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="株式会社 半谷｜制作実績 | LiberaSpace">
-<meta property="og:description" content="株式会社 半谷｜コーポレートサイト / リニューアル。北海道・十勝／帯広で農業用の建物を手がける建築会社さまのサイトを、全面的につくり直しました。牛舎や倉庫といった、写真だけでは伝わりにくい題材です。飾りを足すのではなく文字の形と余白で品よく見せる方向にまとめ、あわせて検索から見つけてもらうための土台と、人を採るた">
+<meta property="og:description" content="株式会社 半谷｜コーポレートサイト / リニューアル。北海道・十勝／帯広で農業用の建物を手がける建築会社さまのサイトを、全面的にリニューアルしました。牛舎や倉庫は、写真だけでは伝わりにくい題材です。飾りを足すのではなく、文字の形と余白で品よく見せる方向にまとめました。あわせて、検索から見つけてもらうための土台と、採用の仕組みも整えています。">
 <meta property="og:site_name" content="LiberaSpace">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@
   "@context": "https://schema.org",
   "@type": "CreativeWork",
   "name": "株式会社 半谷",
-  "description": "北海道・十勝／帯広で農業用の建物を手がける建築会社さまのサイトを、全面的につくり直しました。牛舎や倉庫といった、写真だけでは伝わりにくい題材です。飾りを足すのではなく文字の形と余白で品よく見せる方向にまとめ、あわせて検索から見つけてもらうための土台と、人を採るための仕組みも整えています。",
+  "description": "北海道・十勝／帯広で農業用の建物を手がける建築会社さまのサイトを、全面的にリニューアルしました。牛舎や倉庫は、写真だけでは伝わりにくい題材です。飾りを足すのではなく、文字の形と余白で品よく見せる方向にまとめました。あわせて、検索から見つけてもらうための土台と、採用の仕組みも整えています。",
   "inLanguage": "ja",
   "dateCreated": "2026",
   "creator": { "@type": "Organization", "name": "LiberaSpace" },
@@ -173,6 +173,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -188,7 +196,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../../works/index.html">Works</a>
-      <a href="../../index.html#service">Service</a>
+      <a href="../../service/index.html">Service</a>
       <a href="../../blog/index.html">Journal</a>
       <a href="../../index.html#contact">Contact</a>
     </div>
@@ -203,7 +211,7 @@
           <span>2026</span>
         </div>
         <h1 class="head__title">株式会社 半谷<span class="head__sub">農業施設工事</span></h1>
-        <p class="head__lead">北海道・十勝／帯広で農業用の建物を手がける建築会社さまのサイトを、全面的につくり直しました。牛舎や倉庫といった、写真だけでは伝わりにくい題材です。飾りを足すのではなく<strong>文字の形と余白で品よく見せる</strong>方向にまとめ、あわせて検索から見つけてもらうための土台と、人を採るための仕組みも整えています。</p>
+        <p class="head__lead">北海道・十勝／帯広で農業用の建物を手がける建築会社さまのサイトを、全面的にリニューアルしました。牛舎や倉庫は、写真だけでは伝わりにくい題材です。飾りを足すのではなく、<strong>文字の形と余白で品よく見せる</strong>方向にまとめました。あわせて、検索から見つけてもらうための土台と、採用の仕組みも整えています。</p>
         <div class="tags"><span class="tag">コーポレートサイト</span><span class="tag">デザイン刷新</span><span class="tag">検索対策</span><span class="tag">採用強化</span></div>
       </header>
 
@@ -226,7 +234,7 @@
 
       <div class="wrap prose">
         <h2><span class="n">01</span>どんなサイトか</h2>
-        <p>1976年創業、2026年で50年を迎える会社さまです。トップページでは大きな写真を画面いっぱいに使い、右端に「建物を通じて、農業の発展に貢献する。」という言葉を縦書きで添えました。写真はゆっくりと寄っていく動きをつけてあります。十勝の畑の広さが、そのまま第一印象になるようにしたかったためです。</p>
+        <p>1976年創業、2026年で50年を迎える会社さまです。トップページでは大きな写真を画面いっぱいに使い、右端に「建物を通じて、農業の発展に貢献する。」という言葉を縦書きで添えました。写真にはゆっくり寄っていく動きをつけ、十勝の畑の広さがそのまま第一印象になるようにしています。</p>
         <p>メニューは、新着情報・会社案内・事業内容・採用情報・工事情報・社員食堂・ブログ・お問い合わせ。項目数が多いので、日本語の下に英語を小さく添えて、詰まった印象にならないよう整理しました。</p>
 
         <h2><span class="n">02</span>「静けさ」を、文字と色でつくる</h2>
@@ -239,14 +247,14 @@
 
         <h2><span class="n">04</span>採用ページを1ページから5ページへ</h2>
         <p>もともと1ページに4つの職種がまとまっていた採用情報を、<strong>職種ごとに独立したページ</strong>に分けました。施工管理、鉄骨加工、現場多能工、製図の4つです。</p>
-        <p>分けた理由は、探している人の入口をつくるためです。「施工管理 求人」と検索した方が、いきなりその職種のページにたどり着ける状態にしたい。まとめページ側は一覧と入口の役割に絞り、内容の重複をなくしました。</p>
+        <p>分けたのは、仕事を探している人の入口をつくるためです。「施工管理 求人」と検索した方が、その職種のページへ直接たどり着けます。まとめページは一覧と入口の役割に絞り、内容の重複をなくしました。</p>
 
         <h2><span class="n">05</span>応募フォームは、手間を増やさない形で</h2>
         <p>応募フォームは、送信された内容がGoogleのスプレッドシートに自動で記録され、担当の方へのお知らせと応募者への受付メールまで自動で届く形にしました。</p>
         <p>専用のサーバーやデータベースを新しく用意していないので、<strong>月々の維持費も、管理の手間も増えません</strong>。応募状況は普段お使いの表計算ソフトの画面でそのまま確認できます。</p>
 
         <h2><span class="n">06</span>表示の速さは、地味な積み重ねで</h2>
-        <p>掲載している写真をすべて軽い形式に変換し、外部から読み込んでいた部品を自社サイト側に移し、文字の読み込み方も見直しました。ひとつずつは小さな改善ですが、こういう積み重ねが「開いた瞬間に見える」かどうかを決めます。</p>
+        <p>掲載している写真をすべて軽い形式に変換し、外部から読み込んでいた部品を自社サイト側に移し、文字の読み込み方も見直しました。一つひとつは小さな改善ですが、こうした積み重ねが「開いた瞬間に見える」かどうかを決めます。</p>
       </div>
 
       <div class="wrap visit">
@@ -269,7 +277,7 @@
 
       <div class="wrap cta">
         <p class="cta__title">同じような制作のご相談</p>
-        <p class="cta__body">ホームページ・1ページ完結型のサイト・お仕事用のアプリをつくっています。はじめての方も、つくり直したい方も、まずは気軽にご相談ください。</p>
+        <p class="cta__body">ホームページ、1ページ完結型のサイト、業務用のアプリを制作しています。初めての方も、リニューアルをお考えの方も、お気軽にご相談ください。</p>
         <div class="cta__links">
           <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
           <a class="cta__link" href="../index.html">実績一覧 <span class="arrow"></span></a>

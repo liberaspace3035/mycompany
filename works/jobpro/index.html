@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ジョブプロマーケ｜制作実績 | LiberaSpace</title>
-<meta name="description" content="ジョブプロマーケ｜ランディングページ / 制作担当。採用に特化したSNS運用サービスの、1ページ完結型のサイトです。デザインはご支給いただき、それを実際に動くサイトにする制作を担当しました。縦に長く、内容の種類も多いページなので、どこまで読み進めても崩れない状態をつくることが中心の作業でした。">
+<meta name="description" content="ジョブプロマーケ｜ランディングページ / 制作担当。採用に特化したSNS運用サービスの、1ページ完結型のサイトです。ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当しました。縦に長く、内容の種類も多いページのため、作業の中心は、どこまで読み進めても表示が崩れない状態をつくることでした。">
 <link rel="canonical" href="/works/jobpro/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ジョブプロマーケ｜制作実績 | LiberaSpace">
-<meta property="og:description" content="ジョブプロマーケ｜ランディングページ / 制作担当。採用に特化したSNS運用サービスの、1ページ完結型のサイトです。デザインはご支給いただき、それを実際に動くサイトにする制作を担当しました。縦に長く、内容の種類も多いページなので、どこまで読み進めても崩れない状態をつくることが中心の作業でした。">
+<meta property="og:description" content="ジョブプロマーケ｜ランディングページ / 制作担当。採用に特化したSNS運用サービスの、1ページ完結型のサイトです。ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当しました。縦に長く、内容の種類も多いページのため、作業の中心は、どこまで読み進めても表示が崩れない状態をつくることでした。">
 <meta property="og:site_name" content="LiberaSpace">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@
   "@context": "https://schema.org",
   "@type": "CreativeWork",
   "name": "ジョブプロマーケ",
-  "description": "採用に特化したSNS運用サービスの、1ページ完結型のサイトです。デザインはご支給いただき、それを実際に動くサイトにする制作を担当しました。縦に長く、内容の種類も多いページなので、どこまで読み進めても崩れない状態をつくることが中心の作業でした。",
+  "description": "採用に特化したSNS運用サービスの、1ページ完結型のサイトです。ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当しました。縦に長く、内容の種類も多いページのため、作業の中心は、どこまで読み進めても表示が崩れない状態をつくることでした。",
   "inLanguage": "ja",
   "dateCreated": "2025",
   "creator": { "@type": "Organization", "name": "LiberaSpace" },
@@ -173,6 +173,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -188,7 +196,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../../works/index.html">Works</a>
-      <a href="../../index.html#service">Service</a>
+      <a href="../../service/index.html">Service</a>
       <a href="../../blog/index.html">Journal</a>
       <a href="../../index.html#contact">Contact</a>
     </div>
@@ -203,7 +211,7 @@
           <span>2025</span>
         </div>
         <h1 class="head__title">ジョブプロマーケ<span class="head__sub">採用特化SNS運用</span></h1>
-        <p class="head__lead">採用に特化したSNS運用サービスの、1ページ完結型のサイトです。<strong>デザインはご支給いただき、それを実際に動くサイトにする制作を担当</strong>しました。縦に長く、内容の種類も多いページなので、どこまで読み進めても崩れない状態をつくることが中心の作業でした。</p>
+        <p class="head__lead">採用に特化したSNS運用サービスの、1ページ完結型のサイトです。<strong>ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当</strong>しました。縦に長く、内容の種類も多いページのため、作業の中心は、どこまで読み進めても表示が崩れない状態をつくることでした。</p>
         <div class="tags"><span class="tag">制作</span><span class="tag">1ページ完結型</span><span class="tag">画面幅への対応</span></div>
       </header>
 
@@ -220,25 +228,25 @@
       <dl class="wrap specs">
           <div class="spec"><dt>サービス</dt><dd>採用に特化したSNS運用・採用代行</dd></div>
           <div class="spec"><dt>形式</dt><dd>1ページ完結（11のブロック構成）</dd></div>
-          <div class="spec"><dt>内容</dt><dd>悩みの提示 / 採用事例 / 選ばれる理由 / 他の方法との比較 / 進め方 / よくある質問 ほか</dd></div>
+          <div class="spec"><dt>内容</dt><dd>悩みの提示、採用事例、選ばれる理由、他の方法との比較、進め方、よくある質問など</dd></div>
           <div class="spec"><dt>担当</dt><dd>制作のみ（デザインはご支給）</dd></div>
       </dl>
 
       <div class="wrap prose">
         <h2><span class="n">01</span>担当した範囲について</h2>
-        <p>このお仕事で担当したのは<strong>制作の部分だけ</strong>です。何をどの順番で伝えるかの組み立ても、見た目のデザインも、ご支給いただいたものを正確に形にすることが求められました。</p>
+        <p>このお仕事で担当したのは<strong>制作のみ</strong>です。何をどの順番で伝えるかという構成も、見た目のデザインも、ご支給いただいたものを正確に形にしています。</p>
 
         <h2><span class="n">02</span>縦に長いページは、崩れる箇所が多い</h2>
-        <p>このページは11のブロックが縦に連なっています。悩みの提示、採用事例、選ばれている理由、他の採用方法との比較、進め方の説明、よくある質問——<strong>ブロックごとに中身の性質がまったく違います</strong>。</p>
-        <p>文章だけのブロック、写真が並ぶブロック、表で比較するブロックが混ざっていると、画面幅が変わったときに崩れ方もそれぞれ違ってきます。ひとつずつ、幅を変えながら確認していく作業になりました。</p>
+        <p>このページは、11のブロックが縦に連なる構成です。悩みの提示、採用事例、選ばれている理由、他の採用方法との比較、進め方の説明、よくある質問など、<strong>ブロックごとに中身の性質がまったく違います</strong>。</p>
+        <p>文章だけのもの、写真が並ぶもの、表で比較するものと、形の違うブロックが混ざると、画面幅が変わったときの崩れ方もそれぞれ異なります。一つずつ、幅を変えながら確認しました。</p>
 
         <h2><span class="n">03</span>表は、スマートフォンでいちばん崩れる</h2>
-        <p>特に手がかかるのが、他の採用方法と見比べる表の部分です。横に項目が並ぶ形は<strong>パソコンでは見やすい一方、スマートフォンの幅にはそのまま入りません</strong>。</p>
-        <p>そのまま縮めると文字が読めなくなり、横スクロールにすると比較したい項目が同時に見えなくなります。どちらを取るかを、表の中身に合わせて判断しました。</p>
+        <p>特に手がかかったのが、他の採用方法と見比べる表です。項目が横に並ぶ形は<strong>パソコンでは見やすい一方、スマートフォンの幅にはそのまま収まりません</strong>。</p>
+        <p>そのまま縮めると文字が読めず、横に動かす形にすると比べたい項目が同時に見えません。どちらを取るかは、表の中身に合わせて判断しました。</p>
 
-        <h2><span class="n">04</span>申し込みボタンが、いつでも押せる状態に</h2>
-        <p>このページのゴールは、無料の採用戦略診断へのお申し込みです。縦に長いページなので、読者がどの位置にいても申し込みへの入口が視界に入る状態を保つ必要があります。</p>
-        <p>スクロールの途中でボタンが隠れてしまったり、押しにくい大きさになったりしないよう、画面幅ごとに位置と大きさを確認しています。</p>
+        <h2><span class="n">04</span>申し込みボタンを、いつでも押せる位置に</h2>
+        <p>このページのゴールは、無料の採用戦略診断へのお申し込みです。縦に長いページなので、どこを読んでいても申し込みの入口が目に入るようにする必要があります。</p>
+        <p>スクロールの途中でボタンが隠れたり、押しにくい大きさになったりしないよう、画面幅ごとに位置と大きさを確かめています。</p>
       </div>
 
       <div class="wrap visit">
@@ -261,7 +269,7 @@
 
       <div class="wrap cta">
         <p class="cta__title">同じような制作のご相談</p>
-        <p class="cta__body">ホームページ・1ページ完結型のサイト・お仕事用のアプリをつくっています。はじめての方も、つくり直したい方も、まずは気軽にご相談ください。</p>
+        <p class="cta__body">ホームページ、1ページ完結型のサイト、業務用のアプリを制作しています。初めての方も、リニューアルをお考えの方も、お気軽にご相談ください。</p>
         <div class="cta__links">
           <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
           <a class="cta__link" href="../index.html">実績一覧 <span class="arrow"></span></a>

@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>きなり｜制作実績 | LiberaSpace</title>
-<meta name="description" content="きなり｜自主制作（ポートフォリオ）。自然志向の美容サロンを想定してつくった、自主制作のサイトです。「素材のままの美しさ」というコンセプトを、霧がかったような余白で表現しながら、ご予約までの導線も落とし込みました。">
+<meta name="description" content="きなり｜自主制作（ポートフォリオ）。自然志向の美容サロンを想定した自主制作のサイトです。「素材のままの美しさ」というコンセプトを霧がかったような余白で表現しつつ、予約まで迷わず進める流れも組み込みました。">
 <link rel="canonical" href="/works/kinari/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="きなり｜制作実績 | LiberaSpace">
-<meta property="og:description" content="きなり｜自主制作（ポートフォリオ）。自然志向の美容サロンを想定してつくった、自主制作のサイトです。「素材のままの美しさ」というコンセプトを、霧がかったような余白で表現しながら、ご予約までの導線も落とし込みました。">
+<meta property="og:description" content="きなり｜自主制作（ポートフォリオ）。自然志向の美容サロンを想定した自主制作のサイトです。「素材のままの美しさ」というコンセプトを霧がかったような余白で表現しつつ、予約まで迷わず進める流れも組み込みました。">
 <meta property="og:site_name" content="LiberaSpace">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@
   "@context": "https://schema.org",
   "@type": "CreativeWork",
   "name": "きなり",
-  "description": "自然志向の美容サロンを想定してつくった、自主制作のサイトです。「素材のままの美しさ」というコンセプトを、霧がかったような余白で表現しながら、ご予約までの導線も落とし込みました。",
+  "description": "自然志向の美容サロンを想定した自主制作のサイトです。「素材のままの美しさ」というコンセプトを霧がかったような余白で表現しつつ、予約まで迷わず進める流れも組み込みました。",
   "inLanguage": "ja",
   "dateCreated": "2025",
   "creator": { "@type": "Organization", "name": "LiberaSpace" },
@@ -173,6 +173,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -188,7 +196,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../../works/index.html">Works</a>
-      <a href="../../index.html#service">Service</a>
+      <a href="../../service/index.html">Service</a>
       <a href="../../blog/index.html">Journal</a>
       <a href="../../index.html#contact">Contact</a>
     </div>
@@ -203,7 +211,7 @@
           <span>2025</span>
         </div>
         <h1 class="head__title">きなり<span class="head__sub">素材のままで、美しい。</span></h1>
-        <p class="head__lead">自然志向の美容サロンを想定してつくった、自主制作のサイトです。「素材のままの美しさ」というコンセプトを、<strong>霧がかったような余白</strong>で表現しながら、ご予約までの導線も落とし込みました。</p>
+        <p class="head__lead">自然志向の美容サロンを想定した自主制作のサイトです。「素材のままの美しさ」というコンセプトを<strong>霧がかったような余白</strong>で表現しつつ、予約まで迷わず進める流れも組み込みました。</p>
         <div class="tags"><span class="tag">ブランディング</span><span class="tag">アートディレクション</span><span class="tag">デザイン</span><span class="tag">制作</span></div>
       </header>
 
@@ -224,13 +232,13 @@
       </dl>
 
       <div class="wrap prose">
-        <h2><span class="n">01</span>引き算でコンセプトを出す</h2>
-        <p>「素材のまま」を掲げているサイトが、飾りで埋まっていては説得力がありません。色数を絞り、明暗の差をやわらげ、区切り線をほとんど使わない構成にしました。<strong>ブロックとブロックを分けているのは、線ではなく余白です。</strong></p>
-        <p>サロンのサイトでよく使われる鮮やかな差し色や、影のついた立体的なボタンは使っていません。そのぶん写真と文字の質だけで見せることになるので難しくはなりますが、掲げているコンセプトとは一致します。</p>
+        <h2><span class="n">01</span>飾らないことで、コンセプトを伝える</h2>
+        <p>「素材のまま」を掲げるサイトが飾りで埋まっていては、説得力がありません。色数を絞り、明暗の差を和らげ、区切り線をほとんど使わない構成にしました。<strong>内容の区切りは、線ではなく余白でつけています。</strong></p>
+        <p>サロンのサイトによくある鮮やかな差し色や、影のついた立体的なボタンも使っていません。写真と文字の質だけで見せる分、難しさは増しますが、そのほうがコンセプトと一致します。</p>
 
         <h2><span class="n">02</span>静かなサイトでも、予約はきちんと取る</h2>
-        <p>世界観を優先すると、予約ボタンが埋もれて機能しなくなることがあります。目立つ色で浮かせる代わりに、<strong>どこまで読み進めても、次にすることが視界に入る</strong>ように置く間隔のほうで調整しました。</p>
-        <p>1ページで完結させたのも理由があります。サロン選びは「雰囲気を見て、料金を見て、予約する」という短い流れで決まるので、ページを分けるほど途中で離れてしまうためです。</p>
+        <p>雰囲気を優先すると、予約ボタンが埋もれて役目を果たさなくなりがちです。そこで目立つ色で浮かせるのではなく、<strong>どこまで読み進めても、次にすることが目に入る</strong>よう、ボタンを置く間隔で調整しました。</p>
+        <p>1ページで完結させたのにも理由があります。サロン選びは「雰囲気を見て、料金を見て、予約する」という短い流れで決まります。ページを分けるほど、途中で離れる人が増えるためです。</p>
       </div>
 
       <div class="wrap visit">
@@ -253,7 +261,7 @@
 
       <div class="wrap cta">
         <p class="cta__title">同じような制作のご相談</p>
-        <p class="cta__body">ホームページ・1ページ完結型のサイト・お仕事用のアプリをつくっています。はじめての方も、つくり直したい方も、まずは気軽にご相談ください。</p>
+        <p class="cta__body">ホームページ、1ページ完結型のサイト、業務用のアプリを制作しています。初めての方も、リニューアルをお考えの方も、お気軽にご相談ください。</p>
         <div class="cta__links">
           <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
           <a class="cta__link" href="../index.html">実績一覧 <span class="arrow"></span></a>

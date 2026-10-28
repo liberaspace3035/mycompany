@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Petit Marché｜制作実績 | LiberaSpace</title>
-<meta name="description" content="Petit Marché｜自主制作（ポートフォリオ）。街角のカフェ＆ベーカリーを想定してつくった、自主制作のサイトです。手仕事の温かさをどうやって画面に出すか、というテーマで組み立てました。">
+<meta name="description" content="Petit Marché｜自主制作（ポートフォリオ）。街角のカフェ＆ベーカリーを想定した自主制作のサイトです。手仕事の温かさを画面でどう伝えるかをテーマに組み立てました。">
 <link rel="canonical" href="/works/petit-marche/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Petit Marché｜制作実績 | LiberaSpace">
-<meta property="og:description" content="Petit Marché｜自主制作（ポートフォリオ）。街角のカフェ＆ベーカリーを想定してつくった、自主制作のサイトです。手仕事の温かさをどうやって画面に出すか、というテーマで組み立てました。">
+<meta property="og:description" content="Petit Marché｜自主制作（ポートフォリオ）。街角のカフェ＆ベーカリーを想定した自主制作のサイトです。手仕事の温かさを画面でどう伝えるかをテーマに組み立てました。">
 <meta property="og:site_name" content="LiberaSpace">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@
   "@context": "https://schema.org",
   "@type": "CreativeWork",
   "name": "Petit Marché",
-  "description": "街角のカフェ＆ベーカリーを想定してつくった、自主制作のサイトです。手仕事の温かさをどうやって画面に出すか、というテーマで組み立てました。",
+  "description": "街角のカフェ＆ベーカリーを想定した自主制作のサイトです。手仕事の温かさを画面でどう伝えるかをテーマに組み立てました。",
   "inLanguage": "ja",
   "dateCreated": "2024",
   "creator": { "@type": "Organization", "name": "LiberaSpace" },
@@ -173,6 +173,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -188,7 +196,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../../works/index.html">Works</a>
-      <a href="../../index.html#service">Service</a>
+      <a href="../../service/index.html">Service</a>
       <a href="../../blog/index.html">Journal</a>
       <a href="../../index.html#contact">Contact</a>
     </div>
@@ -203,7 +211,7 @@
           <span>2024</span>
         </div>
         <h1 class="head__title">Petit Marché<span class="head__sub">cafe &amp; bakery</span></h1>
-        <p class="head__lead">街角のカフェ＆ベーカリーを想定してつくった、自主制作のサイトです。<strong>手仕事の温かさ</strong>をどうやって画面に出すか、というテーマで組み立てました。</p>
+        <p class="head__lead">街角のカフェ＆ベーカリーを想定した自主制作のサイトです。<strong>手仕事の温かさ</strong>を画面でどう伝えるかをテーマに組み立てました。</p>
         <div class="tags"><span class="tag">ブランディング</span><span class="tag">デザイン</span><span class="tag">制作</span></div>
       </header>
 
@@ -224,13 +232,13 @@
       </dl>
 
       <div class="wrap prose">
-        <h2><span class="n">01</span>「きれい」と「あたたかい」は違う</h2>
-        <p>カフェのサイトは、整えるほど冷たくなっていきます。位置をきっちり揃えるほど清潔感は出ますが、同時に手仕事の気配が消えてしまう。</p>
-        <p>そこで画面を左右に分ける構成を基本にしながら、<strong>分ける比率をブロックごとに少しずつ変えました</strong>。きれいに揃いすぎない状態をわざとつくっています。線に抑揚のある書体を主役にしたのも、その抑揚で温度を出すためです。</p>
+        <h2><span class="n">01</span>「きれい」と「温かい」は違う</h2>
+        <p>カフェのサイトは、整えるほど冷たい印象になります。配置をきっちり揃えれば清潔感は出ますが、手仕事の気配は消えてしまいます。</p>
+        <p>そこで画面を左右に分ける構成を基本にしつつ、<strong>左右の比率をブロックごとに少しずつ変えました</strong>。あえて揃えすぎない状態をつくっています。線に抑揚のある書体を主役にしたのも、その抑揚で温かみを出すためです。</p>
 
         <h2><span class="n">02</span>小さなお店に必要なページだけ</h2>
-        <p>コンセプト・お知らせ・採用・アクセスと、個人のお店が実際に運用していける範囲にページを絞りました。</p>
-        <p>つくり込みたくなるところですが、<strong>更新されないページが増えるほどサイトは古びていきます</strong>。維持できる分量に収めること自体を、設計の一部として考えました。</p>
+        <p>ページは、コンセプト・お知らせ・採用・アクセスなど、個人のお店が無理なく運用できる範囲に絞りました。</p>
+        <p>ページを増やしたくなるところですが、<strong>更新されないページが増えるほど、サイトは古びて見えます</strong>。更新を続けられる分量に収めることも、設計の一部です。</p>
       </div>
 
       <div class="wrap visit">
@@ -253,7 +261,7 @@
 
       <div class="wrap cta">
         <p class="cta__title">同じような制作のご相談</p>
-        <p class="cta__body">ホームページ・1ページ完結型のサイト・お仕事用のアプリをつくっています。はじめての方も、つくり直したい方も、まずは気軽にご相談ください。</p>
+        <p class="cta__body">ホームページ、1ページ完結型のサイト、業務用のアプリを制作しています。初めての方も、リニューアルをお考えの方も、お気軽にご相談ください。</p>
         <div class="cta__links">
           <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
           <a class="cta__link" href="../index.html">実績一覧 <span class="arrow"></span></a>

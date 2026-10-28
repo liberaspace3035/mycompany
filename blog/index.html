@@ -171,6 +171,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -186,7 +194,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../works/index.html">Works</a>
-      <a href="../index.html#service">Service</a>
+      <a href="../service/index.html">Service</a>
       <a href="../apps/index.html">Apps</a>
       <a href="../index.html#contact">Contact</a>
     </div>
@@ -198,7 +206,7 @@
     <header class="intro">
       <p class="intro__eyebrow">LiberaSpace — Journal</p>
       <h1 class="intro__title">Journal<em>.</em></h1>
-      <p class="intro__lead">つくりながら考えたことの記録です。AIをどこまで制作に組み込めるのか、どこは人が持つべきなのか。うまくいったやり方も、実際に踏んだ落とし穴も、なるべくそのまま書いています。</p>
+      <p class="intro__lead">つくりながら考えたことの記録です。AIをどこまで制作に組み込み、どこを人が持つべきか。うまくいったやり方も、踏んだ落とし穴も、できるだけそのまま書いています。</p>
     </header>
 
     <!-- ===================== POSTS ===================== -->
@@ -246,7 +254,7 @@
           <div class="post__date">2026.07.27</div>
           <div>
             <h2 class="post__title">同じバグを二度踏ませない — プロジェクト単位のメモリー運用</h2>
-            <p class="post__excerpt">前回半日かけて解決した問題を、次のセッションでまた半日かけて解決する。AIとの作業でいちばんもったいないのはこれです。防ぐには、その場で外に書き出すしかない。実際の書き方と、書き残している落とし穴の中身を2つ公開します。</p>
+            <p class="post__excerpt">前回半日かけて解決した問題を、次のセッションでまた半日かけて解決する。AIとの作業でいちばんもったいないのはこれです。防ぐ方法は、その場で外に書き出すことだけです。実際の書き方と、書き残している落とし穴2件を公開します。</p>
             <div class="post__tags">
               <span class="tag">Claude Code</span>
               <span class="tag">メモリ運用</span>
@@ -291,7 +299,7 @@
       <div class="soon" data-reveal>
         <p class="soon__label">About this journal</p>
         <ul>
-          <li>制作の現場で実際に使っている仕組みと、実際に踏んだ失敗だけを書いています。</li>
+          <li>制作の現場で使っている仕組みと、実際に踏んだ失敗だけを書いています。</li>
           <li>手元で確認できる事実にもとづいて書き、確認できないことは書きません。</li>
         </ul>
       </div>

@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>umiharuka｜制作実績 | LiberaSpace</title>
-<meta name="description" content="umiharuka｜宿泊予約サイト / 制作担当。京丹後の、海が見える一棟貸しヴィラのサイトです。デザインはご支給いただき、それを実際に動くサイトにする制作を担当しました。大きな写真をたくさん使うつくりなので、美しさを保ったまま重くならないようにすることが、いちばんの課題でした。">
+<meta name="description" content="umiharuka｜宿泊予約サイト / 制作担当。京丹後にある、海が見える一棟貸しヴィラのサイトです。ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当しました。大きな写真を数多く使うため、美しさを保ったまま表示を軽くすることが最大の課題でした。">
 <link rel="canonical" href="/works/umiharuka/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="umiharuka｜制作実績 | LiberaSpace">
-<meta property="og:description" content="umiharuka｜宿泊予約サイト / 制作担当。京丹後の、海が見える一棟貸しヴィラのサイトです。デザインはご支給いただき、それを実際に動くサイトにする制作を担当しました。大きな写真をたくさん使うつくりなので、美しさを保ったまま重くならないようにすることが、いちばんの課題でした。">
+<meta property="og:description" content="umiharuka｜宿泊予約サイト / 制作担当。京丹後にある、海が見える一棟貸しヴィラのサイトです。ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当しました。大きな写真を数多く使うため、美しさを保ったまま表示を軽くすることが最大の課題でした。">
 <meta property="og:site_name" content="LiberaSpace">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@
   "@context": "https://schema.org",
   "@type": "CreativeWork",
   "name": "umiharuka",
-  "description": "京丹後の、海が見える一棟貸しヴィラのサイトです。デザインはご支給いただき、それを実際に動くサイトにする制作を担当しました。大きな写真をたくさん使うつくりなので、美しさを保ったまま重くならないようにすることが、いちばんの課題でした。",
+  "description": "京丹後にある、海が見える一棟貸しヴィラのサイトです。ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当しました。大きな写真を数多く使うため、美しさを保ったまま表示を軽くすることが最大の課題でした。",
   "inLanguage": "ja",
   "dateCreated": "2024",
   "creator": { "@type": "Organization", "name": "LiberaSpace" },
@@ -173,6 +173,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -188,7 +196,7 @@
     <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
     <div class="nav__links" id="navLinks">
       <a href="../../works/index.html">Works</a>
-      <a href="../../index.html#service">Service</a>
+      <a href="../../service/index.html">Service</a>
       <a href="../../blog/index.html">Journal</a>
       <a href="../../index.html#contact">Contact</a>
     </div>
@@ -203,7 +211,7 @@
           <span>2024</span>
         </div>
         <h1 class="head__title">umiharuka<span class="head__sub">sea side villa</span></h1>
-        <p class="head__lead">京丹後の、海が見える一棟貸しヴィラのサイトです。<strong>デザインはご支給いただき、それを実際に動くサイトにする制作を担当</strong>しました。大きな写真をたくさん使うつくりなので、美しさを保ったまま重くならないようにすることが、いちばんの課題でした。</p>
+        <p class="head__lead">京丹後にある、海が見える一棟貸しヴィラのサイトです。<strong>ご支給いただいたデザインをもとに、実際に動くサイトに仕上げる制作を担当</strong>しました。大きな写真を数多く使うため、美しさを保ったまま表示を軽くすることが最大の課題でした。</p>
         <div class="tags"><span class="tag">制作</span><span class="tag">写真の多いサイト</span><span class="tag">画面幅への対応</span></div>
       </header>
 
@@ -225,15 +233,15 @@
 
       <div class="wrap prose">
         <h2><span class="n">01</span>担当した範囲について</h2>
-        <p>このお仕事で担当したのは<strong>制作の部分だけ</strong>です。デザインはご支給いただいたものを、意図どおりに再現することが求められました。写真の配置や余白の取り方といった判断は、いただいたデザインに沿っています。</p>
+        <p>このお仕事で担当したのは<strong>制作のみ</strong>です。求められたのは、ご支給いただいたデザインを意図どおりに再現すること。写真の配置や余白の取り方は、いただいたデザインに沿っています。</p>
 
         <h2><span class="n">02</span>写真が主役のサイトを、重くしない</h2>
-        <p>海が見えることが最大の価値なので、大きな写真がページ全体にわたって使われています。ただ、写真をそのまま並べると<strong>開くのに時間がかかるサイト</strong>になってしまい、せっかくの美しさが伝わる前に離れられてしまいます。</p>
-        <p>そこで画質を落とさない範囲で写真を軽くし、画面をスクロールして必要になった時点で読み込む形にしました。最初に見えている部分がすぐ表示され、下へ進むにつれて順に読み込まれていきます。</p>
+        <p>海が見えることが最大の魅力なので、ページ全体に大きな写真が使われています。ただ、写真をそのまま並べると<strong>開くのに時間がかかるサイト</strong>になり、美しさが伝わる前に閉じられてしまいます。</p>
+        <p>そこで、画質を落とさない範囲で写真を軽くし、スクロールして必要になった時点で読み込む形にしました。最初の画面はすぐに表示され、下へ進むにつれて順に読み込まれます。</p>
 
         <h2><span class="n">03</span>大きな写真は、画面幅で見え方が変わる</h2>
-        <p>パソコンの横長の画面に合わせて切り取られた写真は、スマートフォンの縦長の画面ではまったく違う見え方になります。海が見切れてしまったり、人物が端で切れてしまったりする。</p>
-        <p>そのため<strong>写真ごとに、どの部分を残して切るかを画面幅ごとに調整</strong>しました。あわせて、余白や文字の大きさもサイト全体で同じ調子になるよう共通の設定でまとめて管理し、どのページを開いても印象がぶれないようにしています。</p>
+        <p>パソコンの横長の画面に合わせて切り取った写真は、スマートフォンの縦長の画面では見え方がまったく変わります。海が見切れたり、人物が端で切れたりするのです。</p>
+        <p>そこで<strong>写真ごとに、どの部分を残すかを画面幅に合わせて調整</strong>しました。あわせて余白や文字の大きさを全体で共通の設定にまとめ、どのページを開いても印象がぶれないようにしています。</p>
       </div>
 
       <div class="wrap visit">
@@ -256,7 +264,7 @@
 
       <div class="wrap cta">
         <p class="cta__title">同じような制作のご相談</p>
-        <p class="cta__body">ホームページ・1ページ完結型のサイト・お仕事用のアプリをつくっています。はじめての方も、つくり直したい方も、まずは気軽にご相談ください。</p>
+        <p class="cta__body">ホームページ、1ページ完結型のサイト、業務用のアプリを制作しています。初めての方も、リニューアルをお考えの方も、お気軽にご相談ください。</p>
         <div class="cta__links">
           <a class="cta__link" href="../../index.html#contact">Contact <span class="arrow"></span></a>
           <a class="cta__link" href="../index.html">実績一覧 <span class="arrow"></span></a>

@@ -164,6 +164,14 @@
       font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
     .nav .nav__links a.nav__cta:hover{ background:none; }
   }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
 </style>
 </head>
 <body>
@@ -192,11 +200,11 @@
       <div class="legal__rule"></div>
 
       <p class="legal__intro">SideHub をご利用いただきありがとうございます。</p>
-      <p class="legal__intro">ご質問・不具合のご報告・ご要望は、下記までお気軽にご連絡ください。</p>
+      <p class="legal__intro">ご質問、不具合のご報告、ご要望は、下記までお気軽にお寄せください。</p>
 
       <section class="sec">
         <div class="sec__head"><span class="sec__num">01</span><h2 class="sec__title">お問い合わせ</h2></div>
-        <p>下記のメールアドレス宛に、できるだけ詳しい状況（端末・iOSのバージョン、発生した操作など）を添えてご連絡ください。順次対応いたします。</p>
+        <p>お使いの端末とiOSのバージョン、発生時の操作など、状況をできるだけ詳しくお書き添えのうえ、下記のメールアドレスまでご連絡ください。順次対応いたします。</p>
         <div class="legal__contact">
           <p class="label">Email</p>
           <a href="mailto:liberaspace3035@gmail.com" class="legal__mail">liberaspace3035@gmail.com</a>
@@ -212,7 +220,7 @@
           </div>
           <div class="faq__item">
             <p class="faq__q"><span class="mark">Q.</span><span>機種変更時にデータは引き継げますか？</span></p>
-            <p class="faq__a"><span class="mark">A.</span><span>現在はバックアップ機能の提供を準備中です。</span></p>
+            <p class="faq__a"><span class="mark">A.</span><span>現在、バックアップ機能の提供に向けて準備を進めています。</span></p>
           </div>
           <div class="faq__item">
             <p class="faq__q"><span class="mark">Q.</span><span>Pro（有料）の解約方法は？</span></p>

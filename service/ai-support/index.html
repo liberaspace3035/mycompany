@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI導入サポート — LiberaSpace</title>
+<meta name="description" content="社内にAIを根づかせ、決まった仕事をAIに任せられる状態まで12か月で伴走するAI導入サポート。初回相談90分無料、最初の3か月は月10,000円のお試し期間です。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1A1B1F;
+    --muted:rgba(26,27,31,0.54);
+    --faint:rgba(26,27,31,0.34);
+    --hair:rgba(26,27,31,0.12);
+    --paper:#fbfaf8;
+    --panel:#f3f0ea;
+    --gut:clamp(24px,6vw,120px);
+    --wordmark-font:"Playfair Display", Georgia, "Times New Roman", serif;
+    --sans:"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  html,body{ overflow-x:hidden; max-width:100%; }
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    background:
+      radial-gradient(120% 80% at 6% 96%, rgba(255,243,228,0.5), rgba(255,243,228,0) 44%),
+      radial-gradient(120% 80% at 94% 4%, rgba(255,241,226,0.46), rgba(255,241,226,0) 44%),
+      radial-gradient(150% 130% at 50% 40%, #fdfcfa 0%, #f7f5f1 72%, #f1eee8 100%);
+    background-attachment:fixed;
+  }
+
+  /* ---- ambient background fx (CSS only) ---- */
+  #bgfx{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .ribbon{ position:absolute; border-radius:50%; }
+  .ribbon--body{
+    width:172vmax; height:52vmax; left:-26vmax; top:24%; transform:rotate(-30deg);
+    background:radial-gradient(ellipse 48% 52% at 50% 50%,
+      rgba(176,175,179,0.42), rgba(176,175,179,0.22) 48%, rgba(176,175,179,0.08) 70%, rgba(176,175,179,0) 82%);
+    filter:blur(62px);
+  }
+  .ribbon--core{
+    width:150vmax; height:34vmax; left:-16vmax; top:30%; transform:rotate(-31deg);
+    background:radial-gradient(ellipse 44% 50% at 50% 50%,
+      rgba(255,255,255,0.72), rgba(238,237,234,0.38) 40%, rgba(210,210,212,0.12) 66%, rgba(210,210,212,0) 80%);
+    filter:blur(44px);
+  }
+  .dotgrid{ position:absolute; top:-28px; left:-28px; width:46vw; height:40vw; max-width:640px; max-height:540px;
+    background-image:radial-gradient(rgba(26,27,31,0.14) 1px, transparent 1.7px);
+    background-size:17px 17px;
+    -webkit-mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%);
+    mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%); }
+  .grain{ position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:170px 170px; opacity:0.38; mix-blend-mode:overlay; }
+
+  .page{ position:relative; z-index:1; }
+
+  /* ---------- header ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px var(--gut);
+    transition:background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+  }
+  .nav.scrolled{
+    background:rgba(251,250,248,0.72);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 var(--hair);
+  }
+  .nav__brand{
+    font-family:var(--wordmark-font); font-weight:700; font-size:20px;
+    letter-spacing:-0.01em; color:var(--ink); text-decoration:none;
+  }
+  .nav__links{ display:flex; gap:clamp(16px,2.4vw,38px); align-items:center; }
+  .nav__links a{
+    font-size:11px; letter-spacing:0.24em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none; font-weight:600; transition:color .25s ease;
+  }
+  .nav__links a:hover{ color:var(--ink); }
+
+  /* ---------- intro ---------- */
+  .intro{ position:relative; padding:clamp(132px,20vh,220px) var(--gut) clamp(48px,8vh,96px); max-width:1100px; margin:0 auto; }
+  .intro__eyebrow{ font-size:11px; letter-spacing:0.34em; text-transform:uppercase; color:var(--muted); font-weight:600; margin-bottom:24px; }
+  .intro__title{ font-family:var(--wordmark-font); font-weight:700; font-size:clamp(40px,8vw,108px); line-height:0.98; letter-spacing:-0.02em; }
+  .intro__title em{ font-style:italic; font-weight:500; color:var(--muted); }
+  .intro__lead{ margin-top:clamp(28px,4vh,44px); font-size:clamp(15px,1.5vw,19px); line-height:1.85; color:var(--muted); max-width:560px; text-wrap:pretty; }
+
+  /* ---------- section scaffolding ---------- */
+  section.block{ position:relative; padding:clamp(56px,9vh,120px) var(--gut); max-width:1100px; margin:0 auto; }
+  .block + .block{ border-top:1px solid var(--hair); }
+  .head{ display:flex; align-items:baseline; gap:18px; margin-bottom:clamp(32px,5vh,60px); flex-wrap:wrap; }
+  .head__num{ font-size:12px; letter-spacing:0.12em; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; }
+  .head__en{ font-family:var(--wordmark-font); font-style:italic; font-weight:500; font-size:clamp(28px,4.4vw,56px); letter-spacing:-0.01em; line-height:1; }
+  .head__jp{ font-size:12px; letter-spacing:0.26em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+  .head__line{ flex:1; height:1px; background:var(--hair); min-width:40px; align-self:center; }
+
+  /* reveal */
+  [data-reveal]{ opacity:0; transform:translateY(20px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  [data-reveal].in{ opacity:1; transform:none; }
+
+
+  .nav__links a.is-current{ color:var(--ink); }
+
+  /* ---------- body text ---------- */
+  .p{ font-size:15px; line-height:1.95; color:var(--muted); max-width:640px; text-wrap:pretty; line-break:strict; }
+  .p + .p{ margin-top:18px; }
+  .p strong{ color:var(--ink); font-weight:600; }
+  .note{ margin-top:22px; font-size:12.5px; line-height:1.85; color:var(--faint); max-width:760px; list-style:none; line-break:strict; }
+  .note li{ padding-left:1.2em; text-indent:-1.2em; }
+  .note li::before{ content:"※ "; }
+  .sub-head{ margin-top:clamp(40px,6vh,64px); margin-bottom:16px; font-size:12px; letter-spacing:0.2em; color:var(--faint); font-weight:600; }
+
+  /* ---------- in-page index ---------- */
+  .toc{ display:flex; flex-wrap:wrap; gap:10px; margin-top:clamp(28px,4vh,40px); }
+  .toc a{ font-size:12.5px; letter-spacing:0.06em; color:var(--muted); border:1px solid var(--hair); padding:9px 15px; text-decoration:none; transition:border-color .25s ease, color .25s ease; }
+  .toc a:hover{ border-color:var(--ink); color:var(--ink); }
+
+  /* ---------- numbered points ---------- */
+  .points{ display:grid; grid-template-columns:repeat(2,1fr); gap:0 clamp(28px,4vw,64px); }
+  .points--3{ grid-template-columns:repeat(3,1fr); }
+  .point{ padding:clamp(22px,3vh,32px) 0; border-top:1px solid var(--hair); }
+  .point__no{ font-size:12px; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; letter-spacing:0.12em; }
+  .point__title{ margin-top:10px; font-size:17px; font-weight:600; line-height:1.6; line-break:strict; }
+  .point__desc{ margin-top:8px; font-size:14px; line-height:1.85; color:var(--muted); text-wrap:pretty; line-break:strict; }
+  @media(max-width:860px){ .points--3{ grid-template-columns:1fr 1fr; } }
+  @media(max-width:680px){ .points, .points--3{ grid-template-columns:1fr; } }
+
+  /* ---------- tables ---------- */
+  .table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .table{ width:100%; border-collapse:collapse; font-size:14px; line-height:1.75; min-width:680px; }
+  .table th, .table td{ text-align:left; vertical-align:top; padding:18px 16px 18px 0; border-top:1px solid var(--hair); }
+  .table tbody tr:last-child th, .table tbody tr:last-child td{ border-bottom:1px solid var(--hair); }
+  .table thead th{ white-space:nowrap; font-size:11px; letter-spacing:0.14em; color:var(--faint); font-weight:600; border-top:none; padding-top:0; padding-bottom:12px; }
+  .table tbody th{ font-weight:600; white-space:nowrap; color:var(--ink); }
+  .table td{ color:var(--muted); line-break:strict; }
+  .amt{ font-family:var(--wordmark-font); font-size:20px; font-weight:600; color:var(--ink); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .amt small{ font-family:var(--sans); font-size:11px; font-weight:600; color:var(--muted); letter-spacing:0.02em; margin-left:2px; }
+  .table .sub{ display:block; font-size:12px; color:var(--faint); margin-top:2px; }
+
+  /* ---------- payment types ---------- */
+  .types{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,2vw,24px); margin-bottom:clamp(36px,5vh,56px); }
+  .type{ border:1px solid var(--hair); padding:22px 22px 24px; background:rgba(255,255,255,0.35); }
+  .type__key{ font-family:var(--wordmark-font); font-style:italic; font-size:15px; color:var(--faint); }
+  .type__name{ margin-top:6px; font-size:16px; font-weight:600; }
+  .type__for{ margin-top:8px; font-size:13.5px; line-height:1.8; color:var(--muted); line-break:strict; }
+  @media(max-width:760px){ .types{ grid-template-columns:1fr; } }
+
+  /* ---------- steps ---------- */
+  .steps{ list-style:none; display:grid; grid-template-columns:repeat(3,1fr); gap:0 clamp(24px,3vw,48px); }
+  .step{ padding:clamp(22px,3vh,30px) 0; border-top:1px solid var(--hair); }
+  .step__when{ font-size:11px; letter-spacing:0.18em; color:var(--faint); font-weight:600; }
+  .step__title{ margin-top:10px; font-size:17px; font-weight:600; line-height:1.6; }
+  .step__desc{ margin-top:8px; font-size:14px; line-height:1.85; color:var(--muted); line-break:strict; }
+  .step__get{ margin-top:12px; font-size:12.5px; line-height:1.8; color:var(--faint); }
+  @media(max-width:860px){ .steps{ grid-template-columns:1fr 1fr; } }
+  @media(max-width:680px){ .steps{ grid-template-columns:1fr; } }
+
+  /* ---------- faq ---------- */
+  .faq details{ border-top:1px solid var(--hair); }
+  .faq details:last-child{ border-bottom:1px solid var(--hair); }
+  .faq summary{ list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:baseline; gap:24px; padding:22px 0; font-size:15.5px; font-weight:600; line-height:1.6; }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary::after{ content:"+"; font-family:var(--wordmark-font); font-size:24px; font-weight:400; color:var(--faint); line-height:1; transition:transform .3s ease; flex:none; }
+  .faq details[open] summary::after{ transform:rotate(45deg); }
+  .faq .a{ padding:0 0 24px; font-size:14.5px; line-height:1.95; color:var(--muted); max-width:700px; line-break:strict; }
+
+  /* ---------- info list ---------- */
+  .info{ display:grid; grid-template-columns:200px 1fr; max-width:860px; }
+  .info dt, .info dd{ padding:18px 0; border-top:1px solid var(--hair); font-size:14.5px; line-height:1.8; }
+  .info dt{ color:var(--faint); font-size:12px; letter-spacing:0.14em; font-weight:600; padding-top:20px; }
+  .info dd{ color:var(--ink); line-break:strict; }
+  .info dd a{ color:var(--ink); }
+  .info dt:nth-last-of-type(1), .info dd:last-of-type{ border-bottom:1px solid var(--hair); }
+  @media(max-width:560px){ .info{ grid-template-columns:1fr; } .info dd{ border-top:none; padding-top:0; } .info dt:nth-last-of-type(1){ border-bottom:none; } }
+
+  /* ---------- link with arrow ---------- */
+  .more{ display:inline-flex; align-items:center; gap:12px; margin-top:28px; font-size:12px; letter-spacing:0.2em; color:var(--ink); font-weight:600; text-decoration:none; }
+  .more .arrow{ width:30px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .more:hover .arrow{ width:48px; }
+
+  /* ---------- call to action ---------- */
+  .cta__big{ font-family:var(--wordmark-font); font-weight:700; font-size:clamp(36px,6vw,84px); line-height:1; letter-spacing:-0.02em; }
+  .cta__big em{ font-style:italic; font-weight:500; color:var(--muted); }
+  .cta__text{ margin-top:clamp(24px,4vh,36px); }
+  .cta__row{ display:flex; flex-wrap:wrap; gap:16px 32px; align-items:center; margin-top:32px; }
+  .btn{ display:inline-flex; align-items:center; gap:14px; border:1px solid var(--ink); padding:16px 26px; font-size:13.5px; letter-spacing:0.08em; font-weight:600; color:var(--paper); background:var(--ink); text-decoration:none; transition:background .25s ease, color .25s ease; }
+  .btn:hover{ background:transparent; color:var(--ink); }
+  .btn--ghost{ background:transparent; color:var(--ink); }
+  .btn--ghost:hover{ background:var(--ink); color:var(--paper); }
+  .cta__mail{ font-size:13px; color:var(--muted); }
+  .cta__mail a{ color:var(--ink); }
+
+  /* ---------- profile ---------- */
+  .profile{ display:grid; grid-template-columns:auto 1fr; gap:clamp(28px,5vw,72px); align-items:start; }
+  .profile__mark{ width:clamp(132px,17vw,220px); aspect-ratio:4/5; background:var(--panel); border:1px solid var(--hair);
+    display:flex; align-items:flex-end; padding:16px 18px; font-family:var(--wordmark-font); font-weight:700; font-size:clamp(44px,6vw,76px); line-height:.9; letter-spacing:-0.02em; color:var(--ink); }
+  .profile__role{ font-size:11px; letter-spacing:0.24em; color:var(--faint); font-weight:600; }
+  .profile__name{ margin:10px 0 26px; font-size:clamp(26px,3vw,38px); font-weight:600; letter-spacing:0.04em; }
+  .profile__roman{ display:block; margin-top:6px; font-family:var(--wordmark-font); font-style:italic; font-weight:500; font-size:clamp(15px,1.5vw,19px); color:var(--muted); letter-spacing:0; }
+  .p a{ color:var(--ink); }
+  @media(max-width:680px){ .profile{ grid-template-columns:1fr; } .profile__mark{ width:120px; } }
+
+  /* ---------- plain list ---------- */
+  .list{ list-style:none; max-width:720px; }
+  .list li{ position:relative; padding:6px 0 6px 1.4em; font-size:14.5px; line-height:1.85; color:var(--muted); line-break:strict; }
+  .list li::before{ content:""; position:absolute; left:0; top:1.05em; width:.6em; height:1px; background:var(--ink); }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
+
+  footer{ padding:36px var(--gut); border-top:1px solid var(--hair);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  footer a{ color:var(--muted); text-decoration:none; transition:color .25s ease; }
+  footer a:hover{ color:var(--ink); }
+
+  /* ---------- スマートフォンのメニュー（ハンバーガー） ---------- */
+  .nav__toggle{ display:none; position:relative; z-index:2; width:44px; height:44px; margin-right:-10px; padding:0; border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .nav__toggle span{ position:absolute; left:11px; right:11px; height:1.5px; background:var(--ink); transition:transform .3s ease, top .3s ease; }
+  .nav__toggle span:nth-child(1){ top:18px; }
+  .nav__toggle span:nth-child(2){ top:25px; }
+  .nav.open .nav__toggle span:nth-child(1){ top:21.5px; transform:rotate(45deg); }
+  .nav.open .nav__toggle span:nth-child(2){ top:21.5px; transform:rotate(-45deg); }
+  @media(max-width:680px){
+    .nav__toggle{ display:block; }
+    .nav__brand{ position:relative; z-index:2; }
+    .nav.open{ background:var(--paper); backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; }
+    .nav .nav__links{ position:fixed; inset:0; z-index:1; flex-direction:column; align-items:flex-start; justify-content:center; gap:6px;
+      padding:96px var(--gut) 48px; background:var(--paper); overflow-y:auto;
+      opacity:0; visibility:hidden; transition:opacity .3s ease, visibility 0s linear .3s; }
+    .nav.open .nav__links{ opacity:1; visibility:visible; transition:opacity .3s ease; }
+    .nav .nav__links a, .nav .nav__links a.nav__cta{ display:block !important; padding:14px 0 !important; border:0; border-radius:0; background:none;
+      font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
+    .nav .nav__links a.nav__cta:hover{ background:none; }
+  }
+</style>
+
+</head>
+<body>
+  <div id="bgfx" aria-hidden="true">
+    <div class="ribbon ribbon--body"></div>
+    <div class="ribbon ribbon--core"></div>
+    <div class="dotgrid"></div>
+    <div class="grain"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="../../index.html" class="nav__brand">LiberaSpace</a>
+    <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
+    <div class="nav__links" id="navLinks">
+      <a href="../../works/index.html">Works</a>
+      <a href="../../service/index.html" class="is-current">Service</a>
+      <a href="../../blog/index.html">Journal</a>
+      <a href="../../about/index.html">About</a>
+      <a href="../../index.html#contact">Contact</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ===================== INTRO ===================== -->
+    <header class="intro">
+      <p class="intro__eyebrow">LiberaSpace — AI Support</p>
+      <h1 class="intro__title">AI Support<em>.</em></h1>
+      <p class="intro__lead">AIを、一部の人だけの道具で終わらせない。社内のルールと仕組みを整え、定型業務をAIに任せられる状態まで、12か月かけて伴走します。</p>
+      <nav class="toc" aria-label="このページの目次">
+        <a href="#for">対象となる企業</a>
+        <a href="#what">支援内容</a>
+        <a href="#first">最初の5週間</a>
+        <a href="#year">12か月の流れ</a>
+        <a href="#price">料金</a>
+        <a href="#scope">ご用意いただくもの</a>
+        <a href="#fit">合わない場合</a>
+      </nav>
+    </header>
+
+    <!-- ===================== FOR ===================== -->
+    <section class="block" id="for">
+      <div class="head" data-reveal>
+        <span class="head__num">01</span>
+        <span class="head__en">For You</span>
+        <span class="head__jp">対象となる企業</span>
+        <span class="head__line"></span>
+      </div>
+
+      <div class="points points--3" data-reveal>
+        <div class="point">
+          <h3 class="point__title">AIを使う社員がほとんどいない</h3>
+          <p class="point__desc">何から始めるべきか、何を入力してよいのかが分からず、手つかずのまま。</p>
+        </div>
+        <div class="point">
+          <h3 class="point__title">一部の社員が自己流で使っている</h3>
+          <p class="point__desc">便利にはなったものの、目的もルールもなく、効果も測れていない。情報管理にも不安が残る。</p>
+        </div>
+        <div class="point">
+          <h3 class="point__title">導入したが、定着しなかった</h3>
+          <p class="point__desc">ツールを契約して配布したものの、いつの間にか使われなくなった。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== WHAT ===================== -->
+    <section class="block" id="what">
+      <div class="head" data-reveal>
+        <span class="head__num">02</span>
+        <span class="head__en">What We Do</span>
+        <span class="head__jp">支援内容</span>
+        <span class="head__line"></span>
+      </div>
+
+      <div class="points" data-reveal>
+        <div class="point">
+          <span class="point__no">01</span>
+          <h3 class="point__title">社内に浸透させる</h3>
+          <p class="point__desc">部署を越えて日常的に使われる状態へ。他部署へ広げる進め方まで設計します。</p>
+        </div>
+        <div class="point">
+          <span class="point__no">02</span>
+          <h3 class="point__title">ルールを整える</h3>
+          <p class="point__desc">入力してよい情報の線引きから、社内規程、AI利用方針まで。原案を作成し、御社の実態に合わせて調整します。</p>
+        </div>
+        <div class="point">
+          <span class="point__no">03</span>
+          <h3 class="point__title">社内データを整える</h3>
+          <p class="point__desc">マニュアル、過去の見積書、判断基準などを、AIが参照できる形に整理します。入力の質が、出力の質を決めます。</p>
+        </div>
+        <div class="point">
+          <span class="point__no">04</span>
+          <h3 class="point__title">AIに任せる仕組みをつくる</h3>
+          <p class="point__desc">定型業務を担うAIの仕組み（AIエージェント）を1つずつ構築し、現場で稼働するまで伴走します。</p>
+        </div>
+      </div>
+
+      <p class="sub-head" data-reveal>支援の方針</p>
+      <ul class="list" data-reveal>
+        <li>最初に取り組むのは、現場の課題が大きく、毎週繰り返される業務です。</li>
+        <li>普段のチャット・メール・表計算から使える形で構築します。新しい操作を覚える必要はありません。</li>
+        <li>業務の判断基準は、実際の担当者から必ずヒアリングします。</li>
+        <li>効果は利用回数ではなく、何がどう改善したかで測ります。</li>
+        <li>AIが作るのは下書きまで。顧客に出す成果物の最終判断と責任は、人が担います。</li>
+      </ul>
+    </section>
+
+    <!-- ===================== FIRST 5 WEEKS ===================== -->
+    <section class="block" id="first">
+      <div class="head" data-reveal>
+        <span class="head__num">03</span>
+        <span class="head__en">First 5 Weeks</span>
+        <span class="head__jp">最初の5週間</span>
+        <span class="head__line"></span>
+      </div>
+
+      <p class="p" data-reveal>初月の目標は、1つ目の仕組みを稼働させることです。打ち合わせは毎週行います。</p>
+
+      <ol class="steps" data-reveal style="margin-top:clamp(28px,4vh,40px)">
+        <li class="step">
+          <span class="step__when">1週目</span>
+          <h3 class="step__title">見つける</h3>
+          <p class="step__desc">現地で業務を確認し、目標を定めて、最初に取り組む業務を1つ決めます。あわせて、社内で安心して使うための利用ガイドラインを作成します。</p>
+          <p class="step__get">成果物：業務の棚卸しシート／利用ガイドライン・チェックシート／12か月の導入計画</p>
+        </li>
+        <li class="step">
+          <span class="step__when">2〜3週目</span>
+          <h3 class="step__title">構築する</h3>
+          <p class="step__desc">試作品をご確認いただき、その場で方向性を調整します。過去の資料をAIが扱える形に変換し、既存の業務の流れに組み込みます。</p>
+          <p class="step__get">成果物：稼働中の仕組み／画面付きの操作マニュアル</p>
+        </li>
+        <li class="step">
+          <span class="step__when">4〜5週目</span>
+          <h3 class="step__title">使い始める</h3>
+          <p class="step__desc">実際の利用を通じて課題を洗い出し、改善します。社内の推進担当者へ引き継ぎ、次の対象業務を決めます。</p>
+          <p class="step__get">成果物：初月の振り返り／次のステップの提案</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ===================== 12 MONTHS ===================== -->
+    <section class="block" id="year">
+      <div class="head" data-reveal>
+        <span class="head__num">04</span>
+        <span class="head__en">12 Months</span>
+        <span class="head__jp">12か月の流れ</span>
+        <span class="head__line"></span>
+      </div>
+
+      <div class="table-wrap" data-reveal>
+        <table class="table">
+          <thead>
+            <tr><th>時期</th><th>浸透</th><th>ルール</th><th>社内データ</th><th>AIの仕組み</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>1か月目</th>
+              <td>推進担当者の決定、対象業務の選定</td>
+              <td>利用ガイドライン・チェックシート</td>
+              <td>対象業務の過去資料を整理</td>
+              <td>1つ目を構築し、利用開始</td>
+            </tr>
+            <tr>
+              <th>2〜3か月目</th>
+              <td>全社への展開、月例の活用共有会</td>
+              <td>運用に合わせて改訂</td>
+              <td>マニュアル・よくある質問・過去の見積を棚卸し</td>
+              <td>1つ目の定着、2つ目の選定</td>
+            </tr>
+            <tr>
+              <th>4〜6か月目</th>
+              <td>他部署への展開</td>
+              <td>社内規程（管理体制・責任の所在）</td>
+              <td>知見を蓄積する仕組みづくり</td>
+              <td>2〜3つ目、既存システムとの連携</td>
+            </tr>
+            <tr>
+              <th>7〜12か月目</th>
+              <td>部署横断の活用、推進担当者による自走</td>
+              <td>AI利用方針の文書化と社内周知</td>
+              <td>ベテランの判断基準を言語化</td>
+              <td>3〜5つ目、社内で構築できる体制へ</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="note" data-reveal>
+        <li>導入前後の数値比較は、利用が1か月を通して定着した3か月目から可能になります。</li>
+        <li>12か月目に到達度を確認し、2年目の計画をご提示します（2年目も月額は同じです）。</li>
+        <li>全社員向けセミナー（月1回・人数無制限・録画付き）と、毎週のオンライン相談会には初月から参加できます。</li>
+      </ul>
+    </section>
+
+    <!-- ===================== PRICE ===================== -->
+    <section class="block" id="price">
+      <div class="head" data-reveal>
+        <span class="head__num">05</span>
+        <span class="head__en">Price</span>
+        <span class="head__jp">料金</span>
+        <span class="head__line"></span>
+      </div>
+
+      <div class="table-wrap" data-reveal>
+        <table class="table">
+          <tbody>
+            <tr><th>初回相談（90分）</th><td><span class="amt">0<small>円</small></span></td><td>業務内容を伺い、支援が可能かをその場で判断します。</td></tr>
+            <tr><th>お試し期間（1〜3か月目）</th><td><span class="amt">10,000<small>円/月</small></span></td><td>4か月目以降の「構築主体」プランと同水準で対応します。初期費用はかかりません。</td></tr>
+            <tr><th>社内研修（任意）</th><td><span class="amt">80,000<small>円</small></span><span class="sub">90分</span></td><td>御社の実際の業務を題材にした、実践型の研修です。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div data-reveal style="margin-top:clamp(32px,5vh,48px)">
+        <p class="p"><strong>お試し期間が月10,000円である理由</strong></p>
+        <p class="p">本サービスは開始から日が浅く、まだ公開できる事例がありません。事例づくりにご協力いただく期間として、この価格を設定しています。導入前後の数値は、事例として掲載させてください（社名を伏せ、業種と規模のみの掲載も可能です）。数値は結果にかかわらず、事実のまま掲載します。</p>
+      </div>
+
+      <p class="sub-head" data-reveal>4か月目以降のプラン</p>
+      <div class="table-wrap" data-reveal>
+        <table class="table">
+          <thead>
+            <tr><th></th><th>内製支援</th><th>構築支援</th><th>構築主体</th><th>専属型</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>月額</th>
+              <td><span class="amt">30,000<small>円</small></span></td>
+              <td><span class="amt">60,000<small>円</small></span></td>
+              <td><span class="amt">150,000<small>円</small></span></td>
+              <td><span class="amt">250,000<small>円</small></span></td></tr>
+            <tr><th>向いている企業</th>
+              <td>自社で進められるが、相談相手がほしい</td>
+              <td>構築を任せたい。やり取りはオンラインで十分</td>
+              <td>現場を見たうえで構築してほしい</td>
+              <td>構築から社内展開まで主導してほしい</td></tr>
+            <tr><th>設計・構築</th>
+              <td>御社が担当（相談に対応）</td>
+              <td>お任せ（オンライン）</td>
+              <td>お任せ（現地確認あり）</td>
+              <td>お任せ（複数業務を同時に）</td></tr>
+            <tr><th>個別の打ち合わせ</th>
+              <td>隔週30分</td><td>毎週30分</td><td>毎週60分</td><td>毎週60分＋随時</td></tr>
+            <tr><th>現地訪問</th>
+              <td>なし</td><td>なし</td><td>半年に1回</td><td>四半期に1回</td></tr>
+            <tr><th>月次の数値報告・品質点検</th>
+              <td>—</td><td>あり</td><td>あり</td><td>あり</td></tr>
+            <tr><th>社内の活用共有会</th>
+              <td>四半期に1回</td><td>隔月</td><td>毎月</td><td>毎月</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="note" data-reveal>
+        <li>価格は税別です。AIサービスの利用料は別途ご負担ください。</li>
+        <li>全プラン共通：社内規程などの文書整備、全社員向けセミナー（月1回）、毎週のオンライン相談会、平日当日中の質問回答（遅くとも翌営業日）、担当者交代時の引き継ぎ。</li>
+        <li>交通費は月額に含みます（北海道外は実費、離島などは要相談）。初回の現地訪問は、プランを問わずお試し期間中に行います。</li>
+        <li>契約期間の縛りはありません。月末までのご連絡で解約でき、違約金もかかりません。プラン変更は4か月目以降いつでも可能です。</li>
+      </ul>
+    </section>
+
+    <!-- ===================== SCOPE ===================== -->
+    <section class="block" id="scope">
+      <div class="head" data-reveal>
+        <span class="head__num">06</span>
+        <span class="head__en">Scope</span>
+        <span class="head__jp">ご用意いただくもの</span>
+        <span class="head__line"></span>
+      </div>
+
+      <div class="points" data-reveal>
+        <div class="point">
+          <h3 class="point__title">推進担当者 1名</h3>
+          <p class="point__desc">対象業務を実際に担当している方。役職は問いません。</p>
+        </div>
+        <div class="point">
+          <h3 class="point__title">過去の成果物 5点程度</h3>
+          <p class="point__desc">対象業務で作成した見積書・報告書・日報・メールなど。</p>
+        </div>
+        <div class="point">
+          <h3 class="point__title">初月の毎週の打ち合わせ</h3>
+          <p class="point__desc">初回は現地訪問（90分）、以降は30〜60分です。</p>
+        </div>
+        <div class="point">
+          <h3 class="point__title">社内への働きかけ</h3>
+          <p class="point__desc">最も重要な要素です。利用を促し、成功事例を社内に共有してください。そのための資料と手順は、こちらで用意します。</p>
+        </div>
+      </div>
+      <ul class="note" data-reveal>
+        <li>月額に含まれないもの：就業規則・人事規程の改訂（社会保険労務士の領域）、契約書作成・法務確認（弁護士の領域）、基幹システムの刷新、社外向けサービスの開発、短納期での納品。</li>
+      </ul>
+    </section>
+
+    <!-- ===================== FIT ===================== -->
+    <section class="block" id="fit">
+      <div class="head" data-reveal>
+        <span class="head__num">07</span>
+        <span class="head__en">If It Doesn't Fit</span>
+        <span class="head__jp">合わない場合</span>
+        <span class="head__line"></span>
+      </div>
+
+      <div data-reveal>
+        <p class="p"><strong>初回相談で、AIに任せられる業務が見つからなければ、その時点でお断りします。</strong>使われない仕組みを増やしても、御社にも私にも得るものがないためです。</p>
+        <p class="p">お試し期間の3か月目には、数値とあわせて継続の可否を率直にお伝えします。見込みが立たない場合も、そのままお伝えします。終了に追加費用はかからず、構築した仕組みとマニュアルは引き続きお使いいただけます。</p>
+      </div>
+    </section>
+
+    <!-- ===================== CTA ===================== -->
+    <section class="block">
+      <h2 class="cta__big" data-reveal>90 minutes, <em>free.</em></h2>
+      <div data-reveal>
+        <p class="p cta__text">まずは90分、お話をお聞かせください。ご相談は無料です。次のものをご用意いただくと、より具体的なお話ができます。</p>
+        <ul class="list" style="margin-top:14px;">
+          <li>最も時間がかかっていると感じる業務</li>
+          <li>その業務の担当者</li>
+          <li>その業務で作成した書類（数点）</li>
+        </ul>
+        <div class="cta__row">
+          <a class="btn" href="mailto:liberaspace3035@gmail.com?subject=AI%E5%B0%8E%E5%85%A5%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%81%AE%E7%84%A1%E6%96%99%E7%9B%B8%E8%AB%87">無料相談を申し込む</a>
+          <a class="btn btn--ghost" href="../../about/index.html">代表プロフィール</a>
+        </div>
+      </div>
+    </section>
+
+
+    <footer>
+      <span>© 2025 LiberaSpace</span>
+      <div>
+        <a href="../../index.html">LiberaSpace Studio</a>
+      </div>
+      <span>HOKKAIDO / REMOTE</span>
+    </footer>
+
+  </div>
+
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    function onScroll(){ if(window.scrollY > 40) nav.classList.add("scrolled"); else nav.classList.remove("scrolled"); }
+    window.addEventListener("scroll", onScroll, {passive:true});
+    onScroll();
+
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ io.observe(el); });
+    }else{
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ el.classList.add("in"); });
+    }
+  })();
+</script>
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    var btn = nav && nav.querySelector(".nav__toggle");
+    if(!btn) return;
+    function setOpen(open){
+      nav.classList.toggle("open", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      btn.setAttribute("aria-label", open ? "メニューを閉じる" : "メニューを開く");
+      document.documentElement.style.overflow = open ? "hidden" : "";
+    }
+    btn.addEventListener("click", function(){ setOpen(!nav.classList.contains("open")); });
+    nav.querySelectorAll(".nav__links a").forEach(function(a){ a.addEventListener("click", function(){ setOpen(false); }); });
+    document.addEventListener("keydown", function(e){ if(e.key === "Escape" && nav.classList.contains("open")){ setOpen(false); btn.focus(); } });
+    window.addEventListener("resize", function(){ if(window.innerWidth > 680 && nav.classList.contains("open")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>
