@@ -3,6 +3,7 @@ FROM caddy:2-alpine
 # Static site config + assets
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY index.html /srv/index.html
+COPY sitemap.xml robots.txt /srv/
 COPY assets /srv/assets
 COPY apps /srv/apps
 COPY blog /srv/blog
