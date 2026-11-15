@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ホームページ制作 — LiberaSpace</title>
-<meta name="description" content="札幌のリベラスペースによるホームページ制作。会社の今の姿が伝わらない、問い合わせにつながらない、原稿を用意する時間がないといった課題を、原稿づくりから公開後の運用まで一貫して解決します。制作費は150,000円〜。">
+<meta name="description" content="ホームページからの集客、諦めていませんか？ AI検索が広がる今だからこそ、SEO対策・構造化データの整備・お問い合わせまでの動線設計で、見つけてもらい、選ばれるホームページを制作します。リニューアル後にAI検索での引用率5倍、お問い合わせ約1.5倍の実績。制作費150,000円〜。">
 <link rel="canonical" href="/service/web/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -226,6 +226,17 @@
   .case .more{ margin-top:auto; padding-top:18px; }
   @media(max-width:860px){ .cases{ grid-template-columns:1fr 1fr; } }
   @media(max-width:680px){ .cases{ grid-template-columns:1fr; } }
+  /* ---------- LP ---------- */
+  .intro__catch{ margin-top:clamp(20px,3vh,28px); font-size:clamp(26px,4.2vw,48px); font-weight:700; line-height:1.45; letter-spacing:0.01em; text-wrap:balance; }
+  .intro__sub{ margin-top:14px; font-size:clamp(15px,1.6vw,18px); font-weight:600; line-height:1.8; color:var(--muted); }
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:0 clamp(20px,3vw,40px); }
+  .stat{ padding:clamp(22px,3vh,30px) 0; border-top:1px solid var(--ink); }
+  .stat__label{ font-size:13px; font-weight:600; line-height:1.7; color:var(--muted); }
+  .stat__num{ display:block; margin-top:10px; font-family:var(--wordmark-font); font-weight:600; font-size:clamp(40px,5vw,64px); line-height:1; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+  .stat__num small{ font-family:var(--sans); font-size:0.32em; font-weight:700; letter-spacing:0.02em; margin-left:4px; }
+  .stat__pre{ font-family:var(--sans); font-size:0.3em; font-weight:700; margin-right:4px; vertical-align:0.4em; }
+  .results-sub{ margin-top:clamp(48px,7vh,72px); }
+  @media(max-width:860px){ .stats{ grid-template-columns:1fr 1fr; } }
   /* ---------- 和文の改行 ----------
      文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
      見出しは行の長さを揃える。 */
@@ -270,7 +281,7 @@
       "@id": "https://www.liberaspace.net/service/web/#service",
       "name": "ホームページ制作",
       "serviceType": "ホームページ制作",
-      "description": "札幌のリベラスペースによるホームページ制作。会社の今の姿が伝わらない、問い合わせにつながらない、原稿を用意する時間がないといった課題を、原稿づくりから公開後の運用まで一貫して解決します。制作費は150,000円〜。",
+      "description": "ホームページからの集客、諦めていませんか？ AI検索が広がる今だからこそ、SEO対策・構造化データの整備・お問い合わせまでの動線設計で、見つけてもらい、選ばれるホームページを制作します。リニューアル後にAI検索での引用率5倍、お問い合わせ約1.5倍の実績。制作費150,000円〜。",
       "url": "https://www.liberaspace.net/service/web/",
       "provider": {
         "@id": "https://www.liberaspace.net/#organization"
@@ -398,14 +409,16 @@
     <!-- ===================== INTRO ===================== -->
     <header class="intro">
       <p class="intro__eyebrow">LiberaSpace — Web Production</p>
-      <h1 class="intro__title">Web Production<em>.</em></h1>
-      <p class="intro__lead">会社の今の姿を、伝わるかたちに。原稿づくりから公開後の運用まで、ひとりの担当者が一貫してお引き受けします。</p>
+      <h1 class="intro__catch">ホームページからの集客、<br>諦めていませんか？</h1>
+      <p class="intro__sub">AI検索が広がる今だからこそ、見つけてもらい、選ばれるホームページを。</p>
       <nav class="toc" aria-label="このページの目次">
-        <a href="#problems">解決できる課題</a>
-        <a href="#flow">公開までの流れ</a>
-        <a href="#cases">制作事例</a>
+        <a href="#problems">よくあるお悩み</a>
+        <a href="#solutions">解決策</a>
+        <a href="#results">実績</a>
         <a href="#price">料金</a>
+        <a href="#flow">公開までの流れ</a>
         <a href="#faq">よくあるご質問</a>
+        <a href="#contact">お問い合わせ</a>
       </nav>
     </header>
 
@@ -414,86 +427,87 @@
       <div class="head" data-reveal>
         <span class="head__num">01</span>
         <span class="head__en">Problems</span>
-        <span class="head__jp">解決できる課題</span>
+        <span class="head__jp">こんなお悩みはありませんか</span>
         <span class="head__line"></span>
       </div>
 
-      <div class="points" data-reveal>
+      <div class="points points--3" data-reveal>
         <div class="point">
-          <h3 class="point__title">ホームページが古く、会社の今の姿が伝わらない</h3>
-          <p class="point__desc">事業内容と強みを伺い、構成から作り直します。写真だけでは伝わりにくい事業も、言葉と見せ方で整理してお伝えします。</p>
+          <h3 class="point__title">ホームページを作ったが、問い合わせがまったく来ない</h3>
+          <p class="point__desc">見た目を整えるだけでは、問い合わせは増えません。見つけてもらう仕組みと、問い合わせまでの流れが欠かせません。</p>
         </div>
         <div class="point">
-          <h3 class="point__title">見てもらえても、問い合わせや応募につながらない</h3>
-          <p class="point__desc">料金・場所・申し込み方法など、訪れた方が知りたいことに早い段階でお答えし、迷わず申し込める流れを整えます。</p>
+          <h3 class="point__title">AI検索からの流入を増やしたい</h3>
+          <p class="point__desc">ChatGPTなどのAIに質問したとき、御社の名前が挙がる状態を目指します。</p>
         </div>
         <div class="point">
-          <h3 class="point__title">原稿を用意する時間がない</h3>
-          <p class="point__desc">ヒアリングをもとに、原稿の下書きをこちらでご用意します。お客様には、内容のご確認と修正点のご指示をお願いしております。</p>
-        </div>
-        <div class="point">
-          <h3 class="point__title">公開後の更新や、相談先に困っている</h3>
-          <p class="point__desc">社内で更新できる仕組みを整えます。保守プランでは、制作者本人が引き続き対応いたします。</p>
-        </div>
-        <div class="point">
-          <h3 class="point__title">検索で会社が見つからない</h3>
-          <p class="point__desc">検索エンジンやAIに会社の情報を正しく伝えるための土台を、制作の段階で整えます。</p>
+          <h3 class="point__title">毎月の広告費を減らしたい</h3>
+          <p class="point__desc">検索やAIから自然に見つけてもらえる状態を整え、広告だけに頼らない集客を目指します。</p>
         </div>
       </div>
     </section>
 
-    <!-- ===================== FLOW ===================== -->
-    <section class="block" id="flow">
+    <!-- ===================== SOLUTIONS ===================== -->
+    <section class="block" id="solutions">
       <div class="head" data-reveal>
         <span class="head__num">02</span>
-        <span class="head__en">How It Works</span>
-        <span class="head__jp">公開までの流れ</span>
+        <span class="head__en">Solutions</span>
+        <span class="head__jp">解決策</span>
         <span class="head__line"></span>
       </div>
 
-      <ol class="steps" data-reveal>
-        <li class="step">
-          <span class="step__when">STEP 0</span>
-          <h3 class="step__title">無料相談</h3>
-          <p class="step__desc">現状の課題と、サイトで実現したいことを伺います。構想段階でも、お気軽にご相談ください。</p>
-        </li>
-        <li class="step">
-          <span class="step__when">STEP 1</span>
-          <h3 class="step__title">ご提案・お見積り</h3>
-          <p class="step__desc">必要なページと機能、費用、スケジュールをご提示します。ご納得いただいたうえで、ご契約となります。</p>
-        </li>
-        <li class="step">
-          <span class="step__when">STEP 2</span>
-          <h3 class="step__title">設計</h3>
-          <p class="step__desc">誰に、何を、どのページで伝えるかを決めます。問い合わせ数など、目指す数値もここで共有します。</p>
-        </li>
-        <li class="step">
-          <span class="step__when">STEP 3</span>
-          <h3 class="step__title">制作</h3>
-          <p class="step__desc">原稿・デザイン・実装はこちらで進めます。お客様には、下書きのご確認と修正点のご指示をお願いしております。</p>
-        </li>
-        <li class="step">
-          <span class="step__when">STEP 4</span>
-          <h3 class="step__title">公開</h3>
-          <p class="step__desc">公開初日から、アクセス数や流入経路を計測できる状態に整えます。</p>
-        </li>
-        <li class="step">
-          <span class="step__when">STEP 5</span>
-          <h3 class="step__title">改善・運用</h3>
-          <p class="step__desc">公開後も数値をもとに改善を続けます。引き続き、制作者本人が担当いたします。</p>
-        </li>
-      </ol>
+      <div class="points points--3" data-reveal>
+        <div class="point">
+          <span class="point__no">01</span>
+          <h3 class="point__title">SEO対策を、しっかりと行う</h3>
+          <p class="point__desc">AI検索の多くは、検索エンジンの結果をもとに回答を作ります。そのため、検索エンジンに正しく評価されるためのSEO対策が、AI検索でも欠かせない土台になります。</p>
+        </div>
+        <div class="point">
+          <span class="point__no">02</span>
+          <h3 class="point__title">構造化データを整備する</h3>
+          <p class="point__desc">会社の情報やサービス、よくある質問などを、AIや検索エンジンが理解できる形に整えます。検索結果に表示される情報が増え、クリックされやすくなる場合もあります。</p>
+        </div>
+        <div class="point">
+          <span class="point__no">03</span>
+          <h3 class="point__title">お問い合わせまでの動線を設計する</h3>
+          <p class="point__desc">料金・場所・申し込み方法など、訪れた方が知りたいことに早い段階でお答えし、迷わずお問い合わせまで進める流れを設計します。</p>
+        </div>
+      </div>
+      <a class="more" href="../seo/index.html" data-reveal>SEO・AI引用対策の詳細を見る <span class="arrow"></span></a>
     </section>
 
-    <!-- ===================== CASES ===================== -->
-    <section class="block" id="cases">
+    <!-- ===================== RESULTS ===================== -->
+    <section class="block" id="results">
       <div class="head" data-reveal>
         <span class="head__num">03</span>
-        <span class="head__en">Case Studies</span>
-        <span class="head__jp">制作事例</span>
+        <span class="head__en">Results</span>
+        <span class="head__jp">実績</span>
         <span class="head__line"></span>
       </div>
 
+      <div class="stats" data-reveal>
+        <div class="stat">
+          <p class="stat__label">AI検索での引用率</p>
+          <span class="stat__num">5<small>倍</small></span>
+        </div>
+        <div class="stat">
+          <p class="stat__label">お問い合わせ数</p>
+          <span class="stat__num"><span class="stat__pre">約</span>1.5<small>倍</small></span>
+        </div>
+        <div class="stat">
+          <p class="stat__label">1か月のクリック数</p>
+          <span class="stat__num"><span class="stat__pre">約</span>20<small>％向上</small></span>
+        </div>
+        <div class="stat">
+          <p class="stat__label">Google検索での表示回数</p>
+          <span class="stat__num"><span class="stat__pre">約</span>25<small>％向上</small></span>
+        </div>
+      </div>
+      <ul class="note" data-reveal>
+        <li>ハングル語学堂（韓国語教室・全9校）のリニューアル前後の比較です。成果は事業内容や地域によって異なります。</li>
+      </ul>
+
+      <p class="sub-head results-sub" data-reveal>制作事例</p>
       <div class="cases" data-reveal>
         <article class="case">
           <a class="case__thumb" href="../../works/hangai/index.html"><img src="../../assets/works/hangai-v2.webp" alt="株式会社 半谷のサイト画面" loading="lazy" decoding="async"></a>
@@ -519,7 +533,7 @@
             <dt>取り組み</dt>
             <dd>疑問に早い段階でお答えし、そのまま無料体験に申し込める流れにまとめました。あわせて、教室の情報を検索エンジンやAIが読み取れる形に整理しました。</dd>
             <dt>成果</dt>
-            <dd>リニューアル後、AIに引用された回数が2倍に増えました。</dd>
+            <dd>リニューアル後、AI検索での引用率が5倍に、お問い合わせ数が約1.5倍に増えました。</dd>
             <dt>担当範囲</dt>
             <dd>デザイン・制作・申し込みフォーム・検索／AI引用対策</dd>
           </dl>
@@ -580,10 +594,53 @@
       </ul>
     </section>
 
+    <!-- ===================== FLOW ===================== -->
+    <section class="block" id="flow">
+      <div class="head" data-reveal>
+        <span class="head__num">05</span>
+        <span class="head__en">How It Works</span>
+        <span class="head__jp">公開までの流れ</span>
+        <span class="head__line"></span>
+      </div>
+
+      <ol class="steps" data-reveal>
+        <li class="step">
+          <span class="step__when">STEP 0</span>
+          <h3 class="step__title">無料相談</h3>
+          <p class="step__desc">現状の課題と、サイトで実現したいことを伺います。構想段階でも、お気軽にご相談ください。</p>
+        </li>
+        <li class="step">
+          <span class="step__when">STEP 1</span>
+          <h3 class="step__title">ご提案・お見積り</h3>
+          <p class="step__desc">必要なページと機能、費用、スケジュールをご提示します。ご納得いただいたうえで、ご契約となります。</p>
+        </li>
+        <li class="step">
+          <span class="step__when">STEP 2</span>
+          <h3 class="step__title">設計</h3>
+          <p class="step__desc">誰に、何を、どのページで伝えるかを決めます。問い合わせ数など、目指す数値もここで共有します。</p>
+        </li>
+        <li class="step">
+          <span class="step__when">STEP 3</span>
+          <h3 class="step__title">制作</h3>
+          <p class="step__desc">原稿・デザイン・実装はこちらで進めます。お客様には、下書きのご確認と修正点のご指示をお願いしております。</p>
+        </li>
+        <li class="step">
+          <span class="step__when">STEP 4</span>
+          <h3 class="step__title">公開</h3>
+          <p class="step__desc">公開初日から、アクセス数や流入経路を計測できる状態に整えます。</p>
+        </li>
+        <li class="step">
+          <span class="step__when">STEP 5</span>
+          <h3 class="step__title">改善・運用</h3>
+          <p class="step__desc">公開後も数値をもとに改善を続けます。引き続き、制作者本人が担当いたします。</p>
+        </li>
+      </ol>
+    </section>
+
     <!-- ===================== FAQ ===================== -->
     <section class="block" id="faq">
       <div class="head" data-reveal>
-        <span class="head__num">05</span>
+        <span class="head__num">06</span>
         <span class="head__en">FAQ</span>
         <span class="head__jp">よくあるご質問</span>
         <span class="head__line"></span>
@@ -618,14 +675,15 @@
     </section>
 
     <!-- ===================== CTA ===================== -->
-    <section class="block">
+    <section class="block" id="contact">
       <h2 class="cta__big" data-reveal>Let's <em>talk.</em></h2>
       <div data-reveal>
         <p class="p cta__text">新しくつくる方も、リニューアルをお考えの方も、まずはお気軽にご相談ください。ご相談とお見積りは無料です。</p>
         <div class="cta__row">
-          <a class="btn" href="mailto:liberaspace3035@gmail.com?subject=%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8%E5%88%B6%E4%BD%9C%E3%81%AE%E3%81%94%E7%9B%B8%E8%AB%87">メールで相談する</a>
-          <a class="btn btn--ghost" href="../index.html">サービスと料金の一覧</a>
+          <a class="btn" href="mailto:liberaspace3035@gmail.com?subject=%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8%E5%88%B6%E4%BD%9C%E3%81%AE%E7%84%A1%E6%96%99%E7%9B%B8%E8%AB%87">無料相談を申し込む</a>
+          <a class="btn btn--ghost" href="mailto:liberaspace3035@gmail.com?subject=%E3%83%9B%E3%83%BC%E3%83%A0%E3%83%9A%E3%83%BC%E3%82%B8%E5%88%B6%E4%BD%9C%E3%81%AE%E8%B3%87%E6%96%99%E8%AB%8B%E6%B1%82">資料を請求する</a>
         </div>
+        <p class="p" style="margin-top:16px;font-size:13px;color:var(--faint)">資料請求はメールで承っています。内容を確認のうえ、ご返信いたします。</p>
       </div>
     </section>
 
