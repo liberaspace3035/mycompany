@@ -9,7 +9,7 @@
 | Googleアカウント | liberaspace3035@gmail.com |
 | Apps Script | LiberaSpace お問い合わせフォーム（スタンドアロン） |
 | 記録先 | スプレッドシート「LiberaSpace お問い合わせ」のシート「お問い合わせ一覧」 |
-| デプロイ | ウェブアプリ／実行：自分／アクセス：全員 |
+| デプロイ | ウェブアプリ／実行：自分／アクセス：全員（バージョン2：2026-11-16 自動返信の悪用対策） |
 | URL | https://script.google.com/macros/s/AKfycbwnoHbY90DUtcg11p_Z4Widy8JgxgzssNQCZPH_Tg4_kjJJrtRCWWRwFEbvnj-N2uRziA/exec |
 | コード | `contact-form.gs`（Apps Script 上のコードと同じ内容） |
 
@@ -29,5 +29,7 @@
 
 - ブラウザからは Content-Type を付けずに JSON 文字列を送る（`application/json` にすると CORS のプリフライトで失敗する）
 - いたずら送信対策：画面外の `website` 欄（埋まっていれば破棄）、送信元オリジンの制限（`ALLOWED_ORIGINS`）、同一アドレスの60秒以内の再送信をブロック
+- 送信元オリジンはリクエストの中身で判定しているため偽装できる。スクリプトが第三者宛てのメール送信に悪用されないよう、自動返信は入力内容を引用しない固定文にし、1時間10通・1日30通を上限にしている（超えた分も記録と通知は行う）
+- さらに強く防ぐなら、Cloudflare Turnstile などの CAPTCHA を追加し、`doPost` でトークンを検証する
 - フォームのURLに `?type=資料請求` などを付けると、お問い合わせの種類が選ばれた状態で開く
 - Gmail の送信数には1日あたりの上限がある（無料アカウントで100通程度）。1件につき2通送る

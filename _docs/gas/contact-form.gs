@@ -35,7 +35,13 @@ const CONFIG = {
   ],
 
   // 同一メールアドレスからの連続送信を弾く間隔（秒）
-  DUPLICATE_WINDOW_SEC: 60
+  DUPLICATE_WINDOW_SEC: 60,
+
+  // 自動返信の上限。送信元オリジンは偽装できるため、このスクリプトが
+  // 第三者宛てのメール送信に悪用されないよう、送る数に上限を設けます。
+  // 上限を超えた分も記録と通知は行い、自動返信だけを止めます。
+  AUTO_REPLY_PER_HOUR: 10,
+  AUTO_REPLY_PER_DAY: 30
 };
 
 // フォームで選べるお問い合わせの種類（入力値の検証に使います）
@@ -81,7 +87,7 @@ function doPost(e) {
     const record = normalize_(data);
     appendRow_(record);
     notifyOwner_(record);
-    replyToSender_(record);
+    if (allowAutoReply_()) replyToSender_(record);
 
     return json_({ ok: true });
 
@@ -222,29 +228,20 @@ function notifyOwner_(r) {
     body, { name: CONFIG.FROM_NAME, replyTo: r.email });
 }
 
+/**
+ * 送信者への受付確認。宛先は入力されたアドレスのため、第三者宛てに悪用されても
+ * 文面を差し込めないよう、入力内容（名前・会社名・本文）は引用しない固定文にしています。
+ * 種類（topic）は TOPICS の中から選ばれた値だけが入ります。
+ */
 function replyToSender_(r) {
   const body = [
-    (r.company ? r.company + '\n' : '') + r.name + ' 様',
-    '',
     'このたびは、LiberaSpace（リベラスペース）にお問い合わせいただき、',
     'ありがとうございます。',
     '',
-    '以下の内容で承りました。',
+    '「' + r.topic + '」についてのお問い合わせを承りました。',
     '内容を確認のうえ、2〜3営業日以内にご連絡いたします。',
     (r.topic === '資料請求' ? '資料は、ご返信の際にあわせてお送りします。\n' : ''),
-    '──────────────────────────────',
-    '種類　　　　： ' + r.topic,
-    '会社名・屋号： ' + (r.company || '（未入力）'),
-    'お名前　　　： ' + r.name,
-    'メール　　　： ' + r.email,
-    '電話番号　　： ' + (r.tel || '（未入力）'),
-    '',
-    'お問い合わせ内容：',
-    r.message,
-    '──────────────────────────────',
-    '',
-    '本メールは自動でお送りしています。',
-    '追加のご連絡は、このメールにそのままご返信ください。',
+    'お心当たりのない場合は、お手数ですがこのメールを破棄してください。',
     '',
     'LiberaSpace（リベラスペース）　加藤 真生',
     CONFIG.NOTIFY_TO,
@@ -253,6 +250,33 @@ function replyToSender_(r) {
 
   GmailApp.sendEmail(r.email, '【LiberaSpace】お問い合わせを承りました', body,
     { name: CONFIG.FROM_NAME, replyTo: CONFIG.NOTIFY_TO });
+}
+
+/** 自動返信の送信数を1時間・1日ごとに数え、上限内なら true を返す */
+function allowAutoReply_() {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const now = new Date();
+    const props = PropertiesService.getScriptProperties();
+    const hourKey = 'ar_h_' + Utilities.formatDate(now, 'Asia/Tokyo', 'yyyyMMddHH');
+    const dayKey  = 'ar_d_' + Utilities.formatDate(now, 'Asia/Tokyo', 'yyyyMMdd');
+    const hour = Number(props.getProperty(hourKey) || 0);
+    const day  = Number(props.getProperty(dayKey) || 0);
+    if (hour >= CONFIG.AUTO_REPLY_PER_HOUR || day >= CONFIG.AUTO_REPLY_PER_DAY) {
+      console.warn('自動返信の上限に達したため送信しません: ' + hourKey + '=' + hour + ', ' + dayKey + '=' + day);
+      return false;
+    }
+    // 古いカウンタは削除し、当日・当該時間のものだけ残す
+    props.getKeys().forEach(k => {
+      if (/^ar_[hd]_/.test(k) && k !== hourKey && k !== dayKey) props.deleteProperty(k);
+    });
+    props.setProperty(hourKey, String(hour + 1));
+    props.setProperty(dayKey, String(day + 1));
+    return true;
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 
