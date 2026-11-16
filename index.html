@@ -339,6 +339,9 @@
   .contact__row{ display:flex; flex-wrap:wrap; gap:clamp(20px,4vw,60px); align-items:flex-end; margin-top:clamp(40px,6vh,72px); }
   .contact__mail{ font-family:var(--wordmark-font); font-size:clamp(20px,2.4vw,30px); color:var(--ink); text-decoration:none; border-bottom:1px solid var(--hair); padding-bottom:4px; transition:border-color .3s ease; }
   .contact__mail:hover{ border-color:var(--ink); }
+  .contact__form{ display:inline-flex; align-items:center; gap:12px; font-size:12px; letter-spacing:0.2em; color:var(--ink); font-weight:600; text-decoration:none; white-space:nowrap; }
+  .contact__form .arrow{ width:30px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .contact__form:hover .arrow{ width:48px; }
   .contact__note{ font-size:13px; line-height:1.7; color:var(--muted); max-width:none; white-space:nowrap; line-break:strict; }
 
   footer{ padding:36px var(--gut); border-top:1px solid var(--hair); display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
@@ -467,7 +470,7 @@
       <a href="apps/index.html">Apps</a>
       <a href="blog/index.html">Journal</a>
       <a href="about/index.html">About</a>
-      <a href="#contact" class="nav__cta">Contact</a>
+      <a href="contact/index.html" class="nav__cta">Contact</a>
     </div>
   </nav>
 
@@ -620,6 +623,7 @@
       <div class="contact__row" data-reveal>
         <a href="mailto:liberaspace3035@gmail.com" class="contact__mail">liberaspace3035@gmail.com</a>
         <p class="contact__note">新規のご相談を受け付けています。お問い合わせには、数日以内にご返信いたします。</p>
+        <a href="contact/index.html" class="contact__form">お問い合わせフォーム <span class="arrow"></span></a>
       </div>
     </section>
 

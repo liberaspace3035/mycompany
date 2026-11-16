@@ -10,6 +10,7 @@ COPY blog /srv/blog
 COPY works /srv/works
 COPY about /srv/about
 COPY service /srv/service
+COPY contact /srv/contact
 
 # Railway injects $PORT; Caddyfile reads it. EXPOSE is informational.
 EXPOSE 80
