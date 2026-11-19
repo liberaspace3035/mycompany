@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>リニューアルで検索の評価を落とさない — 制作時に必ず確認しているSEOの技術チェックリスト | LiberaSpace</title>
+<meta name="description" content="サイトをリニューアルすると検索順位が落ちる。原因の多くは技術的な引き継ぎ漏れです。LiberaSpace が制作のたびに確認しているSEOの項目を、リニューアル・ページ設計・技術設定・表示速度・記事運用・信頼性の6分野に分けて公開します。">
+<link rel="canonical" href="/blog/seo-checklist/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="リニューアルで検索の評価を落とさない — 制作時に必ず確認しているSEOの技術チェックリスト">
+<meta property="og:description" content="リニューアルで評価を落とさないために、制作のたびに確認しているSEOの技術項目を6分野に分けて公開します。">
+<meta property="og:site_name" content="LiberaSpace">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "@id": "https://www.liberaspace.net/blog/seo-checklist/#article",
+      "headline": "リニューアルで検索の評価を落とさない — 制作時に必ず確認しているSEOの技術チェックリスト",
+      "description": "リニューアルで評価を落とさないために、制作のたびに確認しているSEOの技術項目を6分野に分けて公開します。",
+      "inLanguage": "ja",
+      "datePublished": "2026-11-19",
+      "dateModified": "2026-11-19",
+      "mainEntityOfPage": "https://www.liberaspace.net/blog/seo-checklist/",
+      "author": {
+        "@type": "Organization",
+        "@id": "https://www.liberaspace.net/#organization",
+        "name": "LiberaSpace",
+        "url": "https://www.liberaspace.net/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "@id": "https://www.liberaspace.net/#organization",
+        "name": "LiberaSpace",
+        "url": "https://www.liberaspace.net/"
+      },
+      "keywords": "SEO, サイトリニューアル, 301リダイレクト, 構造化データ, リライト, E-E-A-T"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "ホーム",
+          "item": "https://www.liberaspace.net/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Journal",
+          "item": "https://www.liberaspace.net/blog/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "リニューアルで検索の評価を落とさない",
+          "item": "https://www.liberaspace.net/blog/seo-checklist/"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.liberaspace.net/blog/seo-checklist/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "リニューアルすると、検索順位は必ず下がりますか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "必ずではありません。URLの維持、301リダイレクト、既存コンテンツの保持を押さえれば、大きな下落は防げます。公開後は Search Console で404とインデックス登録の状況を確認します。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "記事は頻繁に更新したほうがいいですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "更新の回数そのものは評価されません。目安は月2〜4本の新記事と、四半期ごとの既存記事の見直しです。日付だけを書き換える更新は逆効果になりえます。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "新しい記事を書くのと、古い記事を直すのはどちらが先ですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "すでに10〜30位にある記事があれば、そちらの書き足しが先です。新規記事より少ない手間で順位が伸びやすいためです。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "AIに引用されるために、特別な対策は必要ですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "土台は通常のSEOと同じです。会社情報やよくある質問を構造化データで整理し、誰が書いた情報かを明らかにすることが、検索とAIの両方に効きます。"
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  :root{
+    --ink:#1A1B1F;
+    --muted:rgba(26,27,31,0.54);
+    --faint:rgba(26,27,31,0.34);
+    --hair:rgba(26,27,31,0.12);
+    --paper:#fbfaf8;
+    --panel:#f3f0ea;
+    --gut:clamp(24px,6vw,120px);
+    --measure:720px;
+    --wordmark-font:"Playfair Display", Georgia, "Times New Roman", serif;
+    --sans:"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+    --jp-serif:"Hiragino Mincho ProN", "Yu Mincho", "YuMincho", "Noto Serif JP", serif;
+    --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  html,body{ overflow-x:hidden; max-width:100%; }
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    background:
+      radial-gradient(120% 80% at 6% 96%, rgba(255,243,228,0.5), rgba(255,243,228,0) 44%),
+      radial-gradient(120% 80% at 94% 4%, rgba(255,241,226,0.46), rgba(255,241,226,0) 44%),
+      radial-gradient(150% 130% at 50% 40%, #fdfcfa 0%, #f7f5f1 72%, #f1eee8 100%);
+    background-attachment:fixed;
+  }
+  #bgfx{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .ribbon{ position:absolute; border-radius:50%; }
+  .ribbon--body{
+    width:172vmax; height:52vmax; left:-26vmax; top:24%; transform:rotate(-30deg);
+    background:radial-gradient(ellipse 48% 52% at 50% 50%,
+      rgba(176,175,179,0.42), rgba(176,175,179,0.22) 48%, rgba(176,175,179,0.08) 70%, rgba(176,175,179,0) 82%);
+    filter:blur(62px);
+  }
+  .ribbon--core{
+    width:150vmax; height:34vmax; left:-16vmax; top:30%; transform:rotate(-31deg);
+    background:radial-gradient(ellipse 44% 50% at 50% 50%,
+      rgba(255,255,255,0.72), rgba(238,237,234,0.38) 40%, rgba(210,210,212,0.12) 66%, rgba(210,210,212,0) 80%);
+    filter:blur(44px);
+  }
+  .dotgrid{ position:absolute; top:-28px; left:-28px; width:46vw; height:40vw; max-width:640px; max-height:540px;
+    background-image:radial-gradient(rgba(26,27,31,0.14) 1px, transparent 1.7px);
+    background-size:17px 17px;
+    -webkit-mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%);
+    mask-image:radial-gradient(125% 125% at 0% 0%, #000 6%, rgba(0,0,0,0.45) 34%, transparent 62%); }
+  .grain{ position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:170px 170px; opacity:0.38; mix-blend-mode:overlay; }
+
+  .page{ position:relative; z-index:1; }
+
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px var(--gut);
+    transition:background .4s ease, box-shadow .4s ease, backdrop-filter .4s ease;
+  }
+  .nav.scrolled{
+    background:rgba(251,250,248,0.72);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    box-shadow:0 1px 0 var(--hair);
+  }
+  .nav__brand{
+    font-family:var(--wordmark-font); font-weight:700; font-size:20px;
+    letter-spacing:-0.01em; color:var(--ink); text-decoration:none;
+  }
+  .nav__links{ display:flex; gap:clamp(16px,2.4vw,38px); align-items:center; }
+  .nav__links a{
+    font-size:11px; letter-spacing:0.24em; text-transform:uppercase;
+    color:var(--muted); text-decoration:none; font-weight:600; transition:color .25s ease;
+  }
+  .nav__links a:hover{ color:var(--ink); }
+
+  .art{ max-width:calc(var(--measure) + var(--gut) * 2); margin:0 auto; padding:clamp(124px,18vh,190px) var(--gut) 0; }
+  .art__back{
+    display:inline-flex; align-items:center; gap:10px; font-size:11px; letter-spacing:0.24em;
+    text-transform:uppercase; color:var(--muted); text-decoration:none; font-weight:600; margin-bottom:36px;
+  }
+  .art__back .arrow{ width:22px; height:1px; background:var(--muted); transition:width .3s ease; }
+  .art__back:hover{ color:var(--ink); }
+  .art__back:hover .arrow{ width:34px; background:var(--ink); }
+  .art__meta{ display:flex; flex-wrap:wrap; gap:14px 22px; font-size:11px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:26px; }
+  .art__title{
+    font-family:var(--jp-serif); font-weight:600;
+    font-size:clamp(27px,4.6vw,50px); line-height:1.42; letter-spacing:0.005em;
+    text-wrap:pretty;
+  }
+  .art__lead{
+    margin-top:clamp(26px,4vh,40px); font-size:clamp(15px,1.5vw,17px); line-height:2.0;
+    color:var(--muted); text-wrap:pretty;
+  }
+  .art__rule{ height:1px; background:var(--hair); margin:clamp(44px,7vh,72px) 0 0; }
+
+  .toc{ margin:clamp(38px,6vh,56px) 0 0; padding:26px 30px; border:1px solid var(--hair); background:rgba(255,255,255,0.42); }
+  .toc__label{ font-size:11px; letter-spacing:0.26em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:16px; }
+  .toc ol{ list-style:none; counter-reset:toc; }
+  .toc li{ counter-increment:toc; margin:9px 0; padding-left:30px; position:relative; }
+  .toc li::before{ content:counter(toc,decimal-leading-zero); position:absolute; left:0; top:1px;
+    font-size:11px; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; }
+  .toc a{ color:var(--ink); text-decoration:none; font-size:14px; line-height:1.7; border-bottom:1px solid transparent; transition:border-color .25s ease; }
+  .toc a:hover{ border-bottom-color:var(--hair); }
+
+  .prose{ max-width:calc(var(--measure) + var(--gut) * 2); margin:0 auto; padding:0 var(--gut) clamp(60px,10vh,120px); }
+  .prose h2{
+    font-family:var(--jp-serif); font-weight:600; font-size:clamp(21px,2.8vw,29px);
+    line-height:1.55; letter-spacing:0.005em; margin:clamp(56px,8vh,86px) 0 22px; scroll-margin-top:90px;
+  }
+  .prose h2 .n{ display:block; font-family:var(--wordmark-font); font-style:italic; font-weight:500;
+    font-size:13px; letter-spacing:0.08em; color:var(--faint); margin-bottom:10px; }
+  .prose h3{ font-size:16px; font-weight:700; line-height:1.7; margin:clamp(32px,4.5vh,46px) 0 14px; letter-spacing:0.01em; }
+  .prose p{ font-size:15.5px; line-height:2.05; color:rgba(26,27,31,0.76); margin:18px 0; text-wrap:pretty; }
+  .prose strong{ color:var(--ink); font-weight:700; }
+  .prose a{ color:var(--ink); text-decoration:none; border-bottom:1px solid var(--hair); transition:border-color .25s ease; }
+  .prose a:hover{ border-bottom-color:var(--ink); }
+  .prose ul{ margin:18px 0; padding-left:0; list-style:none; }
+  .prose ul li{ position:relative; padding-left:22px; font-size:15.5px; line-height:2.0; color:rgba(26,27,31,0.76); margin:10px 0; text-wrap:pretty; }
+  .prose ul li::before{ content:""; position:absolute; left:2px; top:15px; width:7px; height:1px; background:var(--faint); }
+  .prose code{ font-family:var(--mono); font-size:0.88em; background:rgba(26,27,31,0.055); padding:2px 6px; border-radius:2px; }
+  .prose pre{
+    font-family:var(--mono); font-size:12.5px; line-height:1.85; margin:26px 0;
+    padding:22px 24px; background:#1A1B1F; color:#e9e7e2; border-radius:2px;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  .prose pre code{ background:none; padding:0; font-size:inherit; }
+  .prose pre .c{ color:rgba(233,231,226,0.44); }
+  .prose pre .bad{ color:#e8a0a0; }
+  .prose pre .good{ color:#a8cf9a; }
+
+  .note{ margin:30px 0; padding:22px 26px; border-left:2px solid var(--ink); background:rgba(255,255,255,0.5); }
+  .note__label{ font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--faint); font-weight:600; margin-bottom:10px; }
+  .note p{ margin:0; font-size:14.5px; line-height:1.95; }
+  .note p + p{ margin-top:12px; }
+
+  .roles{ margin:30px 0; border-top:1px solid var(--hair); }
+  .role{ display:grid; grid-template-columns:minmax(130px,180px) 1fr; gap:8px clamp(18px,3vw,40px);
+    padding:22px 0; border-bottom:1px solid var(--hair); align-items:start; }
+  .role__name{ font-family:var(--wordmark-font); font-style:italic; font-weight:500; font-size:20px; line-height:1.3; }
+  .role__tools{ display:block; font-family:var(--sans); font-style:normal; font-size:10.5px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--faint); font-weight:600; margin-top:8px; }
+  .role__body{ font-size:14.5px; line-height:1.95; color:rgba(26,27,31,0.76); text-wrap:pretty; }
+  .role__body strong{ color:var(--ink); }
+  @media(max-width:600px){ .role{ grid-template-columns:1fr; gap:10px; } }
+
+  .cta{ max-width:calc(var(--measure) + var(--gut) * 2); margin:0 auto; padding:clamp(44px,7vh,72px) var(--gut) clamp(60px,10vh,110px); border-top:1px solid var(--hair); }
+  .cta__title{ font-family:var(--jp-serif); font-weight:600; font-size:clamp(19px,2.4vw,26px); line-height:1.6; }
+  .cta__body{ margin-top:16px; font-size:14.5px; line-height:2.0; color:var(--muted); text-wrap:pretty; }
+  .cta__links{ display:flex; flex-wrap:wrap; gap:14px 30px; margin-top:28px; }
+  .cta__link{ display:inline-flex; align-items:center; gap:11px; font-size:12px; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--ink); font-weight:600; text-decoration:none; }
+  .cta__link .arrow{ width:30px; height:1px; background:var(--ink); transition:width .3s ease; }
+  .cta__link:hover .arrow{ width:48px; }
+
+  footer{ padding:36px var(--gut); border-top:1px solid var(--hair);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); font-weight:600; }
+  footer a{ color:var(--muted); text-decoration:none; transition:color .25s ease; }
+  footer a:hover{ color:var(--ink); }
+
+  @media(min-width:900px){
+    .prose p, .prose ul li{ font-size:16.5px; }
+    .prose h3{ font-size:17px; }
+  }
+
+  [data-reveal]{ opacity:0; transform:translateY(18px); transition:opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  [data-reveal].in{ opacity:1; transform:none; }
+  @media(prefers-reduced-motion:reduce){
+    [data-reveal]{ opacity:1; transform:none; transition:none; }
+    html{ scroll-behavior:auto; }
+  }
+
+  /* ---------- スマートフォンのメニュー（ハンバーガー） ---------- */
+  .nav__toggle{ display:none; position:relative; z-index:2; width:44px; height:44px; margin-right:-10px; padding:0; border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .nav__toggle span{ position:absolute; left:11px; right:11px; height:1.5px; background:var(--ink); transition:transform .3s ease, top .3s ease; }
+  .nav__toggle span:nth-child(1){ top:18px; }
+  .nav__toggle span:nth-child(2){ top:25px; }
+  .nav.open .nav__toggle span:nth-child(1){ top:21.5px; transform:rotate(45deg); }
+  .nav.open .nav__toggle span:nth-child(2){ top:21.5px; transform:rotate(-45deg); }
+  @media(max-width:680px){
+    .nav__toggle{ display:block; }
+    .nav__brand{ position:relative; z-index:2; }
+    .nav.open{ background:var(--paper); backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none; }
+    .nav .nav__links{ position:fixed; inset:0; z-index:1; flex-direction:column; align-items:flex-start; justify-content:center; gap:6px;
+      padding:96px var(--gut) 48px; background:var(--paper); overflow-y:auto;
+      opacity:0; visibility:hidden; transition:opacity .3s ease, visibility 0s linear .3s; }
+    .nav.open .nav__links{ opacity:1; visibility:visible; transition:opacity .3s ease; }
+    .nav .nav__links a, .nav .nav__links a.nav__cta{ display:block !important; padding:14px 0 !important; border:0; border-radius:0; background:none;
+      font-family:var(--wordmark-font); font-size:30px; font-weight:500; letter-spacing:0.01em; text-transform:none; color:var(--ink) !important; }
+    .nav .nav__links a.nav__cta:hover{ background:none; }
+  }
+
+  /* ---------- 和文の改行 ----------
+     文節（語句）の途中では折り返さず、最終行が極端に短くならないよう整える。
+     見出しは行の長さを揃える。 */
+  p, li, dd, dt, td, th, summary, figcaption, blockquote, h1, h2, h3, h4{
+    line-break:strict; word-break:auto-phrase; overflow-wrap:break-word; text-wrap:pretty; }
+  h1, h2, h3{ text-wrap:balance; }
+  pre, pre *, code{ word-break:normal; text-wrap:nowrap; }
+
+  /* ---------- table / faq (seo-checklist) ---------- */
+  .tbl-wrap{ margin:26px 0; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .tbl{ width:100%; min-width:560px; border-collapse:collapse; font-size:14px; line-height:1.8; }
+  .tbl th, .tbl td{ text-align:left; vertical-align:top; padding:14px 14px 14px 0; border-top:1px solid var(--hair); color:rgba(26,27,31,0.76); }
+  .tbl thead th{ border-top:none; padding-top:0; font-size:11px; letter-spacing:0.14em; color:var(--faint); font-weight:600; white-space:nowrap; }
+  .tbl tbody th{ color:var(--ink); font-weight:600; white-space:nowrap; }
+  .tbl tbody tr:last-child th, .tbl tbody tr:last-child td{ border-bottom:1px solid var(--hair); }
+  .faq{ margin:22px 0; }
+  .faq details{ border-top:1px solid var(--hair); }
+  .faq details:last-child{ border-bottom:1px solid var(--hair); }
+  .faq summary{ list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:baseline; gap:20px; padding:18px 0; font-size:15.5px; font-weight:600; line-height:1.7; color:var(--ink); }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary::after{ content:"+"; font-family:var(--wordmark-font); font-size:22px; font-weight:400; color:var(--faint); line-height:1; transition:transform .3s ease; flex:none; }
+  .faq details[open] summary::after{ transform:rotate(45deg); }
+  .faq details p{ margin:0 0 20px; }
+</style>
+</head>
+<body>
+  <div id="bgfx" aria-hidden="true">
+    <div class="ribbon ribbon--body"></div>
+    <div class="ribbon ribbon--core"></div>
+    <div class="dotgrid"></div>
+    <div class="grain"></div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="../../index.html" class="nav__brand">LiberaSpace</a>
+    <button class="nav__toggle" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="navLinks"><span></span><span></span></button>
+    <div class="nav__links" id="navLinks">
+      <a href="../../works/index.html">Works</a>
+      <a href="../../service/index.html">Service</a>
+      <a href="../index.html">Journal</a>
+      <a href="../../contact/index.html">Contact</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <article>
+      <header class="art">
+        <a href="../index.html" class="art__back"><span class="arrow"></span> Journal</a>
+
+        <div class="art__meta">
+          <span>2026.11.19</span>
+          <span>SEO</span>
+          <span>技術メモ</span>
+        </div>
+
+        <h1 class="art__title">リニューアルで検索の評価を落とさない<br>— 制作時に必ず確認しているSEOの技術チェックリスト</h1>
+
+        <p class="art__lead">サイトを作り直したら、検索からの流入が減った。よく聞く話ですが、原因の多くはデザインでも文章でもなく、<strong>技術的な引き継ぎ漏れ</strong>です。古いURLが404のまま残っている。canonical が実際とは違うURLを指している。確認用環境の noindex を本番で外し忘れている。どれも公開時に一度確認すれば防げます。先に結論を書くと、SEOで効くのは<strong>「何本書いたか」ではなく「評価を落とさない作り」と「伸びる記事に手を入れること」</strong>です。LiberaSpace が制作のたびに確認している項目を、そのまま公開します。</p>
+
+        <nav class="toc" aria-label="目次">
+          <p class="toc__label">Contents</p>
+          <ol>
+            <li><a href="#overview">まず全体像：6分野のチェックリスト</a></li>
+            <li><a href="#renewal">リニューアル時は、評価を引き継ぐことが最優先</a></li>
+            <li><a href="#structure">ページ設計：1ページ1テーマ</a></li>
+            <li><a href="#technical">技術設定：検索エンジンとAIに正しく読ませる</a></li>
+            <li><a href="#speed">表示速度と使いやすさ</a></li>
+            <li><a href="#articles">記事は本数より中身、新規よりリライト</a></li>
+            <li><a href="#trust">誰が書いたかを明らかにする</a></li>
+            <li><a href="#faq">よくある質問</a></li>
+          </ol>
+        </nav>
+
+        <div class="art__rule"></div>
+      </header>
+
+      <div class="prose">
+
+        <h2 id="overview"><span class="n">01</span>まず全体像：6分野のチェックリスト</h2>
+
+        <p>確認する項目は、大きく6つの分野に分かれます。分野ごとに、確認するタイミングも違います。</p>
+
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead>
+              <tr><th>分野</th><th>主な確認項目</th><th>タイミング</th></tr>
+            </thead>
+            <tbody>
+              <tr><th>リニューアル時の引き継ぎ</th><td>URLの維持、301リダイレクト、既存コンテンツの保持、404の確認</td><td>設計時・公開直後</td></tr>
+              <tr><th>ページ設計</th><td>1ページ1テーマ、重複ページの統合、内部リンク</td><td>設計時</td></tr>
+              <tr><th>技術設定</th><td>title／description、OGP、canonical、構造化データ、sitemap.xml、robots.txt、noindex、見出し、alt、hreflang</td><td>実装時・公開直前</td></tr>
+              <tr><th>表示速度・使いやすさ</th><td>画像の圧縮と形式、動画の遅延読み込み、Core Web Vitals、問い合わせ導線</td><td>実装時・公開後</td></tr>
+              <tr><th>記事の作り方と運用</th><td>目次、冒頭の結論、表、FAQ、事実確認、リライト</td><td>執筆時・四半期ごと</td></tr>
+              <tr><th>信頼性（E-E-A-T）</th><td>執筆者と日付の表示、プロフィール、会社概要、具体的な実績</td><td>設計時・執筆時</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="renewal"><span class="n">02</span>リニューアル時は、評価を引き継ぐことが最優先</h2>
+
+        <p>長く運営してきたサイトには、URLごとに評価が積み上がっています。作り直しで一番避けたいのは、それをゼロに戻してしまうことです。</p>
+
+        <ul>
+          <li>既存ページのURLは、できるだけ変えない</li>
+          <li>URLを変える・ページを統合する場合は、旧URLから新URLへ<strong>301リダイレクト</strong>する</li>
+          <li>今のサイトで評価されている部分（title／description、テキストで書かれた事業説明や実績）は削らない</li>
+          <li>http→https、wwwあり／なしを1つにそろえ、canonical が実際に表示されるURLを指すようにする</li>
+          <li>公開後は Search Console で、旧URLの404とインデックス登録の状況を確認する</li>
+        </ul>
+
+        <p>表記の統一は見落とされがちです。<a href="../../works/hangai/index.html">株式会社 半谷</a>のリニューアルでも、サイトのアドレス表記を1つに統一しました。同じページでも表記が何通りもあると、検索エンジンからは別々のページに見え、評価が分散するためです。</p>
+
+        <h2 id="structure"><span class="n">03</span>ページ設計：1ページ1テーマ</h2>
+
+        <ul>
+          <li>1ページ1テーマ、1記事1テーマにする</li>
+          <li>トップページは全体の要約と入口にし、詳しい内容は下層ページに置く</li>
+          <li>同じテーマのページを複数作らない（評価の取り合いになる）</li>
+          <li>関連ページ同士を内部リンクでつなぐ（記事⇔サービス、校舎ページ⇔料金ページ、記事同士）</li>
+          <li>各ページに十分な情報量を持たせる</li>
+        </ul>
+
+        <p>半谷では、1ページに4職種がまとまっていた採用情報を、施工管理・鉄骨加工・現場多能工・製図の職種別ページに分けました。「施工管理 求人」と検索した人が、その職種のページへ直接たどり着けるようにするためです。まとめページは一覧と入口の役割に絞り、内容の重複をなくしています。</p>
+
+        <h2 id="technical"><span class="n">04</span>技術設定：検索エンジンとAIに正しく読ませる</h2>
+
+        <p>見た目には出ない部分ですが、検索結果での表示とAIからの引用に直接関わります。</p>
+
+        <ul>
+          <li>全ページに、そのページだけの title と meta description を付ける</li>
+          <li>OGP を設定する。og:image のURLが実在するか、タグが二重に出力されていないかを確認する</li>
+          <li>canonical を指定する</li>
+          <li>構造化データ（JSON-LD）を内容に合わせて入れる。Organization、LocalBusiness、Person、Article、BreadcrumbList、FAQPage、WebSite など</li>
+          <li>記事の author を空欄にしない。<code>@type</code>（Organization か Person か）も正しく書く</li>
+          <li>sitemap.xml を自動で生成・更新し、Search Console に送信する</li>
+          <li>似たドメインがある場合は、サイトマップで各サイトの役割を示す</li>
+          <li>robots.txt で、必要なページのクロールを止めていないか確認する</li>
+          <li>確認用環境は noindex にし、本番公開時に外し忘れない</li>
+          <li>見出しは h1〜h3 を正しい順番で使う</li>
+          <li>画像には alt と、内容が分かるファイル名を付ける</li>
+          <li>多言語ページには hreflang を設定する</li>
+        </ul>
+
+        <p>効果が分かりやすかったのが、<a href="../../works/hangul/index.html">ハングル語学堂</a>です。旧サイトは全ページの title が同じで、教室の情報を伝える構造化データもありませんでした。リニューアルでは、9校それぞれの住所・電話番号・受付時間、コースと料金、よくある質問を構造化データで整理し、全ページの title と description を教室名と所在地が伝わる内容に改めました。キーワードを並べただけの記述は、Google のガイドラインでは逆効果になるため取り除いています。</p>
+
+        <p>リニューアル後、AI検索での引用率は5倍に、お問い合わせ数は約1.5倍に増えました。Google 検索での表示回数は約25％、1か月のクリック数は約20％向上しています。</p>
+
+        <h2 id="speed"><span class="n">05</span>表示速度と使いやすさ</h2>
+
+        <ul>
+          <li>画像は圧縮し、表示サイズに合った大きさで WebP／AVIF を配信する</li>
+          <li>埋め込み動画は、クリックしてから読み込む形にする</li>
+          <li>スマートフォンでの見やすさを確認する</li>
+          <li>PageSpeed Insights で Core Web Vitals を確認する</li>
+          <li>どのページからでも、問い合わせへ迷わずたどれるようにする</li>
+        </ul>
+
+        <p>速度は、一つの大きな施策より小さな改善の積み重ねで決まります。半谷では、写真をすべて軽い形式に変換し、外部から読み込んでいた部品を自社サイト側に移し、フォントの読み込み方も見直しました。</p>
+
+        <h2 id="articles"><span class="n">06</span>記事は本数より中身、新規よりリライト</h2>
+
+        <h3>記事の作り方</h3>
+        <ul>
+          <li>導入文のすぐ後に、見出しへのリンク付きの目次を置く</li>
+          <li>冒頭で答えを書く。一覧は画像だけでなく、文字の表でも載せる</li>
+          <li>「よくある質問」を入れ、FAQPage の構造化データも付ける</li>
+          <li>画像は大きくしすぎない（中央寄せで幅400〜480px、縦長は360px）。上下に約2emの余白を入れる</li>
+          <li>日程などの事実は公式情報で確認する。推測では書かない</li>
+        </ul>
+
+        <h3>更新とリライトの考え方</h3>
+        <ul>
+          <li><strong>更新の回数そのものは評価されない</strong>。効くのは中身</li>
+          <li>中身の薄い記事を量産すると、評価が下がるおそれがある</li>
+          <li>すでに10〜30位にいる記事を書き足すほうが、新しい記事を増やすより効率がいい</li>
+          <li>日付だけを書き換える「見せかけの更新」はしない</li>
+          <li>運用の目安は、月2〜4本の新記事と、四半期ごとの既存記事の見直し</li>
+          <li>Search Console で「表示回数は多いのにクリックが少ない記事」をリライトの対象にする</li>
+          <li>順位は高いのにクリックされない記事は、まず title と description を直す</li>
+          <li>リライトしたら、URL検査から再インデックスを依頼する</li>
+        </ul>
+
+        <div class="note">
+          <p class="note__label">ポイント</p>
+          <p>新しい記事を書く前に、Search Console で10〜30位の記事を探してください。ゼロから1本書くより、すでに評価されている記事に足りない情報を足すほうが、少ない手間で順位が伸びます。</p>
+        </div>
+
+        <h2 id="trust"><span class="n">07</span>誰が書いたかを明らかにする</h2>
+
+        <p>検索エンジンもAIも、出どころがはっきりした情報を優先します。</p>
+
+        <ul>
+          <li>記事に執筆者・監修者と、公開日・更新日を表示する</li>
+          <li>執筆者の資格や経歴が分かるページを作り、記事からリンクする</li>
+          <li>会社概要、運営者の情報、問い合わせ先、プライバシーポリシーを載せる</li>
+          <li>実績は具体的な数字で書く。数字はクライアントに確認してから載せる</li>
+        </ul>
+
+        <h2 id="faq"><span class="n">08</span>よくある質問</h2>
+
+        <div class="faq">
+          <details>
+            <summary>リニューアルすると、検索順位は必ず下がりますか？</summary>
+            <p>必ずではありません。URLの維持、301リダイレクト、既存コンテンツの保持を押さえれば、大きな下落は防げます。公開後は Search Console で404とインデックス登録の状況を確認します。</p>
+          </details>
+          <details>
+            <summary>記事は頻繁に更新したほうがいいですか？</summary>
+            <p>更新の回数そのものは評価されません。目安は月2〜4本の新記事と、四半期ごとの既存記事の見直しです。日付だけを書き換える更新は逆効果になりえます。</p>
+          </details>
+          <details>
+            <summary>新しい記事を書くのと、古い記事を直すのはどちらが先ですか？</summary>
+            <p>すでに10〜30位にある記事があれば、そちらの書き足しが先です。新規記事より少ない手間で順位が伸びやすいためです。</p>
+          </details>
+          <details>
+            <summary>AIに引用されるために、特別な対策は必要ですか？</summary>
+            <p>土台は通常のSEOと同じです。会社情報やよくある質問を構造化データで整理し、誰が書いた情報かを明らかにすることが、検索とAIの両方に効きます。</p>
+          </details>
+        </div>
+
+        <p>SEOは公開してから頑張るものと思われがちですが、実際には作る段階で8割が決まります。評価を落とさない形で作っておけば、その後の運用はずっと楽になります。自社サイトの現状が気になる方は、<a href="../../service/seo/index.html">SEO・AI引用対策</a>の30分無料診断でご確認いただけます。</p>
+
+      </div>
+
+      <div class="cta">
+        <p class="cta__title">SEO・AI引用対策のご相談</p>
+        <p class="cta__body">リニューアル時の引き継ぎから、公開後の定点観測とリライトまで対応しています。まずは30分の無料診断で、検索やAIでの現在の紹介状況をご確認ください。</p>
+        <div class="cta__links">
+          <a class="cta__link" href="../../service/seo/index.html">SEO・AI引用対策 <span class="arrow"></span></a>
+          <a class="cta__link" href="../../contact/index.html">Contact <span class="arrow"></span></a>
+          <a class="cta__link" href="../index.html">Journal 一覧 <span class="arrow"></span></a>
+        </div>
+      </div>
+    </article>
+
+    <footer>
+      <span>© 2025 LiberaSpace</span>
+      <div>
+        <a href="../../index.html">LiberaSpace Studio</a>
+      </div>
+      <span>HOKKAIDO / REMOTE</span>
+    </footer>
+
+  </div>
+
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    function onScroll(){ if(window.scrollY > 40) nav.classList.add("scrolled"); else nav.classList.remove("scrolled"); }
+    window.addEventListener("scroll", onScroll, {passive:true});
+    onScroll();
+
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, {threshold:0.12, rootMargin:"0px 0px -8% 0px"});
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ io.observe(el); });
+    }else{
+      document.querySelectorAll("[data-reveal]").forEach(function(el){ el.classList.add("in"); });
+    }
+  })();
+</script>
+<script>
+  (function(){
+    var nav = document.getElementById("nav");
+    var btn = nav && nav.querySelector(".nav__toggle");
+    if(!btn) return;
+    function setOpen(open){
+      nav.classList.toggle("open", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      btn.setAttribute("aria-label", open ? "メニューを閉じる" : "メニューを開く");
+      document.documentElement.style.overflow = open ? "hidden" : "";
+    }
+    btn.addEventListener("click", function(){ setOpen(!nav.classList.contains("open")); });
+    nav.querySelectorAll(".nav__links a").forEach(function(a){ a.addEventListener("click", function(){ setOpen(false); }); });
+    document.addEventListener("keydown", function(e){ if(e.key === "Escape" && nav.classList.contains("open")){ setOpen(false); btn.focus(); } });
+    window.addEventListener("resize", function(){ if(window.innerWidth > 680 && nav.classList.contains("open")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

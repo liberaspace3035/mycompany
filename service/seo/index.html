@@ -129,6 +129,8 @@
   .point__no{ font-size:12px; color:var(--faint); font-variant-numeric:tabular-nums; font-weight:600; letter-spacing:0.12em; }
   .point__title{ margin-top:10px; font-size:17px; font-weight:600; line-height:1.6; line-break:strict; }
   .point__desc{ margin-top:8px; font-size:14px; line-height:1.85; color:var(--muted); text-wrap:pretty; line-break:strict; }
+  .point .list{ margin-top:12px; }
+  .point .list li{ padding:3px 0 3px 1.4em; font-size:13.5px; line-height:1.8; }
   @media(max-width:860px){ .points--3{ grid-template-columns:1fr 1fr; } }
   @media(max-width:680px){ .points, .points--3{ grid-template-columns:1fr; } }
 
@@ -366,6 +368,22 @@
         },
         {
           "@type": "Question",
+          "name": "リニューアルすると、検索順位は下がりませんか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "ページのアドレスや評価されている文章をできるだけ残し、変更が必要な場合は古いアドレスから新しいページへ自動で案内する設定を行います。公開後も、見つからないページが出ていないかを確認します。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "記事は頻繁に更新したほうがよいですか？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "更新の回数そのものは評価されません。目安は月2〜4本の新しい記事と、3か月ごとの既存記事の見直しです。すでに10〜30位にある記事を書き足すほうが、新しい記事を増やすより効率よく成果につながります。"
+          }
+        },
+        {
+          "@type": "Question",
           "name": "月額SEO対策の料金はどのように決まりますか？",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -407,6 +425,7 @@
       <p class="intro__lead">検索でも、AIへの質問でも、御社の名前が挙がるように。現状の確認から改善の実施、効果の確認まで、継続して取り組みます。</p>
       <nav class="toc" aria-label="このページの目次">
         <a href="#problems">解決できる課題</a>
+        <a href="#scope">取り組む内容</a>
         <a href="#flow">対策の進め方</a>
         <a href="#cases">取り組み事例</a>
         <a href="#price">料金</a>
@@ -443,10 +462,92 @@
       </div>
     </section>
 
+    <!-- ===================== SCOPE ===================== -->
+    <section class="block" id="scope">
+      <div class="head" data-reveal>
+        <span class="head__num">02</span>
+        <span class="head__en">What We Do</span>
+        <span class="head__jp">取り組む内容</span>
+        <span class="head__line"></span>
+      </div>
+      <div class="points" data-reveal>
+        <div class="point">
+          <span class="point__no">01</span>
+          <h3 class="point__title">リニューアルしても、これまでの評価を引き継ぎます</h3>
+          <p class="point__desc">長く運営してきたサイトには、検索での評価が積み上がっています。作り直しでそれを失わないよう、公開前後に次の点を確認します。</p>
+          <ul class="list">
+            <li>ページのアドレスは、できるだけ変えずに残します</li>
+            <li>アドレスを変える・ページをまとめる場合は、古いアドレスから新しいページへ自動で案内する設定を行います</li>
+            <li>事業の説明や実績など、今のサイトで評価されている文章は削らずに活かします</li>
+            <li>公開後は Google の管理画面で、見つからないページが出ていないか、検索に登録されているかを確認します</li>
+          </ul>
+        </div>
+        <div class="point">
+          <span class="point__no">02</span>
+          <h3 class="point__title">1ページ1テーマで、探している方に届く構成にします</h3>
+          <p class="point__desc">1つのページに話題を詰め込むと、何のページなのかが伝わりにくくなります。</p>
+          <ul class="list">
+            <li>トップページは全体の要約と入口にし、詳しい内容は各ページに分けます</li>
+            <li>同じテーマのページが複数あると評価が分散するため、1つにまとめます</li>
+            <li>サービス・料金・事例・記事など、関連するページ同士をリンクでつなぎます</li>
+          </ul>
+        </div>
+        <div class="point">
+          <span class="point__no">03</span>
+          <h3 class="point__title">検索エンジンやAIが、内容を正しく読み取れる状態に整えます</h3>
+          <p class="point__desc">見た目には表れない部分ですが、検索結果での表示や評価に直接関わります。</p>
+          <ul class="list">
+            <li>全ページに、そのページ専用のタイトルと説明文を付けます</li>
+            <li>SNSで共有されたときの画像や見出しを設定し、正しく表示されるか確認します</li>
+            <li>会社情報・所在地・執筆者・よくある質問などを、検索エンジンやAIが読み取れる目印として入れます</li>
+            <li>サイト全体のページ一覧を Google に届け、検索に載せたいページが除外されていないか確認します</li>
+            <li>見出しの順序や画像の説明文を整えます</li>
+          </ul>
+        </div>
+        <div class="point">
+          <span class="point__no">04</span>
+          <h3 class="point__title">スマートフォンでも速く、お問い合わせまで迷わない作りにします</h3>
+          <p class="point__desc">表示が遅いページや、問い合わせ先が見つからないページは、途中で閉じられてしまいます。</p>
+          <ul class="list">
+            <li>画像は軽い形式に変換し、表示に合った大きさで配信します</li>
+            <li>動画は再生ボタンを押してから読み込む形にし、最初の表示を軽くします</li>
+            <li>Google の計測ツールで表示速度を確認し、スマートフォンでの見やすさも点検します</li>
+            <li>どのページからでも、お問い合わせへすぐ進めるようにします</li>
+          </ul>
+        </div>
+        <div class="point">
+          <span class="point__no">05</span>
+          <h3 class="point__title">記事は本数より中身で、上位を狙えるものから手を入れます</h3>
+          <p class="point__desc">更新の回数そのものは評価されません。中身の薄い記事を増やすと、かえって評価が下がるおそれがあります。</p>
+          <ul class="list">
+            <li>冒頭で答えを示し、目次・表・よくある質問を備えた読みやすい記事にします</li>
+            <li>日程や料金などの事実は、公式の情報で確認してから書きます</li>
+            <li>すでに10〜30位にある記事は、新しい記事を増やすより書き足すほうが効率よく伸びます</li>
+            <li>表示は多いのにクリックが少ない記事は、まずタイトルと説明文を見直します</li>
+            <li>日付だけを書き換える更新は行いません</li>
+          </ul>
+        </div>
+        <div class="point">
+          <span class="point__no">06</span>
+          <h3 class="point__title">誰が書き、誰が運営しているサイトかを明らかにします</h3>
+          <p class="point__desc">検索エンジンもAIも、情報の出どころがはっきりしたサイトを信頼します。</p>
+          <ul class="list">
+            <li>記事に執筆者と公開日・更新日を表示し、執筆者の経歴が分かるページへつなぎます</li>
+            <li>会社概要・運営者情報・お問い合わせ先・プライバシーポリシーを整えます</li>
+            <li>実績は具体的な数字で示します（数字はお客さまに確認したうえで掲載します）</li>
+          </ul>
+        </div>
+      </div>
+      <ul class="note" data-reveal>
+        <li>詳細診断で現状を確認し、御社のサイトに必要なものから優先順位をつけて取り組みます。すべてを一度に行う必要はありません。</li>
+        <li>各項目の詳しい内容は、Journal の記事「<a href="../../blog/seo-checklist/index.html">リニューアルで検索の評価を落とさない</a>」でご紹介しています。</li>
+      </ul>
+    </section>
+
     <!-- ===================== FLOW ===================== -->
     <section class="block" id="flow">
       <div class="head" data-reveal>
-        <span class="head__num">02</span>
+        <span class="head__num">03</span>
         <span class="head__en">How It Works</span>
         <span class="head__jp">対策の進め方</span>
         <span class="head__line"></span>
@@ -484,7 +585,7 @@
     <!-- ===================== CASES ===================== -->
     <section class="block" id="cases">
       <div class="head" data-reveal>
-        <span class="head__num">03</span>
+        <span class="head__num">04</span>
         <span class="head__en">Case Studies</span>
         <span class="head__jp">取り組み事例</span>
         <span class="head__line"></span>
@@ -530,7 +631,7 @@
     <!-- ===================== PRICE ===================== -->
     <section class="block" id="price">
       <div class="head" data-reveal>
-        <span class="head__num">04</span>
+        <span class="head__num">05</span>
         <span class="head__en">Price</span>
         <span class="head__jp">料金</span>
         <span class="head__line"></span>
@@ -555,7 +656,7 @@
             <tr>
               <th>月額SEO対策</th>
               <td><span class="amt">10,000<small>円/月〜</small></span></td>
-              <td>AIでの紹介状況の定点観測、月次レポート、ページ改善など。取り組む範囲に応じてお見積りします。</td>
+              <td>検索とAIでの紹介状況の定点観測、月次レポート、表示は多いのにクリックが少ないページの見直しなど。取り組む範囲に応じてお見積りします。</td>
             </tr>
           </tbody>
         </table>
@@ -565,7 +666,7 @@
     <!-- ===================== FAQ ===================== -->
     <section class="block" id="faq">
       <div class="head" data-reveal>
-        <span class="head__num">05</span>
+        <span class="head__num">06</span>
         <span class="head__en">FAQ</span>
         <span class="head__jp">よくあるご質問</span>
         <span class="head__line"></span>
@@ -583,6 +684,14 @@
         <details>
           <summary>詳細診断ではどのようなものを受け取れますか？</summary>
           <p class="a">10〜15のキーワードで表示状況を検証し、優先順位をつけた改善計画（A4・5ページ程度）をお渡しします。</p>
+        </details>
+        <details>
+          <summary>リニューアルすると、検索順位は下がりませんか？</summary>
+          <p class="a">ページのアドレスや評価されている文章をできるだけ残し、変更が必要な場合は古いアドレスから新しいページへ自動で案内する設定を行います。公開後も、見つからないページが出ていないかを確認します。</p>
+        </details>
+        <details>
+          <summary>記事は頻繁に更新したほうがよいですか？</summary>
+          <p class="a">更新の回数そのものは評価されません。目安は月2〜4本の新しい記事と、3か月ごとの既存記事の見直しです。すでに10〜30位にある記事を書き足すほうが、新しい記事を増やすより効率よく成果につながります。</p>
         </details>
         <details>
           <summary>月額SEO対策の料金はどのように決まりますか？</summary>
